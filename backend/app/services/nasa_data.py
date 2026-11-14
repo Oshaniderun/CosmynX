@@ -225,6 +225,8 @@ def get_lunar_map_resources() -> dict[str, Any]:
             "name": "NASA Moon Trek",
             "portal_url": "https://trek.nasa.gov/moon/",
             "wmts_base_url": "https://trek.nasa.gov/tiles/Moon/EQ/",
+            "wac_wmts_capabilities": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/WMTSCapabilities.xml",
+            "wac_tile_template": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm/{z}/{y}/{x}.jpg",
             "purpose": "Lunar maps, terrain visualization, and available map layers",
         },
         "lroc_quickmap": {
@@ -239,3 +241,27 @@ def get_lunar_map_resources() -> dict[str, Any]:
             "purpose": "Sun and Earth ephemeris calculations for lunar locations",
         },
     }
+
+
+def list_cached_datasets() -> list[dict[str, Any]]:
+    """Return metadata for all cached ephemeris datasets in data/processed/."""
+    if not PROCESSED_DATA_DIR.exists():
+        return []
+    datasets: list[dict[str, Any]] = []
+    for path in sorted(PROCESSED_DATA_DIR.glob("ephemeris_*.json")):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+            datasets.append(
+                {
+                    "file": path.name,
+                    "latitude_deg": data.get("latitude_deg"),
+                    "longitude_deg": data.get("longitude_deg"),
+                    "start_utc": data.get("start_utc"),
+                    "end_utc": data.get("end_utc"),
+                    "step_minutes": data.get("step_minutes"),
+                    "point_count": len(data.get("points", [])),
+                }
+            )
+        except (OSError, json.JSONDecodeError):
+            continue
+    return datasets
