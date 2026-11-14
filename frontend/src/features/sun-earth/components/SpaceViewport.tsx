@@ -5,6 +5,10 @@ import moonMap from "../assets/moon.webp";
 import sunMap from "../assets/sun.webp";
 import { createSpaceScene, type SceneFrame } from "./spaceScene";
 import type { LandingSite } from "../../../types/helios";
+import {
+  APOLLO_DOSSIERS,
+  apolloDossierToLandingSite,
+} from "../services/apolloDossiers";
 
 export default function SpaceViewport({
   frame,
@@ -31,6 +35,7 @@ export default function SpaceViewport({
   onZoomChangeRef.current = onZoomChange;
 
   useEffect(() => { currentFrame.current = frame; scene.current?.update(frame); }, [frame]);
+
   useEffect(() => {
     if (!host.current || !sunLabel.current || !earthLabel.current || !moonLabel.current) return;
     let viewport: ReturnType<typeof createSpaceScene>;
@@ -82,10 +87,20 @@ export default function SpaceViewport({
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
                 Artemis III
               </span>
-              <span className="inline-flex items-center gap-1 text-sky-300 font-medium">
+              <button
+                type="button"
+                onClick={() => {
+                  const defaultApollo = APOLLO_DOSSIERS["apollo_11"];
+                  if (defaultApollo) {
+                    onSelectSiteRef.current?.(apolloDossierToLandingSite(defaultApollo));
+                  }
+                }}
+                className="pointer-events-auto inline-flex items-center gap-1 font-medium text-sky-300 transition-colors hover:text-sky-200 hover:underline cursor-pointer"
+                title="Select Apollo 11 historical landing site"
+              >
                 <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
                 Apollo 11–17
-              </span>
+              </button>
             </span>
           </div>
           <div className="pointer-events-auto flex shrink-0 gap-1.5">
