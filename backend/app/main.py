@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from app.api import comparison, conditions, ephemeris, helios, sites
+from app.api import comparison, conditions, ephemeris, helios, sites, terrain
 
 load_dotenv()
 
@@ -37,6 +37,7 @@ def health_check() -> dict[str, str]:
 
 
 app.include_router(sites.router, prefix="/api", tags=["Sites"])
+app.include_router(terrain.router, prefix="/api", tags=["Terrain"])
 app.include_router(ephemeris.router, prefix="/api", tags=["Ephemeris"])
 app.include_router(conditions.router, prefix="/api", tags=["Conditions"])
 app.include_router(comparison.router, prefix="/api", tags=["Comparison"])
