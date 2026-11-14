@@ -98,7 +98,7 @@ export default function SpaceViewport({
                 className="pointer-events-auto inline-flex items-center gap-1 font-medium text-sky-300 transition-colors hover:text-sky-200 hover:underline cursor-pointer"
                 title="Select Apollo 11 historical landing site"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                <span className="text-[10px] leading-none">🚀</span>
                 Apollo 11–17
               </button>
             </span>
