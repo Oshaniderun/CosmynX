@@ -72,6 +72,7 @@ class ConditionsResponse(BaseModel):
     source: str = "JPL Horizons"
     windows: list[OperationalWindow] = Field(default_factory=list)
     timeline: list[dict[str, Any]] = Field(default_factory=list)
+    power_modeling: Optional[dict[str, Any]] = None
 
 
 class ScenarioInput(BaseModel):

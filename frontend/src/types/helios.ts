@@ -27,6 +27,29 @@ export interface ConditionTimelinePoint {
   earth_elevation_deg: number | null;
   is_sunlit: boolean;
   is_earth_visible: boolean;
+  power_watts_vertical?: number;
+  power_watts_horizontal?: number;
+  power_watts_tracking?: number;
+}
+
+export interface BatterySizingInfo {
+  longest_darkness_hours: number;
+  baseline_hotel_load_watts: number;
+  usable_storage_kwh: number;
+  nominal_capacity_kwh: number;
+  max_dod_percent: number;
+  estimated_battery_mass_kg: number;
+  battery_chemistry: string;
+}
+
+export interface PowerModelingInfo {
+  rated_array_kw: number;
+  cumulative_energy_kwh: {
+    vertical_polar: number;
+    tracking: number;
+    horizontal: number;
+  };
+  battery_sizing: BatterySizingInfo;
 }
 
 export interface ConditionsResponse {
@@ -42,6 +65,7 @@ export interface ConditionsResponse {
   source: string;
   windows?: OperationalWindow[];
   timeline?: ConditionTimelinePoint[];
+  power_modeling?: PowerModelingInfo;
 }
 
 export interface EphemerisPoint {
