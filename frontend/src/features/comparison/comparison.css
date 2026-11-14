@@ -378,3 +378,31 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.comparison-panel .cmp-operations {
+  margin: 12px 0;
+  padding: 10px;
+  background: #101b2c;
+  border-radius: 6px;
+}
+.comparison-panel .cmp-window-table {
+  overflow-x: auto;
+}
+.comparison-panel .cmp-window-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.comparison-panel .cmp-window-table th,
+.comparison-panel .cmp-window-table td {
+  padding: 8px;
+  border-bottom: 1px solid #334155;
+  text-align: left;
+  vertical-align: top;
+}
+.comparison-panel .cmp-assumptions a {
+  text-decoration: underline;
+  color: #7dd3fc;
+}
+.comparison-panel fieldset > .cmp-secondary {
+  margin-bottom: 18px;
+}

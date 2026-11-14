@@ -1,6 +1,7 @@
 """Member 5 regression checks; run from backend: python -m unittest discover -s ../tests -v."""
 
 import unittest
+from datetime import datetime
 from unittest.mock import patch
 
 from fastapi import HTTPException
@@ -23,10 +24,11 @@ def request(mode="live", scenarios=None):
 
 
 def conditions(**params):
+    duration = (datetime.fromisoformat(params["end_utc"].replace("Z", "+00:00")) - datetime.fromisoformat(params["start_utc"].replace("Z", "+00:00"))).total_seconds() / 3600
     fraction = 0.5 if params["site_id"] == "candidate_001" else 0.75
     return ConditionsResponse(**params, status="ok", metrics=VisibilityMetrics(
         sunlit_fraction=fraction, earth_visible_fraction=0.8,
-        sunlit_hours=72 * fraction, earth_visible_hours=57.6,
+        sunlit_hours=duration * fraction, earth_visible_hours=duration * 0.8,
     ))
 
 
@@ -76,7 +78,8 @@ class ValidationTests(unittest.TestCase):
 
 
 class ScientificComparisonTests(unittest.TestCase):
-    def test_live_pending_is_not_synthetic(self):
+    @patch("app.services.comparison.get_ephemeris_for_site", side_effect=lambda **params: EphemerisResponse(**params, status="unavailable"))
+    def test_live_pending_is_not_synthetic(self, _):
         result = compare_scenarios(request())
         self.assertEqual(result.data_mode, "live")
         self.assertEqual(result.status, "pending")
@@ -209,6 +212,91 @@ class DemoTests(unittest.TestCase):
         result = compare_scenarios(request("demo", [s, s]))
         self.assertEqual(result.scenarios[0].conditions.metrics.sunlit_hours, 2.5)
         self.assertEqual(result.scenarios[0].conditions.metrics.sunlit_fraction, 1)
+
+class FinalizedComparisonTests(unittest.TestCase):
+    def test_custom_coordinates_and_validation(self):
+        custom = scenario("custom", latitude_deg=-88.1, longitude_deg=-170)
+        self.assertEqual(request(scenarios=[custom, scenario()]).scenarios[0].latitude_deg, -88.1)
+        for entry in [scenario("custom"), scenario("custom", latitude_deg=-91, longitude_deg=0), scenario(latitude_deg=0, longitude_deg=0)]:
+            with self.subTest(entry=entry), self.assertRaises(ValidationError):
+                request(scenarios=[entry, scenario()])
+        custom["start_utc"] = "2026-11-20T00:00:30Z"
+        with self.assertRaises(ValidationError):
+            request(scenarios=[custom, scenario()])
+
+    def test_custom_demo_is_rejected(self):
+        with self.assertRaises(ValueError):
+            compare_scenarios(request("demo", [scenario("custom", latitude_deg=-88, longitude_deg=0), scenario()]))
+
+    @patch("app.services.comparison.analyze_site_conditions", side_effect=lambda **params: ConditionsResponse(**params))
+    def test_real_cached_nasa_example_has_complete_metrics(self, _):
+        scenarios = [scenario(), scenario("candidate_002")]
+        for entry in scenarios:
+            entry["end_utc"] = "2026-11-20T06:00:00Z"
+        result = compare_scenarios(request(scenarios=scenarios))
+        self.assertEqual(result.status, "ok")
+        self.assertEqual(result.data_mode, "live")
+        self.assertTrue(all(s.summary_method == "comparison_intervals" for s in result.scenarios))
+        self.assertTrue(all(s.sun_coverage_fraction == 1 and s.earth_coverage_fraction == 1 for s in result.scenarios))
+        self.assertTrue(all(s.conditions.metrics.sunlit_hours <= 6 for s in result.scenarios))
+        self.assertTrue(all(s.timeline[0].sun_elevation_deg is not None for s in result.scenarios))
+        self.assertEqual(result.scenarios[0].conditions.metrics.sunlit_hours, 6)
+        self.assertEqual(result.scenarios[0].conditions.metrics.earth_visible_hours, 6)
+
+    @patch("app.services.comparison.analyze_site_conditions", side_effect=lambda **params: ConditionsResponse(**params))
+    def test_duration_weighting_windows_and_bracketed_settings(self, _):
+        def samples(**params):
+            return EphemerisResponse(**params, status="ok", points=[
+                EphemerisPoint(timestamp_utc="2026-11-20T00:00:00Z", sun_elevation_deg=2, earth_elevation_deg=1),
+                EphemerisPoint(timestamp_utc="2026-11-20T01:00:00Z", sun_elevation_deg=-1, earth_elevation_deg=1),
+                EphemerisPoint(timestamp_utc="2026-11-20T02:00:00Z", sun_elevation_deg=-2, earth_elevation_deg=-1),
+            ])
+        entries = [scenario(), scenario()]
+        for entry in entries:
+            entry["end_utc"] = "2026-11-20T02:30:00Z"
+        with patch("app.services.comparison.get_ephemeris_for_site", side_effect=samples):
+            result = compare_scenarios(request(scenarios=entries))
+        first = result.scenarios[0]
+        self.assertAlmostEqual(first.conditions.metrics.sunlit_fraction, 0.4)
+        self.assertAlmostEqual(first.conditions.metrics.earth_visible_fraction, 0.8)
+        self.assertEqual([w.duration_hours for w in first.windows], [1, 2, 1])
+        self.assertEqual(first.setting_transitions[0].target, "sunlight")
+        self.assertEqual(first.setting_transitions[0].after_elapsed_hours, 0)
+        self.assertEqual(first.setting_transitions[0].by_elapsed_hours, 1)
+
+    @patch("app.services.comparison.analyze_site_conditions", side_effect=lambda **params: ConditionsResponse(**params))
+    @patch("app.services.comparison.get_ephemeris_for_site", side_effect=ephemeris)
+    def test_gaps_break_windows_and_prevent_complete_summary(self, *_):
+        result = compare_scenarios(request())
+        first = result.scenarios[0]
+        self.assertEqual(first.conditions.status, "pending")
+        self.assertIsNone(first.conditions.metrics.sunlit_fraction)
+        self.assertLess(first.sun_coverage_fraction, 1)
+        self.assertEqual(first.windows[0].duration_hours, 1)
+        self.assertEqual(first.setting_transitions, [])
+
+    @patch("app.services.comparison.analyze_site_conditions", side_effect=lambda **params: ConditionsResponse(**params))
+    def test_response_for_wrong_site_is_not_used(self, _):
+        def wrong(**params):
+            data = ephemeris(**params)
+            data.latitude_deg = 5
+            return data
+        with patch("app.services.comparison.get_ephemeris_for_site", side_effect=wrong):
+            result = compare_scenarios(request())
+        self.assertEqual(result.scenarios[0].timeline_status, "unavailable")
+        self.assertEqual(result.scenarios[0].sun_coverage_fraction, 0)
+
+    def test_invalid_service_duration_is_replaced_by_complete_intervals(self):
+        def invalid(**params):
+            return ConditionsResponse(**params, status="ok", metrics=VisibilityMetrics(
+                sunlit_fraction=1, earth_visible_fraction=1, sunlit_hours=7, earth_visible_hours=7))
+        entries = [scenario(), scenario("candidate_002")]
+        for entry in entries:
+            entry["end_utc"] = "2026-11-20T06:00:00Z"
+        with patch("app.services.comparison.analyze_site_conditions", side_effect=invalid):
+            result = compare_scenarios(request(scenarios=entries))
+        self.assertTrue(all(s.conditions.metrics.sunlit_hours <= 6 for s in result.scenarios))
+        self.assertEqual(result.scenarios[0].summary_method, "comparison_intervals")
 
 
 if __name__ == "__main__":

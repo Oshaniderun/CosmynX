@@ -1,6 +1,6 @@
 # Member 5 — Scenario Comparison & Timelines
 
-Owner: Ravindu. Branch: `Ravindu` (created from `main`).
+Owner: Ravindu. Branch: `Ravindu`. Integrated `Dev` commit `54385e8` (NASA retrieval and Member 3 visualizations) on 14 November 2026. No other members’ feature branches were merged separately.
 
 ## Run and try it
 
@@ -13,11 +13,15 @@ Use the frontend and backend setup in the main README. The comparison panel is a
 5. Set a delay in hours and press **Apply to B**. B copies A's site, duration, and sampling resolution, then shifts both UTC endpoints. Press **Compare scenarios** again.
 6. Use timeline range controls and the shared inspection cursor. JSON export contains the complete structured result and provenance.
 
-Scientific services are the default. Member 2's NASA retrieval and Member 4's conditions service remain placeholders on the base branch, so live mode correctly shows pending/unknown until their implementations are integrated. There is no automatic switch to demo values.
+Scientific services are the default. Member 2’s real Horizons retrieval and Member 3’s updated visualizations are integrated from Dev. Member 4’s conditions service is still pending on that branch. Member 5 therefore derives comparison-only duration-weighted summaries from complete real ephemeris intervals when the conditions service is unavailable, pending, incomplete, or inconsistent with mission duration. The separate Member 4 implementation is untouched. Each result identifies `summary_method`. Incomplete intervals never produce full-mission fallback metrics, and live requests never switch to synthetic values.
+
+Press **Load cached NASA example · 6 hours**, then **Compare scenarios** to use the committed real Horizons data for 20 November 2026, 00:00–06:00 UTC. This does not require a fresh NASA request. New locations/dates require the upstream service and network. The frontend can cancel a request and enforces a four-minute timeout; validation errors from the API are displayed directly.
+
+For custom comparisons, select **Custom lunar coordinates** in scientific mode. Enter latitude in [-90, 90] and east-positive longitude in [-180, 180]. Delay-to-B preserves custom coordinates. Synthetic mode supports only the three catalog sites.
 
 ## API and HELIOS handoff
 
-`POST /api/compare` accepts the existing `scenarios` array, with optional `scenario_id` and optional top-level `data_mode` (`live` by default). Existing consumers can continue reading `results`.
+`POST /api/compare` accepts the existing `scenarios` array, with optional `scenario_id`, custom coordinate fields, and optional top-level `data_mode` (`live` by default). Existing consumers can continue reading `results`.
 
 ```json
 {
@@ -47,15 +51,20 @@ Additive response fields:
 - `timeline`: explicit `[start_utc, end_utc)` intervals with `elapsed_hours`, nullable `sunlit`, and nullable `earth_visible`. Missing states remain `null`, distinct from `false`.
 - `deltas`: alternatives minus the first scenario, with start delay in hours, sunlight/Earth fraction differences in **percentage points**, and duration differences in hours. Differences remain null when metrics are missing, either scenario is not `ok`, or horizon models differ. Hour differences are also withheld for unequal mission durations.
 - `status`: `ok`, `partial`, `pending`, or `unavailable` for summary conditions. Each timeline has its own availability status.
+- `summary_method`: `conditions_service`, `comparison_intervals`, or `synthetic`.
+- `sun_coverage_fraction`, `earth_coverage_fraction`: duration-weighted proportions with known timeline states.
+- `windows`: contiguous sampled above-horizon intervals for `sunlight`, `earth`, or `both`, with UTC endpoints and duration. Unknown intervals split windows.
+- `setting_transitions`: observed true-to-false brackets between adjacent known samples, retaining both UTC and elapsed-hour bounds. These are not exact sunset/Earthset times or predictions beyond the mission.
+- Each timeline interval now includes nullable `sun_elevation_deg` and `earth_elevation_deg` for the cursor’s sampled angle readout. Invalid angles outside [-90, 90] are unknown.
 - `data_mode`, `assumptions`: explicit provenance and interpretation rules.
 
 Member 6 can consume `compare_scenarios(request)` in Python, JSON export, or the optional React `ComparisonPanel` `onComparison(result)` callback. Recommendations must accept only `data_mode == "live"`, `conditions.status == "ok"`, and complete required metrics. Do not treat deltas as ranking scores. Filter and rank according to the advisor's own mission constraints.
 
-Validation: 2–4 scenarios; unique effective scenario IDs; known catalog sites; timezone-aware ISO timestamps normalized to UTC; end after start; windows at most 31 days; step 1–1440 minutes; at most 2,000 timeline intervals per scenario. Invalid requests return 422. Unknown sites never fall back to invented coordinates. Per-scenario scientific-service failures preserve other available results.
+Validation: 2–4 scenarios; unique effective scenario IDs; known catalog sites, or `site_id: "custom"` with both `latitude_deg` and `longitude_deg` (catalog coordinates cannot be overridden); timezone-aware ISO timestamps at whole-minute precision normalized to UTC; end after start; windows at most 31 days; step 1–1440 minutes; at most 2,000 timeline intervals per scenario. Invalid requests return 422. Unknown sites never fall back to invented coordinates. Per-scenario scientific-service failures preserve other available results.
 
 ## Scientific assumptions
 
-Live summary metrics are passed through from Member 4's `analyze_site_conditions`. The comparison module does not recalculate their durations or fill their missing values.
+Live summary metrics prefer Member 4’s `analyze_site_conditions` when all required measurements are present, finite, consistent with mission duration, and identify the requested scenario. Otherwise, the comparison module uses its own complete timeline intervals to compute each visible duration and divide it by the full mission duration. Endpoint samples are never counted as an extra time bin. Partial data cannot be presented as a full-mission fraction. The response records the calculation method and warning. It never changes another member’s analysis service.
 
 Live timelines consume Member 3's `get_ephemeris_for_site`, requiring `status == "ok"`. At each requested timestamp, a finite Sun/Earth elevation strictly greater than zero means geometrically visible. Exactly zero or negative means below the horizon. Missing, malformed, non-finite, or duplicate samples remain unknown. Samples must match the requested timestamp grid; no interpolation is performed.
 
@@ -78,3 +87,15 @@ npm run build
 ```
 
 The regression suite covers UTC normalization, invalid ranges and sampling, unknown/duplicate identities, delta direction and zero values, missing samples, exact-horizon states, clipped intervals, upstream failures, incompatible models, unequal durations, explicit demo provenance/coverage, and mission-delay effects.
+
+
+## Resource review and final scope
+
+Reviewed the supplied resources on 14 November 2026:
+
+- [JPL Horizons manual](https://ssd.jpl.nasa.gov/horizons/manual.html) and [official API](https://ssd-api.jpl.nasa.gov/doc/horizons.html): observer-table quantity 4 provides apparent azimuth/elevation relative to the local horizontal plane. Lunar comparisons use airless target-center elevations; no terrestrial atmospheric refraction correction is applied. A >0° center-angle threshold is an explicitly simplified model, not a terrain-aware limb or eclipse model. A cached Shackleton solar sample (20 November 2026 00:00 UTC: 1.817654°) was independently checked against the official live API during verification.
+- [LROC QuickMap](https://quickmap.lroc.im-ldi.com/) and [provider documentation](https://files.actgate.com/quickmap/LROC_QuickMap_Oct2020/index.html): imagery, numeric terrain layers, and profiles support site inspection. Member 5 links to this resource but does not claim to ingest its terrain or calculate terrain horizons.
+- [NASA Moon Trek](https://trek.nasa.gov/moon/) and [NASA Treks](https://trek.nasa.gov/home/): imagery and elevation-profile tools provide spatial/terrain context. The comparison panel links to these rather than presenting imagery as evidence of an unobstructed view.
+- [CSA Moon exploration](https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/): mission and exploration context; it is not a source of numerical ephemerides.
+
+The finalized Member 5 scope is rapid comparison of sites, custom coordinates, dates, delays, sampled elevations, operational windows, setting-time brackets, and structured handoff to HELIOS. It does not take ownership of the lunar map, terrain horizon solver, hardware power model, radio link budget, AI advisor, or Member 3’s eclipse replay. In particular, the comparison’s positive solar elevation threshold is not an eclipse/illumination solver. Terrain, eclipses, observer height, finite target disks, and hardware constraints require further modeling before mission use.

@@ -16,6 +16,7 @@ import type {
   CompareResponse,
   ScenarioInput,
 } from "../services/comparisonService";
+import { OperationalDetails } from "./OperationalDetails";
 import { VisibilityTimeline } from "./VisibilityTimeline";
 import "../comparison.css";
 
@@ -25,6 +26,8 @@ interface Draft {
   start: string;
   end: string;
   step: number;
+  latitude?: string;
+  longitude?: string;
 }
 
 const initialDrafts: Draft[] = [
@@ -71,7 +74,27 @@ function toInputs(drafts: Draft[]): ScenarioInput[] {
       throw new Error(
         "Choose a larger sample step: each mission supports at most 2,000 intervals.",
       );
+    const coordinates =
+      draft.siteId === "custom"
+        ? {
+            latitude_deg: Number(draft.latitude),
+            longitude_deg: Number(draft.longitude),
+          }
+        : {};
+    if (
+      draft.siteId === "custom" &&
+      (!draft.latitude?.trim() ||
+        !draft.longitude?.trim() ||
+        !Number.isFinite(coordinates.latitude_deg) ||
+        !Number.isFinite(coordinates.longitude_deg) ||
+        Math.abs(coordinates.latitude_deg!) > 90 ||
+        Math.abs(coordinates.longitude_deg!) > 180)
+    )
+      throw new Error(
+        "Custom sites require latitude from -90 to 90 and east-positive longitude from -180 to 180.",
+      );
     return {
+      ...coordinates,
       scenario_id: draft.id,
       site_id: draft.siteId,
       start_utc: start,
@@ -98,6 +121,7 @@ export function ComparisonPanel({
   const [view, setView] = useState({ from: 0, to: 72, cursor: 0 });
   const sequence = useRef(1);
   const activeRequest = useRef(0);
+  const requestController = useRef<AbortController | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -115,9 +139,11 @@ export function ComparisonPanel({
         setDrafts((current) =>
           current.map((draft, i) => ({
             ...draft,
-            siteId: data.some((s) => s.site_id === draft.siteId)
-              ? draft.siteId
-              : data[i % data.length].site_id,
+            siteId:
+              draft.siteId === "custom" ||
+              data.some((s) => s.site_id === draft.siteId)
+                ? draft.siteId
+                : data[i % data.length].site_id,
           })),
         );
       })
@@ -135,6 +161,7 @@ export function ComparisonPanel({
   useEffect(
     () => () => {
       activeRequest.current += 1;
+      requestController.current?.abort();
     },
     [],
   );
@@ -170,6 +197,8 @@ export function ComparisonPanel({
           .slice(0, 16);
       update(drafts[1].id, {
         siteId: base.siteId,
+        latitude: base.latitude,
+        longitude: base.longitude,
         start: shift(base.start),
         end: shift(base.end),
         step: base.step,
@@ -193,8 +222,11 @@ export function ComparisonPanel({
     }
     setBusy(true);
     const request = ++activeRequest.current;
+    const controller = new AbortController();
+    requestController.current = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 240000);
     try {
-      const data = await compareScenarios(inputs, mode);
+      const data = await compareScenarios(inputs, mode, controller.signal);
       if (request !== activeRequest.current) return;
       if (!Array.isArray(data.scenarios) || !Array.isArray(data.deltas))
         throw new Error(
@@ -207,11 +239,14 @@ export function ComparisonPanel({
     } catch (err) {
       if (request === activeRequest.current)
         setError(
-          err instanceof Error
-            ? err.message
-            : "Comparison failed. Check your backend connection and retry.",
+          controller.signal.aborted
+            ? "Comparison stopped or timed out. Try the cached NASA example or a smaller mission window."
+            : err instanceof Error
+              ? err.message
+              : "Comparison failed. Check your backend connection and retry.",
         );
     } finally {
+      window.clearTimeout(timeout);
       if (request === activeRequest.current) setBusy(false);
     }
   }
@@ -257,6 +292,17 @@ export function ComparisonPanel({
                 onChange={(e) => {
                   clearResults();
                   setMode(e.target.value as "live" | "demo");
+                  if (e.target.value === "demo")
+                    setDrafts((current) =>
+                      current.map((d) =>
+                        d.siteId === "custom"
+                          ? {
+                              ...d,
+                              siteId: sites[0]?.site_id ?? "candidate_001",
+                            }
+                          : d,
+                      ),
+                    );
                 }}
               >
                 <option value="live">Scientific services</option>
@@ -264,9 +310,31 @@ export function ComparisonPanel({
               </select>
             </label>
             <p>
-              All dates and times are UTC. The first scenario is your baseline.
+              All dates and times are UTC. Longitude is east-positive. The first
+              scenario is your baseline.
             </p>
           </div>
+          <p className="cmp-notice">
+            Geometric visibility only: terrain can block the Sun or Earth.
+            Sunlight is not generated power, and Earth line of sight is not a
+            guaranteed communication link.
+          </p>
+          <button
+            type="button"
+            className="cmp-secondary"
+            onClick={() => {
+              clearResults();
+              setMode("live");
+              setDrafts(
+                initialDrafts.map((draft) => ({
+                  ...draft,
+                  end: "2026-11-20T06:00",
+                })),
+              );
+            }}
+          >
+            Load cached NASA example · 6 hours
+          </button>
           {mode === "demo" && (
             <p className="cmp-notice" role="status">
               <strong>DEMO — synthetic data, not NASA measurements.</strong>{" "}
@@ -326,6 +394,9 @@ export function ComparisonPanel({
                         Waiting for candidate sites
                       </option>
                     )}
+                    {mode === "live" && (
+                      <option value="custom">Custom lunar coordinates</option>
+                    )}
                     {sites.map((site) => (
                       <option key={site.site_id} value={site.site_id}>
                         {site.name}
@@ -333,6 +404,38 @@ export function ComparisonPanel({
                     ))}
                   </select>
                 </label>
+                {draft.siteId === "custom" && (
+                  <div className="cmp-date-grid">
+                    <label>
+                      Latitude (°)
+                      <input
+                        required
+                        type="number"
+                        step="any"
+                        min="-90"
+                        max="90"
+                        value={draft.latitude ?? ""}
+                        onChange={(e) =>
+                          update(draft.id, { latitude: e.target.value })
+                        }
+                      />
+                    </label>
+                    <label>
+                      Longitude (° east)
+                      <input
+                        required
+                        type="number"
+                        step="any"
+                        min="-180"
+                        max="180"
+                        value={draft.longitude ?? ""}
+                        onChange={(e) =>
+                          update(draft.id, { longitude: e.target.value })
+                        }
+                      />
+                    </label>
+                  </div>
+                )}
                 <div className="cmp-date-grid">
                   <label>
                     Mission start (UTC)
@@ -428,9 +531,16 @@ export function ComparisonPanel({
         </fieldset>
       </form>
       {busy && (
-        <p className="cmp-empty" role="status">
+        <div className="cmp-empty" role="status">
           Loading conditions and visibility timelines…
-        </p>
+          <button
+            type="button"
+            className="cmp-secondary"
+            onClick={() => requestController.current?.abort()}
+          >
+            Cancel request
+          </button>
+        </div>
       )}
       {error && (
         <p className="cmp-error" role="alert">
@@ -551,6 +661,10 @@ export function ComparisonPanel({
                     </div>
                   )}
                   <p className="cmp-caption">
+                    Summary method:{" "}
+                    {scenario.summary_method.split("_").join(" ")}
+                  </p>
+                  <p className="cmp-caption">
                     Source: {conditions.source} · Model:{" "}
                     {conditions.horizon_model}
                   </p>
@@ -572,7 +686,7 @@ export function ComparisonPanel({
           </div>
           <div className="cmp-range-controls">
             <label>
-              View from: {view.from.toFixed(1)} h
+              View from: {view.from.toFixed(2)} h
               <input
                 type="range"
                 min="0"
@@ -593,7 +707,7 @@ export function ComparisonPanel({
               />
             </label>
             <label>
-              View to: {view.to.toFixed(1)} h
+              View to: {view.to.toFixed(2)} h
               <input
                 type="range"
                 min="0"
@@ -610,7 +724,7 @@ export function ComparisonPanel({
               />
             </label>
             <label>
-              Inspect: {view.cursor.toFixed(1)} h
+              Inspect: {view.cursor.toFixed(2)} h
               <input
                 type="range"
                 min={view.from}
@@ -649,6 +763,10 @@ export function ComparisonPanel({
                     Sun: {state(point?.sunlit)} · Earth:{" "}
                     {state(point?.earth_visible)}
                   </p>
+                  <OperationalDetails
+                    scenario={scenario}
+                    cursor={view.cursor}
+                  />
                   <VisibilityTimeline
                     scenario={scenario}
                     from={view.from}
@@ -665,6 +783,39 @@ export function ComparisonPanel({
           </div>
           <details className="cmp-assumptions">
             <summary>Sources, assumptions & integration notes</summary>
+            <p>
+              <a
+                href="https://quickmap.lroc.im-ldi.com/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                LROC QuickMap: inspect terrain
+              </a>{" "}
+              ·{" "}
+              <a
+                href="https://trek.nasa.gov/moon/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Moon Trek: imagery and elevation
+              </a>{" "}
+              ·{" "}
+              <a
+                href="https://ssd.jpl.nasa.gov/horizons/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                JPL Horizons: Sun/Earth positions
+              </a>{" "}
+              ·{" "}
+              <a
+                href="https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                CSA: lunar exploration background
+              </a>
+            </p>
             <ul>
               {result.assumptions.map((assumption) => (
                 <li key={assumption}>{assumption}</li>

@@ -70,6 +70,8 @@ class ScenarioInput(BaseModel):
     end_utc: str
     step_minutes: int = Field(default=60, ge=1, le=1440)
     scenario_id: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    latitude_deg: Optional[float] = Field(default=None, ge=-90, le=90, allow_inf_nan=False)
+    longitude_deg: Optional[float] = Field(default=None, ge=-180, le=180, allow_inf_nan=False)
 
     @field_validator("start_utc", "end_utc")
     @classmethod
@@ -80,10 +82,17 @@ class ScenarioInput(BaseModel):
             raise ValueError("Use an ISO 8601 timestamp with a timezone") from exc
         if parsed.tzinfo is None or parsed.utcoffset() is None:
             raise ValueError("Timestamps must include Z or a timezone offset")
+        if parsed.second or parsed.microsecond:
+            raise ValueError("Comparison timestamps must use whole minutes (Horizons sampling precision)")
         return parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
     @model_validator(mode="after")
     def validate_window(self) -> "ScenarioInput":
+        if self.site_id == "custom":
+            if self.latitude_deg is None or self.longitude_deg is None:
+                raise ValueError("Custom sites require latitude_deg and longitude_deg")
+        elif self.latitude_deg is not None or self.longitude_deg is not None:
+            raise ValueError("Use site_id='custom' for custom coordinates; catalog coordinates cannot be overridden")
         start = datetime.fromisoformat(self.start_utc.replace("Z", "+00:00"))
         end = datetime.fromisoformat(self.end_utc.replace("Z", "+00:00"))
         duration = (end - start).total_seconds()
@@ -118,6 +127,23 @@ class VisibilityInterval(BaseModel):
     elapsed_hours: float
     sunlit: Optional[bool] = None
     earth_visible: Optional[bool] = None
+    sun_elevation_deg: Optional[float] = None
+    earth_elevation_deg: Optional[float] = None
+
+
+class OperationalWindow(BaseModel):
+    target: Literal["sunlight", "earth", "both"]
+    start_utc: str
+    end_utc: str
+    duration_hours: float
+
+
+class SettingTransition(BaseModel):
+    target: Literal["sunlight", "earth"]
+    after_utc: str
+    by_utc: str
+    after_elapsed_hours: float
+    by_elapsed_hours: float
 
 
 class ScenarioComparison(BaseModel):
@@ -129,6 +155,11 @@ class ScenarioComparison(BaseModel):
     timeline_status: Literal["ok", "partial", "unavailable"] = "unavailable"
     timeline_source: str
     warnings: list[str] = Field(default_factory=list)
+    summary_method: Literal["conditions_service", "comparison_intervals", "synthetic"] = "conditions_service"
+    sun_coverage_fraction: float = 0
+    earth_coverage_fraction: float = 0
+    windows: list[OperationalWindow] = Field(default_factory=list)
+    setting_transitions: list[SettingTransition] = Field(default_factory=list)
 
 
 class ComparisonDelta(BaseModel):
