@@ -106,13 +106,17 @@ export default function App() {
               <SectionHeading
                 id="environment-heading"
                 index="01"
-                eyebrow="Mission environment"
+                eyebrow="Mission environment & site explorer"
                 title="See the system in motion."
-                detail="Explore 3D lunar topography, Sun and Earth geometry, South Pole surface maps, and direct-to-Earth line of sight for the selected mission window."
+                detail="Explore 3D Sun, Earth, and lunar South Pole topography, select candidate landing sites, and inspect measured illumination and direct-to-Earth line of sight."
               />
               <div className="space-y-6">
                 <UnifiedLunarExplorer />
-                <PowerCommunicationPanel />
+                <div className="environment-grid">
+                  <div className="environment-grid__conditions col-span-full">
+                    <PowerCommunicationPanel />
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -122,7 +126,7 @@ export default function App() {
                 index="02"
                 eyebrow="Site workspace"
                 title="Put candidate sites in context."
-                detail="Compare South Pole landing-site scenarios side-by-side using the connected scientific services."
+                detail="Compare south-pole landing-site scenarios side by side using the connected scientific services."
               />
               <div className="workspace-grid">
                 <Suspense fallback={<div className="mission-panel comparison-loading" role="status">Loading comparison workspace…</div>}>

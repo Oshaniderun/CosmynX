@@ -282,8 +282,8 @@ export function PowerCommunicationPanel({
       arrayArch === "vertical_polar"
         ? pt.power_watts_vertical ?? null
         : arrayArch === "horizontal"
-        ? pt.power_watts_horizontal ?? null
-        : pt.power_watts_tracking ?? null;
+          ? pt.power_watts_horizontal ?? null
+          : pt.power_watts_tracking ?? null;
 
     const scaledPwrWatts = rawPwr === null ? null : rawPwr * ratedArrayKw;
 
@@ -303,7 +303,7 @@ export function PowerCommunicationPanel({
   // Derived transitions calculation (README Section 7: Next transition estimation)
   const derivedTransitions = data.transitions ?? (() => {
     if (!isOk || !data.timeline || data.timeline.length === 0 ||
-        data.timeline.some((point) => point.is_sunlit === null || point.is_earth_visible === null)) return null;
+      data.timeline.some((point) => point.is_sunlit === null || point.is_earth_visible === null)) return null;
     const s0 = data.timeline[0].is_sunlit;
     const e0 = data.timeline[0].is_earth_visible;
     const stepHours = (data.step_minutes ?? 60) / 60;
@@ -342,8 +342,8 @@ export function PowerCommunicationPanel({
           solarNext !== "none"
             ? `${s0 ? "Sunset" : "Sunrise"} in ${solarHours}h`
             : s0
-            ? "Continuous daylight throughout window"
-            : "Continuous shadow throughout window",
+              ? "Continuous daylight throughout window"
+              : "Continuous shadow throughout window",
       },
       earth: {
         current_state: e0 ? ("contact_active" as const) : ("blackout" as const),
@@ -354,8 +354,8 @@ export function PowerCommunicationPanel({
           earthNext !== "none"
             ? `${e0 ? "Earthset (LOS)" : "Earthrise (AOS)"} in ${earthHours}h`
             : e0
-            ? "Continuous direct contact throughout window"
-            : "Continuous blackout throughout window",
+              ? "Continuous direct contact throughout window"
+              : "Continuous blackout throughout window",
       },
     };
   })();
@@ -632,11 +632,10 @@ export function PowerCommunicationPanel({
                   {/* Solar Transition Card */}
                   <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
                     <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
-                        derivedTransitions.solar.current_state === "sunlit"
-                          ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
-                          : "bg-indigo-950/40 text-indigo-400 border border-indigo-500/30"
-                      }`}
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${derivedTransitions.solar.current_state === "sunlit"
+                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                        : "bg-indigo-950/40 text-indigo-400 border border-indigo-500/30"
+                        }`}
                     >
                       <Sun className="h-4 w-4" />
                     </div>
@@ -646,11 +645,10 @@ export function PowerCommunicationPanel({
                           Solar Illumination
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                            derivedTransitions.solar.current_state === "sunlit"
-                              ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                              : "bg-slate-800 text-slate-300 border border-slate-700"
-                          }`}
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${derivedTransitions.solar.current_state === "sunlit"
+                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                            : "bg-slate-800 text-slate-300 border border-slate-700"
+                            }`}
                         >
                           {derivedTransitions.solar.current_state === "sunlit" ? "Sunlit (Day)" : "In Shadow (Night)"}
                         </span>
@@ -683,11 +681,10 @@ export function PowerCommunicationPanel({
                   {/* Earth Direct-to-Earth Transition Card */}
                   <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
                     <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
-                        derivedTransitions.earth.current_state === "contact_active"
-                          ? "bg-sky-500/10 text-sky-400 border border-sky-500/30"
-                          : "bg-rose-950/40 text-rose-400 border border-rose-500/30"
-                      }`}
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${derivedTransitions.earth.current_state === "contact_active"
+                        ? "bg-sky-500/10 text-sky-400 border border-sky-500/30"
+                        : "bg-rose-950/40 text-rose-400 border border-rose-500/30"
+                        }`}
                     >
                       <Radio className="h-4 w-4" />
                     </div>
@@ -697,11 +694,10 @@ export function PowerCommunicationPanel({
                           Direct-to-Earth (DTE)
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                            derivedTransitions.earth.current_state === "contact_active"
-                              ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
-                              : "bg-rose-900/30 text-rose-300 border border-rose-700/40"
-                          }`}
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${derivedTransitions.earth.current_state === "contact_active"
+                            ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                            : "bg-rose-900/30 text-rose-300 border border-rose-700/40"
+                            }`}
                         >
                           {derivedTransitions.earth.current_state === "contact_active" ? "Contact Active" : "No LOS (Blackout)"}
                         </span>
@@ -761,11 +757,10 @@ export function PowerCommunicationPanel({
                         key={kw}
                         type="button"
                         onClick={() => setRatedArrayKw(kw)}
-                        className={`flex-1 rounded px-2 py-1 text-[11px] font-medium transition ${
-                          ratedArrayKw === kw
-                            ? "bg-amber-500 text-slate-950 font-semibold"
-                            : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                        }`}
+                        className={`flex-1 rounded px-2 py-1 text-[11px] font-medium transition ${ratedArrayKw === kw
+                          ? "bg-amber-500 text-slate-950 font-semibold"
+                          : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                          }`}
                       >
                         {kw} kW
                       </button>
@@ -884,22 +879,20 @@ export function PowerCommunicationPanel({
                     <button
                       type="button"
                       onClick={() => setChartView("power")}
-                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${
-                        chartView === "power"
-                          ? "bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30"
-                          : "text-slate-400 hover:text-slate-200"
-                      }`}
+                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${chartView === "power"
+                        ? "bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30"
+                        : "text-slate-400 hover:text-slate-200"
+                        }`}
                     >
                       Power Output (Watts)
                     </button>
                     <button
                       type="button"
                       onClick={() => setChartView("elevation")}
-                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${
-                        chartView === "elevation"
-                          ? "bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30"
-                          : "text-slate-400 hover:text-slate-200"
-                      }`}
+                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${chartView === "elevation"
+                        ? "bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30"
+                        : "text-slate-400 hover:text-slate-200"
+                        }`}
                     >
                       Elevation Angles (°)
                     </button>
