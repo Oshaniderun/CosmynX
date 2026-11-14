@@ -57,13 +57,13 @@ export function VisibilityTimeline({ scenario, from, to, cursor }: Props) {
                 margin={{ top: 6, right: 12, bottom: 4, left: 0 }}
                 accessibilityLayer
               >
-                <CartesianGrid stroke="#243244" strokeDasharray="3 3" />
+                <CartesianGrid stroke="rgba(148, 163, 184, 0.12)" strokeDasharray="3 3" />
                 <XAxis
                   dataKey="hour"
                   type="number"
                   domain={[from, to]}
                   allowDataOverflow
-                  tick={{ fill: "#94a3b8", fontSize: 11 }}
+                  tick={{ fill: "#94a3b8", fontSize: 11, fontFamily: "var(--font-mono, monospace)" }}
                   tickFormatter={(value: number) => `${value}h`}
                 />
                 <YAxis
@@ -71,7 +71,7 @@ export function VisibilityTimeline({ scenario, from, to, cursor }: Props) {
                   domain={[0, 1]}
                   ticks={[0, 1]}
                   width={46}
-                  tick={{ fill: "#94a3b8", fontSize: 10 }}
+                  tick={{ fill: "#94a3b8", fontSize: 10, fontFamily: "var(--font-sans, sans-serif)" }}
                   tickFormatter={(value: number) =>
                     value ? "Visible" : "Hidden"
                   }
@@ -79,9 +79,12 @@ export function VisibilityTimeline({ scenario, from, to, cursor }: Props) {
                 <Tooltip
                   filterNull={false}
                   contentStyle={{
-                    background: "#0f172a",
-                    borderColor: "#334155",
+                    background: "#0D1728",
+                    borderColor: "rgba(56, 189, 248, 0.3)",
+                    borderRadius: "8px",
                     fontSize: 12,
+                    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
+                    fontFamily: "var(--font-mono, monospace)",
                   }}
                   labelFormatter={(value) =>
                     `${Number(value).toFixed(1)}h · ${new Date(start + Number(value) * 3600000).toISOString().replace("T", " ").replace(".000Z", " UTC")}`

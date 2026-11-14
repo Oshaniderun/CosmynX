@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Sun, Radio, Activity } from "lucide-react";
 import { ModuleCard } from "../../../components/shared/ModuleCard";
 import { useMission } from "../../../context/MissionContext";
 import type { ConditionsResponse } from "../../../types/helios";
@@ -52,7 +53,6 @@ export function PowerCommunicationPanel({
       })
       .catch((err: unknown) => {
         if (isMounted) {
-          // If backend endpoint is offline during development, fall back gracefully to demoConditions
           console.warn("Could not fetch conditions from /api/conditions, using demo data:", err);
           setData(demoConditions);
         }
@@ -84,106 +84,107 @@ export function PowerCommunicationPanel({
       branch="feature/power-communication"
     >
       <div className="space-y-4">
-        {/* Active Target Banner (Member 1 Integration) */}
+        {/* Active Target Banner */}
         {selectedSite && (
-          <div className="flex items-center gap-2 rounded bg-slate-950/60 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
-            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span>Target: {selectedSite.name} ({selectedSite.site_id})</span>
+          <div className="flex items-center gap-2.5 rounded-lg border border-sky-500/30 bg-[#0D1728] px-3 py-1.5 text-xs font-mono text-sky-300 shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-sky-400 ring-2 ring-sky-400/30 animate-pulse" />
+            <span>Target: <strong className="text-white">{selectedSite.name}</strong> ({selectedSite.site_id})</span>
           </div>
         )}
 
         {/* Header Metadata */}
-        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#A7B4C7]">
           <div className="flex items-center gap-2">
-            <span>Source: <strong className="text-slate-200">{data.source}</strong></span>
-            <span>•</span>
-            <span>Model: <span className="font-mono text-slate-300">{data.horizon_model}</span></span>
+            <span>Source: <strong className="text-slate-200 font-mono">{data.source}</strong></span>
+            <span className="text-slate-600">•</span>
+            <span>Model: <span className="font-mono text-sky-300">{data.horizon_model}</span></span>
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-mono font-medium ${
                 data.status === "ok"
-                  ? "bg-emerald-950 text-emerald-400 border border-emerald-800"
+                  ? "bg-emerald-950/40 text-emerald-400 border border-emerald-800/60"
                   : data.status === "pending"
-                  ? "bg-amber-950 text-amber-400 border border-amber-800"
-                  : "bg-rose-950 text-rose-400 border border-rose-800"
+                  ? "bg-amber-950/40 text-amber-400 border border-amber-800/60"
+                  : "bg-rose-950/40 text-rose-400 border border-rose-800/60"
               }`}
             >
+              <Activity className="h-3 w-3" />
               {loading ? "Refreshing..." : `Status: ${data.status}`}
             </span>
           </div>
         </div>
 
         {error && (
-          <div className="rounded border border-rose-800 bg-rose-950/40 p-2 text-xs text-rose-300">
+          <div className="rounded-lg border border-rose-800/60 bg-rose-950/30 p-2.5 text-xs text-rose-300">
             {error}
           </div>
         )}
 
         {/* Content based on status */}
         {!isOk ? (
-          <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-center">
-            <p className="text-sm text-slate-300">
+          <div className="rounded-xl border border-white/[0.08] bg-[#0A1324]/70 backdrop-blur-md p-6 text-center shadow-inner">
+            <p className="text-sm font-medium text-slate-200">
               {data.status === "pending"
                 ? "Calculating solar illumination and Earth visibility metrics..."
                 : "No ephemeris condition data is available for this site and time window."}
             </p>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-400">
               JPL Horizons ephemeris data unavailable or site out of range.
             </p>
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2">
             {/* Solar Illumination Metric Card */}
-            <div className="rounded-lg border border-amber-500/20 bg-amber-950/10 p-3.5">
+            <div className="rounded-xl border border-amber-500/30 bg-[#0A1424]/75 backdrop-blur-md p-4 shadow-sm hover:border-amber-500/50 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-amber-400">
-                  Solar Illumination
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-300">
+                  <Sun className="h-3.5 w-3.5" /> Solar Illumination
                 </span>
-                <span className="text-xs text-slate-400">
+                <span className="font-mono text-xs text-amber-400/90 font-medium">
                   {metrics.sunlit_hours !== null ? `${metrics.sunlit_hours} hrs` : "—"}
                 </span>
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-2xl font-bold tracking-tight text-slate-100">
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="font-heading text-3xl font-bold tracking-tight text-white">
                   {sunlitPct !== null ? `${sunlitPct}%` : "—"}
                 </span>
-                <span className="text-xs text-slate-400">sunlit</span>
+                <span className="text-xs text-slate-300 font-medium">sunlit</span>
               </div>
               {/* Progress bar */}
-              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#040814]/80 border border-white/[0.06]">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500 shadow-[0_0_8px_rgba(251,191,36,0.3)]"
                   style={{ width: `${Math.min(Math.max((metrics.sunlit_fraction ?? 0) * 100, 0), 100)}%` }}
                 />
               </div>
-              <div className="mt-2 text-xs text-slate-400">
+              <div className="mt-2.5 text-[11px] text-slate-400">
                 Geometric elevation &gt; 0°
               </div>
             </div>
 
             {/* Earth Visibility & Communication Card */}
-            <div className="rounded-lg border border-sky-500/20 bg-sky-950/10 p-3.5">
+            <div className="rounded-xl border border-sky-500/30 bg-[#0A1424]/75 backdrop-blur-md p-4 shadow-sm hover:border-sky-500/50 transition">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-sky-400">
-                  Direct-to-Earth Contact
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-sky-300">
+                  <Radio className="h-3.5 w-3.5" /> Direct-to-Earth Contact
                 </span>
-                <span className="text-xs text-slate-400">
+                <span className="font-mono text-xs text-sky-400/90 font-medium">
                   {metrics.earth_visible_hours !== null
                     ? `${metrics.earth_visible_hours} hrs`
                     : "—"}
                 </span>
               </div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-2xl font-bold tracking-tight text-slate-100">
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="font-heading text-3xl font-bold tracking-tight text-white">
                   {earthVisiblePct !== null ? `${earthVisiblePct}%` : "—"}
                 </span>
-                <span className="text-xs text-slate-400">visibility</span>
+                <span className="text-xs text-slate-300 font-medium">visibility</span>
               </div>
               {/* Progress bar */}
-              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+              <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-[#040814]/80 border border-white/[0.06]">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-500 shadow-[0_0_8px_rgba(56,189,248,0.3)]"
                   style={{
                     width: `${Math.min(
                       Math.max((metrics.earth_visible_fraction ?? 0) * 100, 0),
@@ -192,7 +193,7 @@ export function PowerCommunicationPanel({
                   }}
                 />
               </div>
-              <div className="mt-2 text-xs text-slate-400">
+              <div className="mt-2.5 text-[11px] text-slate-400">
                 Direct Line-of-Sight &gt; 0°
               </div>
             </div>
@@ -200,25 +201,25 @@ export function PowerCommunicationPanel({
         )}
 
         {/* Site & Coordinate Details Footer */}
-        <div className="rounded-lg bg-slate-950/40 p-3 text-xs text-slate-400">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="rounded-xl border border-white/[0.08] bg-[#070F1E]/75 backdrop-blur-md p-3.5 text-xs text-slate-300">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div>
-              <span className="block text-slate-500">Site ID</span>
-              <span className="font-mono text-slate-200">{data.site_id}</span>
+              <span className="block text-xs font-medium uppercase tracking-wider text-[#718096]">Site ID</span>
+              <span className="font-mono text-sm text-slate-100">{data.site_id}</span>
             </div>
             <div>
-              <span className="block text-slate-500">Coordinates</span>
-              <span className="font-mono text-slate-200">
+              <span className="block text-xs font-medium uppercase tracking-wider text-[#718096]">Coordinates</span>
+              <span className="font-mono text-sm text-slate-100">
                 {data.latitude_deg}°, {data.longitude_deg}°
               </span>
             </div>
             <div>
-              <span className="block text-slate-500">Start (UTC)</span>
-              <span className="font-mono text-slate-200">{data.start_utc}</span>
+              <span className="block text-xs font-medium uppercase tracking-wider text-[#718096]">Start (UTC)</span>
+              <span className="font-mono text-sm text-slate-100">{data.start_utc.replace("T", " ").replace("Z", "")}</span>
             </div>
             <div>
-              <span className="block text-slate-500">End (UTC)</span>
-              <span className="font-mono text-slate-200">{data.end_utc}</span>
+              <span className="block text-xs font-medium uppercase tracking-wider text-[#718096]">End (UTC)</span>
+              <span className="font-mono text-sm text-slate-100">{data.end_utc.replace("T", " ").replace("Z", "")}</span>
             </div>
           </div>
         </div>

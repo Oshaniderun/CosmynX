@@ -21,8 +21,8 @@ function horizonStatus(elevation: number | null) {
   return elevation > 0 ? "Above horizon" : "Below horizon";
 }
 
-const controlClass = "rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-100 hover:border-slate-400 focus-visible:outline-2 focus-visible:outline-sky-400";
-const modeClass = controlClass + " inline-flex items-center gap-2 aria-pressed:border-sky-400/70 aria-pressed:bg-sky-400/10 aria-pressed:text-sky-200";
+const controlClass = "rounded-lg border border-white/[0.08] bg-[#0A1424]/80 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-slate-100 hover:border-sky-400/50 hover:bg-[#12223B] focus-visible:outline-2 focus-visible:outline-sky-400 transition cursor-pointer";
+const modeClass = "inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-[#0A1424]/80 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-slate-300 hover:border-sky-400/50 hover:text-white aria-pressed:border-sky-400/80 aria-pressed:bg-sky-950/70 aria-pressed:text-sky-300 transition cursor-pointer shadow-sm";
 
 export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } = {}) {
   const { selectedSite, setSelectedSite } = useMission();
@@ -119,14 +119,16 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   useEffect(() => { if (replayFinished) setPlaying(false); }, [replayFinished]);
 
   return (
-    <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-[#0a101b] shadow-lg md:col-span-2">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-4 py-4 sm:px-6">
+    <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-2xl glass-panel md:col-span-2">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.07] px-5 py-4 sm:px-6">
         <div className="flex flex-wrap items-center gap-3">
-          <h2 id="space-explorer-title" className="text-lg font-semibold tracking-tight text-slate-100">Sun, Earth & Moon</h2>
+          <h2 id="space-explorer-title" className="font-heading text-lg font-semibold tracking-tight text-slate-100">
+            Sun, Earth & Moon
+          </h2>
           {selectedSite && (
-            <div className="flex items-center gap-2 rounded bg-slate-950/80 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              <span>Target: {selectedSite.name} ({selectedSite.site_id})</span>
+            <div className="flex items-center gap-2 rounded-lg border border-sky-500/30 bg-[#060D19]/80 backdrop-blur-md px-2.5 py-1 text-xs font-mono text-sky-300 shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse" />
+              <span>Target: <strong className="text-white">{selectedSite.name}</strong> ({selectedSite.site_id})</span>
             </div>
           )}
         </div>
@@ -143,7 +145,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       {mode === "eclipse" && <EclipsePurpose />}
 
       {(mode === "eclipse" || (positions?.status === "ok" && points.length > 0)) && (
-        <Suspense fallback={<div className="grid h-[280px] place-items-center bg-slate-950 text-sm text-slate-400 sm:h-[380px]" role="status">Loading 3D view…</div>}>
+        <Suspense fallback={<div className="grid h-[280px] place-items-center bg-[#080E1B] text-sm text-[#A7B4C7] sm:h-[380px]" role="status">Loading 3D view…</div>}>
           {mode === "eclipse" ? (
             <SpaceViewport key="eclipse" frame={{ mode, time }} />
           ) : positions && (
@@ -155,9 +157,9 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       )}
 
       {mode === "eclipse" ? (
-        <div className="space-y-3 border-t border-slate-800 px-4 py-4 sm:px-6">
+        <div className="space-y-3 border-t border-white/[0.07] px-5 py-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <label className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
+            <label className="flex flex-wrap items-center gap-2 text-xs font-medium text-slate-300">
               Total lunar eclipse
               <select className={controlClass} value={eventIndex} onChange={(change) => {
                 const next = Number(change.target.value);
@@ -168,7 +170,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                 {lunarEclipses.map(({ label }, index) => <option key={label} value={index}>{label}</option>)}
               </select>
             </label>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-300" aria-label="Earth’s shadow legend">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#A7B4C7]" aria-label="Earth’s shadow legend">
               <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="size-2.5 rounded-full border border-[#fb9366]" /> Umbra · inner shadow</span>
               <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="size-2.5 rounded-full border border-[#c4a1bd]" /> Penumbra · outer shadow</span>
             </div>
@@ -190,7 +192,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                 onChange={(change) => { setPlaying(false); setReplayOffset(Number(change.target.value)); }}
                 className="block w-full cursor-pointer accent-sky-400" />
             </div>
-            <time className="min-w-[122px] text-right text-xs tabular-nums text-slate-200" dateTime={new Date(time).toISOString()}>
+            <time className="min-w-[122px] text-right font-mono text-xs tabular-nums text-slate-200" dateTime={new Date(time).toISOString()}>
               {timeFormat.format(time)} UTC
             </time>
           </div>
@@ -200,9 +202,9 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
           }} />
         </div>
       ) : (
-        <div className="space-y-3 border-t border-slate-800 px-4 py-4 sm:px-6">
+        <div className="space-y-3.5 border-t border-white/[0.07] px-5 py-4 sm:px-6">
           {!ephemeris && sites.length > 0 && (
-            <label className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
+            <label className="flex flex-wrap items-center gap-2 text-xs font-medium text-slate-300">
               Landing site
               <select className={controlClass} value={landingSite?.site_id} onChange={(change) => {
                 clearPositions();
@@ -219,11 +221,11 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
           )}
           {positions && (
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-              <p className="text-slate-300">{positions.source} · {positions.latitude_deg}°, {positions.longitude_deg}°</p>
-              {point && <time className="tabular-nums text-slate-200" dateTime={point.timestamp_utc}>{timeFormat.format(new Date(point.timestamp_utc))} UTC</time>}
+              <p className="font-mono text-xs text-[#A7B4C7]">{positions.source} · {positions.latitude_deg}°, {positions.longitude_deg}°</p>
+              {point && <time className="font-mono text-xs tabular-nums text-slate-200" dateTime={point.timestamp_utc}>{timeFormat.format(new Date(point.timestamp_utc))} UTC</time>}
             </div>
           )}
-          <p className="text-xs text-slate-400">
+          <p className="font-mono text-xs text-[#718096]">
             Mission window · {timeFormat.format(Date.parse(missionWindow.start_utc))}–{timeFormat.format(Date.parse(missionWindow.end_utc))} UTC
           </p>
           {points.length > 1 && (
@@ -235,21 +237,31 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
             </>
           )}
           {point ? (
-            <dl className="grid gap-2 text-sm sm:grid-cols-2">
+            <dl className="grid gap-3 sm:grid-cols-2">
               {[
-                { name: "Sun", textColor: "text-amber-200", azimuth: point.sun_azimuth_deg, elevation: point.sun_elevation_deg },
-                { name: "Earth", textColor: "text-sky-200", azimuth: point.earth_azimuth_deg, elevation: point.earth_elevation_deg },
-              ].map(({ name, textColor, azimuth, elevation }) => (
-                <div key={name} className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                  <dt className={`font-medium ${textColor}`}>{name}</dt>
-                  <dd className="mt-1 text-xs text-slate-300">Azimuth {formatAngle(azimuth)} · Elevation {formatAngle(elevation)}</dd>
-                  <dd className="mt-1 text-xs text-slate-400">{horizonStatus(elevation)}</dd>
+                { name: "Sun", textColor: "text-amber-300", azimuth: point.sun_azimuth_deg, elevation: point.sun_elevation_deg, accentBorder: "border-amber-500/25" },
+                { name: "Earth", textColor: "text-sky-300", azimuth: point.earth_azimuth_deg, elevation: point.earth_elevation_deg, accentBorder: "border-sky-500/25" },
+              ].map(({ name, textColor, azimuth, elevation, accentBorder }) => (
+                <div key={name} className={`rounded-xl border ${accentBorder} bg-[#0A1424]/75 backdrop-blur-md p-3.5 shadow-sm`}>
+                  <div className="flex items-center justify-between">
+                    <dt className={`font-heading text-base font-semibold ${textColor}`}>{name}</dt>
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-mono font-medium ${
+                      elevation && elevation > 0 
+                        ? "bg-emerald-950/50 text-emerald-300 border border-emerald-800/50" 
+                        : "bg-slate-900 text-slate-400 border border-slate-800"
+                    }`}>
+                      {horizonStatus(elevation)}
+                    </span>
+                  </div>
+                  <dd className="mt-2 text-sm font-mono text-slate-200">
+                    Azimuth <span className="font-bold text-white">{formatAngle(azimuth)}</span> · Elevation <span className="font-bold text-white">{formatAngle(elevation)}</span>
+                  </dd>
                 </div>
               ))}
             </dl>
           ) : (
             <div className="flex flex-wrap items-center gap-3" role="status">
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-[#A7B4C7]">
                 {loading && !ephemeris ? "Loading NASA ephemeris…" : error || (positions?.status === "pending"
                   ? "Ephemeris data is pending."
                   : "No JPL Horizons positions are available for this site and time range.")}
@@ -262,15 +274,15 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
               )}
             </div>
           )}
-          {point && <p className="text-xs leading-relaxed text-slate-400">The cyan ring marks the geometric horizon at the site. Terrain can obstruct the view. Body sizes and distances are illustrative.</p>}
+          {point && <p className="text-xs leading-relaxed text-[#718096]">The cyan ring marks the geometric horizon at the site. Terrain can obstruct the view. Body sizes and distances are illustrative.</p>}
         </div>
       )}
 
-      <footer className="flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-800 px-4 py-3 text-[11px] text-slate-400 sm:px-6">
-        <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/" target="_blank" rel="noreferrer">Earth imagery · NASA Blue Marble</a>
-        <span>Sun and Moon textures · <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noreferrer">Solar System Scope</a> (<a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>, resized)</span>
-        <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://github.com/cosinekitty/astronomy" target="_blank" rel="noreferrer">Eclipse calculations · Astronomy Engine</a>
-        <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://eclipse.gsfc.nasa.gov/OH/OH2025.html" target="_blank" rel="noreferrer">2025 eclipse catalog · NASA</a>
+      <footer className="flex flex-wrap gap-x-4 gap-y-1 border-t border-white/[0.07] bg-[#040812]/75 px-5 py-3 text-xs text-slate-400 sm:px-6 backdrop-blur-md">
+        <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/" target="_blank" rel="noreferrer">Earth imagery · NASA Blue Marble</a>
+        <span>Sun and Moon textures · <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noreferrer">Solar System Scope</a> (<a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>, resized)</span>
+        <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://github.com/cosinekitty/astronomy" target="_blank" rel="noreferrer">Eclipse calculations · Astronomy Engine</a>
+        <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://eclipse.gsfc.nasa.gov/OH/OH2025.html" target="_blank" rel="noreferrer">2025 eclipse catalog · NASA</a>
       </footer>
     </section>
   );

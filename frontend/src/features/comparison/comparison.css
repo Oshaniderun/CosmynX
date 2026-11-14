@@ -1,68 +1,119 @@
+/* ==========================================================================
+   HELIOS SCENARIO LAB — NASA Space-Tech Theme
+   Smoked Obsidian Glass (rgba(8,16,29,0.76)), Lunar Cyan (#38BDF8), Deep Space
+   ========================================================================== */
+
 .comparison-panel {
-  border: 1px solid #334155;
-  border-radius: 18px;
-  background: #0c1525;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(8, 16, 29, 0.76);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   color: #cbd5e1;
   overflow: hidden;
-  font-size: 14px;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 15px;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7);
 }
+
 .comparison-panel * {
   box-sizing: border-box;
 }
+
+.comparison-panel [hidden] {
+  display: none !important;
+}
+
+/* --- Header --- */
 .comparison-panel .cmp-header {
-  padding: 28px;
+  padding: 28px 32px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 18px;
-  border-bottom: 1px solid #243244;
-  background: linear-gradient(115deg, #172235, #0c1525 70%);
+  gap: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: radial-gradient(ellipse at right top, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+              linear-gradient(135deg, rgba(16, 27, 46, 0.8), rgba(8, 16, 29, 0.75) 75%);
 }
+
 .comparison-panel h2 {
   display: flex;
   align-items: center;
   gap: 12px;
   color: #f8fafc;
-  font-size: 24px;
-  font-weight: 650;
-  letter-spacing: -0.6px;
-  margin: 8px 0;
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: clamp(22px, 2.5vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin: 6px 0;
 }
+
 .comparison-panel h3 {
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
   font-size: 17px;
   color: #f1f5f9;
   font-weight: 600;
+  margin: 0;
 }
+
 .comparison-panel h4 {
-  color: #f1f5f9;
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  color: #f8fafc;
   font-size: 16px;
   font-weight: 600;
-  margin: 8px 0;
+  margin: 6px 0;
 }
+
 .comparison-panel .cmp-eyebrow {
-  color: #fbbf24;
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 1.8px;
-}
-.comparison-panel .cmp-badge {
-  display: inline-block;
-  white-space: nowrap;
+  color: #38bdf8;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
   font-size: 11px;
-  color: #a5b4c8;
-  padding: 5px 9px;
-  border: 1px solid #334155;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.comparison-panel .cmp-header > div > p:last-child {
+  color: #94a3b8;
+  max-width: 540px;
+  line-height: 1.6;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.comparison-panel .cmp-badge {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 12px;
+  font-weight: 500;
+  color: #7dd3fc;
+  padding: 4px 10px;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.08);
   border-radius: 6px;
 }
+
+.comparison-panel .cmp-model-badge {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(14, 165, 233, 0.12);
+}
+
+/* --- Form & Section Layout --- */
 .comparison-panel form,
 .comparison-panel .cmp-results {
-  padding: 24px 28px;
+  padding: 24px 32px;
 }
+
 .comparison-panel fieldset {
   border: 0;
   padding: 0;
   min-width: 0;
 }
+
 .comparison-panel .cmp-toolbar {
   display: flex;
   gap: 24px;
@@ -70,69 +121,164 @@
   justify-content: space-between;
   margin-bottom: 20px;
 }
+
 .comparison-panel .cmp-toolbar p,
 .comparison-panel .cmp-submit-row p {
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 13px;
 }
+
 .comparison-panel label {
   display: block;
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
 }
+
+/* --- Form Inputs & Selects --- */
 .comparison-panel input,
 .comparison-panel select {
   display: block;
   width: 100%;
   min-width: 0;
-  padding: 10px;
-  border: 1px solid #334155;
-  background: #0a1120;
-  color: #e2e8f0;
-  border-radius: 6px;
-  font: inherit;
-  font-size: 13px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(4, 9, 18, 0.85);
+  color: #f1f5f9;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
   margin-top: 6px;
   color-scheme: dark;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
+
+.comparison-panel input[type="datetime-local"],
+.comparison-panel input[type="number"],
+.comparison-panel input[type="text"] {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+}
+
 .comparison-panel input:focus-visible,
 .comparison-panel select:focus-visible,
 .comparison-panel button:focus-visible,
 .comparison-panel summary:focus-visible {
-  outline: 2px solid #fbbf24;
-  outline-offset: 3px;
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+  border-color: #38bdf8;
 }
+
 .comparison-panel .cmp-mode {
   min-width: 210px;
 }
+
+/* --- Step Indicators --- */
+.comparison-panel .cmp-step-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 16px;
+}
+
+.comparison-panel .cmp-step-title > span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.comparison-panel .cmp-step-title h3 {
+  font-size: 16px;
+}
+
+.comparison-panel .cmp-step-title p {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* --- Draft Grid --- */
 .comparison-panel .cmp-draft-grid,
 .comparison-panel .cmp-summary-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
+
 .comparison-panel .cmp-draft {
-  border: 1px solid #243244;
-  border-radius: 10px;
-  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid rgba(129, 140, 248, 0.7);
+  border-radius: 14px;
+  padding: 20px;
   display: grid;
-  gap: 15px;
-  background: #101b2c;
+  gap: 14px;
+  background: linear-gradient(155deg, rgba(16, 27, 46, 0.75), rgba(7, 14, 26, 0.8));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
+
+.comparison-panel .cmp-draft:first-child {
+  border-top-color: #38bdf8;
+}
+
 .comparison-panel .cmp-draft-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: 22px;
-  font-size: 11px;
-  letter-spacing: 1.3px;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 12px;
+  letter-spacing: 1.5px;
   color: #cbd5e1;
+  font-weight: 600;
 }
+
+.comparison-panel .cmp-draft:first-child .cmp-draft-title > span {
+  color: #38bdf8;
+}
+
+.comparison-panel .cmp-scenario-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: -4px;
+}
+
+.comparison-panel .cmp-scenario-tools .cmp-link {
+  margin: 0;
+  color: #7dd3fc;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.comparison-panel .cmp-scenario-tools .cmp-link:hover {
+  text-decoration: underline;
+  color: #bae6fd;
+}
+
 .comparison-panel .cmp-date-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
+
+.comparison-panel .cmp-caption {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+/* --- Action Rows & Buttons --- */
 .comparison-panel .cmp-actions,
 .comparison-panel .cmp-submit-row,
 .comparison-panel .cmp-result-heading {
@@ -142,223 +288,559 @@
   gap: 16px;
   flex-wrap: wrap;
 }
+
 .comparison-panel .cmp-actions {
-  margin: 18px 0;
+  margin: 20px 0;
 }
+
 .comparison-panel button {
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.15s ease-in-out;
 }
+
 .comparison-panel button:disabled,
 .comparison-panel fieldset:disabled {
   opacity: 0.55;
   cursor: wait;
 }
+
 .comparison-panel .cmp-secondary,
 .comparison-panel .cmp-primary {
   display: inline-flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
-  border-radius: 7px;
-  padding: 10px 13px;
-  font: inherit;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
   font-size: 12px;
   font-weight: 600;
 }
+
 .comparison-panel .cmp-secondary {
-  border: 1px solid #334155;
-  background: #172235;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(14, 25, 42, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #e2e8f0;
 }
-.comparison-panel .cmp-secondary:hover {
-  background: #243244;
+
+.comparison-panel .cmp-secondary:hover:not(:disabled) {
+  background: rgba(22, 38, 62, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
+
 .comparison-panel .cmp-primary {
-  background: #fbbf24;
-  color: #172033;
-  border: 1px solid #fbbf24;
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  color: #ffffff;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.35);
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  letter-spacing: 0.3px;
 }
-.comparison-panel .cmp-primary:hover {
-  background: #fcd34d;
+
+.comparison-panel .cmp-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0369a1, #0284c7);
+  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.5);
 }
+
 .comparison-panel .cmp-icon {
-  padding: 3px;
+  padding: 4px;
   color: #94a3b8;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
 }
+
+.comparison-panel .cmp-icon:hover {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+}
+
 .comparison-panel .cmp-delay {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  font-size: 12px;
+  color: #94a3b8;
 }
+
 .comparison-panel .cmp-delay label {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .comparison-panel .cmp-delay input {
   display: inline-block;
   width: 72px;
   margin: 0;
-  padding: 7px;
+  padding: 7px 10px;
 }
+
+.comparison-panel .cmp-submit-row {
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- Notices, Alerts & Empty States --- */
 .comparison-panel .cmp-notice,
 .comparison-panel .cmp-error {
   margin: 0 0 18px;
-  padding: 14px;
-  border: 1px solid #685423;
-  border-radius: 7px;
-  color: #fcd98b;
-  background: #282313;
+  padding: 12px 16px;
+  border-radius: 8px;
   font-size: 12px;
-  line-height: 1.7;
+  line-height: 1.6;
 }
+
+.comparison-panel .cmp-notice {
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.comparison-panel .cmp-error,
 .comparison-panel > .cmp-error {
-  margin: 0 28px 24px;
-  border-color: #7f3342;
-  background: #2d1924;
-  color: #fda4af;
+  margin: 0 0 18px;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  background: rgba(244, 63, 94, 0.1);
+  color: #fca5a5;
 }
+
+.comparison-panel > .cmp-error {
+  margin: 0 32px 24px;
+}
+
 .comparison-panel .cmp-link {
   text-decoration: underline;
   margin-left: 8px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
+
 .comparison-panel .cmp-empty {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 14px;
   text-align: center;
-  padding: 28px;
-  color: #cbd5e1;
-  border-top: 1px solid #243244;
+  padding: 32px;
+  color: #94a3b8;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   line-height: 1.8;
 }
+
 .comparison-panel .cmp-empty span {
   font-size: 12px;
   color: #64748b;
 }
+
+/* --- Results Section --- */
 .comparison-panel .cmp-results {
-  border-top: 1px solid #243244;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
+
 .comparison-panel .cmp-result-heading {
   margin-bottom: 20px;
 }
+
+.comparison-panel .cmp-evidence-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 12px 18px;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  background: rgba(10, 20, 36, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.comparison-panel .cmp-evidence-strip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #7dd3fc;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+}
+
+.comparison-panel .cmp-overview-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.comparison-panel .cmp-overview-heading h3 {
+  margin-top: 6px;
+  font-size: 19px;
+}
+
+.comparison-panel .cmp-overview-heading > p {
+  max-width: 280px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* --- Comparison Overview Table --- */
+.comparison-panel .cmp-comparison-table {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(6, 12, 22, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.comparison-panel .cmp-comparison-table table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.comparison-panel .cmp-comparison-table caption {
+  caption-side: bottom;
+  text-align: left;
+  padding: 12px 16px;
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1.6;
+  background: rgba(8, 16, 29, 0.85);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.comparison-panel .cmp-comparison-table th {
+  text-align: left;
+  font-weight: 500;
+}
+
+.comparison-panel .cmp-comparison-table thead th {
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  background: rgba(16, 28, 48, 0.85);
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comparison-panel .cmp-comparison-table thead svg {
+  display: inline;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.comparison-panel .cmp-comparison-table tbody td,
+.comparison-panel .cmp-comparison-table tbody th {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.comparison-panel .cmp-comparison-table tbody th {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 210px;
+}
+
+.comparison-panel .cmp-comparison-table tbody tr:first-child {
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.comparison-panel .cmp-comparison-table tbody tr:hover {
+  background: rgba(22, 38, 62, 0.5);
+}
+
+.comparison-panel .cmp-comparison-table small {
+  display: block;
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 4px;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+}
+
+.comparison-panel .cmp-letter {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 6px;
+  color: #38bdf8;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-weight: 600;
+}
+
+/* --- Result Tabs & Views --- */
+.comparison-panel .cmp-result-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 24px 0 20px;
+  padding: 4px;
+  background: rgba(4, 9, 18, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.comparison-panel .cmp-result-tabs button {
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.comparison-panel .cmp-result-tabs button[aria-pressed="true"] {
+  background: rgba(16, 28, 48, 0.9);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.comparison-panel .cmp-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* --- Scenario Summary Cards --- */
 .comparison-panel .cmp-summary {
   min-width: 0;
-  padding: 18px;
-  border: 1px solid #243244;
-  border-radius: 9px;
-  background: #0e192a;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: linear-gradient(155deg, rgba(16, 27, 46, 0.75), rgba(7, 14, 26, 0.8));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
-.comparison-panel .cmp-caption {
-  font-size: 11px;
-  color: #94a3b8;
-  margin: 6px 0;
-  overflow-wrap: anywhere;
-  line-height: 1.65;
-}
+
 .comparison-panel .cmp-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 20px 0;
   gap: 16px;
 }
+
 .comparison-panel .cmp-metrics > div {
   display: grid;
-  gap: 5px;
+  gap: 4px;
+  padding: 14px;
+  background: rgba(4, 9, 18, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
 }
+
 .comparison-panel .cmp-metrics span {
-  font-size: 12px;
+  font-size: 11px;
   color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
+
 .comparison-panel .cmp-metrics strong {
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
   font-size: 26px;
-  font-weight: 600;
-  color: #f1f5f9;
+  font-weight: 700;
+  color: #f8fafc;
 }
+
 .comparison-panel .cmp-metrics small {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
   font-size: 12px;
   color: #94a3b8;
 }
+
 .comparison-panel .cmp-sun {
   color: #fbbf24;
 }
+
 .comparison-panel .cmp-earth {
   color: #38bdf8;
 }
+
 .comparison-panel .cmp-delta {
-  padding: 12px 0;
-  margin: 12px 0;
-  border-top: 1px solid #243244;
-  border-bottom: 1px solid #243244;
+  padding: 12px 14px;
+  margin: 14px 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(4, 9, 18, 0.75);
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
   font-size: 12px;
-  line-height: 1.9;
+  line-height: 1.8;
 }
+
 .comparison-panel .cmp-delta strong {
-  color: #f8fafc;
+  color: #38bdf8;
 }
+
 .comparison-panel .cmp-warning {
-  color: #d3b777;
+  color: #fbbf24;
   font-size: 11px;
   line-height: 1.6;
-  margin-top: 7px;
+  margin-top: 6px;
 }
+
+.comparison-panel .cmp-quality-details {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+}
+
+/* --- Timeline Controls & Charts --- */
 .comparison-panel .cmp-timeline-header {
-  margin: 28px 0 18px;
+  margin: 24px 0 16px;
 }
+
 .comparison-panel .cmp-timeline-header p {
   font-size: 12px;
   color: #94a3b8;
-  margin-top: 5px;
+  margin-top: 4px;
 }
+
 .comparison-panel .cmp-range-controls {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 20px;
 }
+
+.comparison-panel .cmp-range-controls label {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+}
+
 .comparison-panel input[type="range"] {
   padding: 0;
-  accent-color: #fbbf24;
+  accent-color: #38bdf8;
   height: 20px;
   border: 0;
+  background: transparent;
 }
+
 .comparison-panel .cmp-chart-label {
-  font-size: 11px;
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: 12px;
+  font-weight: 600;
   margin-top: 12px;
 }
+
 .comparison-panel .cmp-inspect {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
   font-size: 11px;
   margin: 12px 0;
-  color: #e2e8f0;
+  color: #7dd3fc;
+  padding: 6px 10px;
+  background: rgba(4, 9, 18, 0.75);
+  border-radius: 6px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
 }
+
+.comparison-panel .cmp-operations {
+  margin: 12px 0;
+  padding: 14px;
+  background: rgba(4, 9, 18, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.comparison-panel .cmp-window-table {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.comparison-panel .cmp-window-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+}
+
+.comparison-panel .cmp-window-table th,
+.comparison-panel .cmp-window-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
+  vertical-align: top;
+}
+
+.comparison-panel .cmp-window-table th {
+  color: #94a3b8;
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+/* --- Assumptions & Details --- */
 .comparison-panel .cmp-assumptions {
   margin-top: 22px;
   padding-top: 16px;
-  border-top: 1px solid #243244;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   color: #94a3b8;
   font-size: 12px;
   line-height: 1.8;
 }
+
 .comparison-panel summary {
   cursor: pointer;
   color: #cbd5e1;
+  font-weight: 500;
 }
+
 .comparison-panel .cmp-assumptions ul {
-  padding: 12px 0 12px 18px;
+  padding: 10px 0 10px 18px;
   list-style: disc;
 }
-@media (max-width: 760px) {
+
+.comparison-panel .cmp-assumptions a {
+  text-decoration: underline;
+  color: #38bdf8;
+}
+
+.comparison-panel .cmp-assumptions code {
+  color: #7dd3fc;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 11px;
+  background: rgba(4, 9, 18, 0.85);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
   .comparison-panel .cmp-header,
   .comparison-panel form,
   .comparison-panel .cmp-results {
-    padding: 20px 16px;
+    padding: 20px 18px;
   }
   .comparison-panel .cmp-header,
   .comparison-panel .cmp-toolbar {
     flex-direction: column;
+    align-items: flex-start;
   }
   .comparison-panel .cmp-draft-grid,
   .comparison-panel .cmp-summary-grid,
@@ -369,306 +851,26 @@
     align-items: stretch;
     flex-direction: column;
   }
-  .comparison-panel h2 {
-    font-size: 21px;
-  }
-}
-@media (max-width: 420px) {
-  .comparison-panel .cmp-date-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-.comparison-panel .cmp-operations {
-  margin: 12px 0;
-  padding: 10px;
-  background: #101b2c;
-  border-radius: 6px;
-}
-.comparison-panel .cmp-window-table {
-  overflow-x: auto;
-}
-.comparison-panel .cmp-window-table table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11px;
-}
-.comparison-panel .cmp-window-table th,
-.comparison-panel .cmp-window-table td {
-  padding: 8px;
-  border-bottom: 1px solid #334155;
-  text-align: left;
-  vertical-align: top;
-}
-.comparison-panel .cmp-assumptions a {
-  text-decoration: underline;
-  color: #7dd3fc;
-}
-.comparison-panel fieldset > .cmp-secondary {
-  margin-bottom: 18px;
-}
-/* Scenario Lab: clear hierarchy, compact tools, and readable comparison data. */
-.comparison-panel {
-  background: #0a1322;
-  box-shadow: 0 20px 60px #0003;
-}
-.comparison-panel [hidden] {
-  display: none !important;
-}
-.comparison-panel .cmp-header {
-  background:
-    radial-gradient(ellipse at right top, #15314d 0, transparent 60%), #101c2e;
-  padding: 32px;
-}
-.comparison-panel h2 {
-  font-size: clamp(24px, 3vw, 32px);
-  letter-spacing: -0.9px;
-}
-.comparison-panel .cmp-header > div > p:last-child {
-  color: #9bacbf;
-  max-width: 540px;
-  line-height: 1.7;
-}
-.comparison-panel .cmp-model-badge {
-  color: #a5e2ef;
-  border-color: #285369;
-  background: #12344766;
-}
-.comparison-panel .cmp-step-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0 16px;
-}
-.comparison-panel .cmp-step-title > span {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid #36516d;
-  border-radius: 9px;
-  color: #7dd3fc;
-  font-size: 12px;
-  font-weight: 700;
-}
-.comparison-panel .cmp-step-title h3 {
-  font-size: 15px;
-}
-.comparison-panel .cmp-step-title p {
-  margin-top: 3px;
-  font-size: 12px;
-  color: #91a2b8;
-}
-.comparison-panel .cmp-draft {
-  border-top: 2px solid #34506f;
-  border-radius: 12px;
-  background: linear-gradient(155deg, #122135, #0e192a);
-}
-.comparison-panel .cmp-draft:first-child {
-  border-top-color: #fbbf24;
-}
-.comparison-panel .cmp-draft-title {
-  font-weight: 600;
-}
-.comparison-panel .cmp-draft:first-child .cmp-draft-title > span {
-  color: #fcd34d;
-}
-.comparison-panel .cmp-scenario-tools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-top: -5px;
-}
-.comparison-panel .cmp-scenario-tools .cmp-link {
-  margin: 0;
-  color: #9dccec;
-  font-size: 11px;
-  text-decoration: none;
-}
-.comparison-panel .cmp-scenario-tools .cmp-link:hover {
-  text-decoration: underline;
-}
-.comparison-panel input,
-.comparison-panel select {
-  padding: 11px;
-  border-color: #34475f;
-}
-.comparison-panel .cmp-submit-row {
-  padding-top: 16px;
-  border-top: 1px solid #26384e;
-}
-.comparison-panel .cmp-primary {
-  padding: 12px 18px;
-  box-shadow: 0 4px 20px #fbbf2418;
-}
-.comparison-panel .cmp-evidence-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 22px;
-  padding: 14px 16px;
-  border: 1px solid #24455b;
-  background: #0b2233;
-  border-radius: 9px;
-  margin-bottom: 24px;
-}
-.comparison-panel .cmp-evidence-strip span {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: #a9cddd;
-  font-size: 11px;
-}
-.comparison-panel .cmp-overview-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-.comparison-panel .cmp-overview-heading h3 {
-  margin-top: 7px;
-  font-size: 19px;
-}
-.comparison-panel .cmp-overview-heading > p {
-  max-width: 280px;
-  font-size: 12px;
-  color: #94a3b8;
-}
-.comparison-panel .cmp-comparison-table {
-  overflow-x: auto;
-  border: 1px solid #2a3d54;
-  border-radius: 10px;
-}
-.comparison-panel .cmp-comparison-table table {
-  width: 100%;
-  min-width: 780px;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-}
-.comparison-panel .cmp-comparison-table caption {
-  caption-side: bottom;
-  text-align: left;
-  padding: 12px 14px;
-  color: #8ca4bc;
-  font-size: 11px;
-  line-height: 1.6;
-  background: #101d2e;
-}
-.comparison-panel .cmp-comparison-table th {
-  text-align: left;
-  font-weight: 500;
-}
-.comparison-panel .cmp-comparison-table thead th {
-  font-size: 11px;
-  color: #8ca4bc;
-  background: #122135;
-  padding: 12px;
-}
-.comparison-panel .cmp-comparison-table thead svg {
-  display: inline;
-  vertical-align: middle;
-  margin-right: 5px;
-}
-.comparison-panel .cmp-comparison-table tbody td,
-.comparison-panel .cmp-comparison-table tbody th {
-  padding: 16px 12px;
-  border-bottom: 1px solid #20324a;
-  font-size: 14px;
-  color: #e2e8f0;
-}
-.comparison-panel .cmp-comparison-table tbody th {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  font-size: 12px;
-  min-width: 210px;
-}
-.comparison-panel .cmp-comparison-table tbody tr:first-child {
-  background: #172537;
-}
-.comparison-panel .cmp-comparison-table tbody tr:hover {
-  background: #14273b;
-}
-.comparison-panel .cmp-comparison-table small {
-  display: block;
-  color: #8ca4bc;
-  font-size: 10px;
-  margin-top: 5px;
-}
-.comparison-panel .cmp-letter {
-  display: grid;
-  place-items: center;
-  min-width: 26px;
-  height: 26px;
-  background: #203c54;
-  border-radius: 6px;
-  color: #a5d3f5;
-  font-weight: 600;
-}
-.comparison-panel .cmp-result-tabs {
-  display: flex;
-  gap: 4px;
-  margin: 24px 0 20px;
-  padding: 4px;
-  background: #070e1b;
-  border: 1px solid #24364f;
-  border-radius: 9px;
-  width: fit-content;
-}
-.comparison-panel .cmp-result-tabs button {
-  border-radius: 6px;
-  padding: 10px 14px;
-  font-size: 12px;
-  color: #8eabc5;
-}
-.comparison-panel .cmp-result-tabs button[aria-pressed="true"] {
-  background: #20364c;
-  color: #eaf6ff;
-}
-.comparison-panel .cmp-export-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.comparison-panel .cmp-quality-details {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid #263a52;
-  font-size: 11px;
-}
-.comparison-panel .cmp-operations {
-  padding: 14px;
-  background: #142337;
-}
-.comparison-panel .cmp-timeline-header {
-  margin-top: 12px;
-}
-.comparison-panel .cmp-assumptions code {
-  color: #afd7f2;
-  font-size: 10px;
-  overflow-wrap: anywhere;
-}
-@media (max-width: 760px) {
-  .comparison-panel .cmp-header {
-    padding: 24px 18px;
-  }
   .comparison-panel .cmp-overview-heading {
     flex-direction: column;
     align-items: flex-start;
   }
-  .comparison-panel .cmp-result-tabs {
-    width: 100%;
-  }
-  .comparison-panel .cmp-result-tabs button {
-    flex: 1;
-    padding: 10px 8px;
-  }
+  .comparison-panel .cmp-result-tabs,
   .comparison-panel .cmp-export-actions {
     width: 100%;
   }
+  .comparison-panel .cmp-result-tabs button,
   .comparison-panel .cmp-export-actions button {
     flex: 1;
   }
 }
+
+@media (max-width: 440px) {
+  .comparison-panel .cmp-date-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .comparison-panel * {
     transition: none !important;
