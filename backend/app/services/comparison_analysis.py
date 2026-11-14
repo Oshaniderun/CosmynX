@@ -57,3 +57,27 @@ def setting_transitions(intervals: list[VisibilityInterval]) -> list[SettingTran
                     after_elapsed_hours=previous.elapsed_hours, by_elapsed_hours=current.elapsed_hours,
                 ))
     return transitions
+
+
+def continuity_metrics(intervals: list[VisibilityInterval], duration: float) -> dict[str, float | None]:
+    """Continuous outage estimates are withheld when their target has unknown time."""
+    _, coverage = summarize_intervals(intervals, duration)
+    result = {}
+    for target, field, output in (
+        ("sunlight", "sunlit", "longest_darkness_hours"),
+        ("earth", "earth_visible", "longest_earth_outage_hours"),
+    ):
+        longest = run = 0.0
+        previous_end = None
+        for point in intervals:
+            if previous_end != point.start_utc:
+                run = 0
+            run = run + hours_between(point.start_utc, point.end_utc) if getattr(point, field) is False else 0
+            longest = max(longest, run)
+            previous_end = point.end_utc
+        result[output] = longest if coverage[target] >= 1 - 1e-10 else None
+    result["simultaneous_visibility_hours"] = (
+        sum(hours_between(p.start_utc, p.end_utc) for p in intervals if p.sunlit is True and p.earth_visible is True)
+        if all(value >= 1 - 1e-10 for value in coverage.values()) else None
+    )
+    return result

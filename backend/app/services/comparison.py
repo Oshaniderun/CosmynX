@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 from math import isfinite
-from app.services.comparison_analysis import summarize_intervals, operational_windows, setting_transitions
+from app.services.comparison_analysis import summarize_intervals, operational_windows, setting_transitions, continuity_metrics
 from httpx import HTTPError
 
 from app.api.sites import DEFAULT_SITES
@@ -95,6 +95,7 @@ def compare_scenarios(request: CompareRequest) -> CompareResponse:
         )
         duration = (_utc(scenario.end_utc) - _utc(scenario.start_utc)).total_seconds() / 3600
         summary_method = "synthetic" if request.data_mode == "demo" else "conditions_service"
+        retrieved_utc = request_fingerprint = None
         warnings = []
         if request.data_mode == "demo":
             conditions, timeline, warnings = demo_conditions(scenario, site.latitude_deg, site.longitude_deg)
@@ -125,6 +126,8 @@ def compare_scenarios(request: CompareRequest) -> CompareResponse:
                     raise ValueError("Ephemeris does not match the requested scenario")
                 timeline = _timeline(scenario, ephemeris)
                 timeline_source = ephemeris.source
+                retrieved_utc = ephemeris.retrieved_utc
+                request_fingerprint = ephemeris.request_fingerprint
             except (OSError, ValueError, HTTPError):
                 timeline = []
                 timeline_source = "JPL Horizons — unavailable"
@@ -164,6 +167,8 @@ def compare_scenarios(request: CompareRequest) -> CompareResponse:
             timeline_source=timeline_source, warnings=warnings, summary_method=summary_method,
             sun_coverage_fraction=coverage["sunlight"], earth_coverage_fraction=coverage["earth"],
             windows=operational_windows(timeline), setting_transitions=setting_transitions(timeline),
+            **continuity_metrics(timeline, duration),
+            retrieved_utc=retrieved_utc, request_fingerprint=request_fingerprint,
         ))
     statuses = [s.conditions.status for s in scenarios]
     status = "ok" if all(s == "ok" for s in statuses) else (

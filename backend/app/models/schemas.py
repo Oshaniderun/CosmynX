@@ -36,6 +36,8 @@ class EphemerisResponse(BaseModel):
     source: str = "JPL Horizons"
     status: Literal["ok", "pending", "unavailable"] = "pending"
     points: list[EphemerisPoint] = Field(default_factory=list)
+    retrieved_utc: Optional[str] = None
+    request_fingerprint: Optional[str] = None
 
 
 class VisibilityMetrics(BaseModel):
@@ -72,6 +74,13 @@ class ScenarioInput(BaseModel):
     scenario_id: Optional[str] = Field(default=None, min_length=1, max_length=100)
     latitude_deg: Optional[float] = Field(default=None, ge=-90, le=90, allow_inf_nan=False)
     longitude_deg: Optional[float] = Field(default=None, ge=-180, le=180, allow_inf_nan=False)
+
+    @field_validator("latitude_deg", "longitude_deg")
+    @classmethod
+    def coordinate_precision(cls, value: Optional[float]) -> Optional[float]:
+        if value is not None and value != round(value, 6):
+            raise ValueError("Custom coordinates support at most six decimal places")
+        return value
 
     @field_validator("start_utc", "end_utc")
     @classmethod
@@ -160,6 +169,11 @@ class ScenarioComparison(BaseModel):
     earth_coverage_fraction: float = 0
     windows: list[OperationalWindow] = Field(default_factory=list)
     setting_transitions: list[SettingTransition] = Field(default_factory=list)
+    simultaneous_visibility_hours: Optional[float] = None
+    longest_darkness_hours: Optional[float] = None
+    longest_earth_outage_hours: Optional[float] = None
+    retrieved_utc: Optional[str] = None
+    request_fingerprint: Optional[str] = None
 
 
 class ComparisonDelta(BaseModel):

@@ -99,3 +99,23 @@ Reviewed the supplied resources on 14 November 2026:
 - [CSA Moon exploration](https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/): mission and exploration context; it is not a source of numerical ephemerides.
 
 The finalized Member 5 scope is rapid comparison of sites, custom coordinates, dates, delays, sampled elevations, operational windows, setting-time brackets, and structured handoff to HELIOS. It does not take ownership of the lunar map, terrain horizon solver, hardware power model, radio link budget, AI advisor, or Member 3’s eclipse replay. In particular, the comparison’s positive solar elevation threshold is not an eclipse/illumination solver. Terrain, eclipses, observer height, finite target disks, and hardware constraints require further modeling before mission use.
+
+## Accuracy audit and interface update — 14 November 2026
+
+The numerical source is real JPL Horizons in scientific mode; synthetic mode remains explicitly opt-in. The [recorded verification](member-5-data-verification.json) compares **84 azimuth/elevation values** from all three original six-hour snapshots against fresh official API responses. Maximum difference was **0.0 degrees at the returned precision**, with a 0.000001-degree comparison tolerance. This verifies those samples, not every location, date, or operational prediction.
+
+A previously uncached 21–24 November 2026 comparison succeeded for two sites, returning 72 complete hourly intervals per site. The secure client now uses Python’s default OS certificate context (certificate and hostname verification remain required); the earlier bundled-CA path failed on this Windows environment. Cache keys retain the six decimal places sent to Horizons. New and legacy entries must match their exact coordinate, window, step, body, convention, and source metadata before reuse. Custom comparison coordinates are limited to six decimal places. Retrieved time and request fingerprint are retained where available; older snapshots explicitly have no recorded retrieval time.
+
+Sampling matters: at Malapert Massif, an actual solar crossing was bracketed at **3 December 2026 10:00–11:00 UTC** with hourly data. Five-minute data narrowed the bracket to **10:00–10:05 UTC**. This is a bracket, not a validated exact event time or terrain-shadow result. Five-minute sampling is available within the existing 2,000-interval limit.
+
+The overview adds simultaneous geometric Sun/Earth visibility, longest contiguous sampled darkness, and longest contiguous sampled Earth outage. These are duration-weighted estimates, withheld when relevant coverage is unknown. Scenario duplication and baseline promotion simplify exploration. Results are separated into details and timelines, with CSV window export, JSON export, and provenance.
+
+Rerun the online reference audit from `backend` with `python -m scripts.verify_comparison_data`. The offline suite also covers nearby-site cache collisions, mismatched legacy metadata, TLS verification, explicit airless UTC queries, coordinate precision, and outage continuity.
+
+## Operational readiness boundary
+
+This application is a **research and mission-screening prototype**, not an approved flight or landing-decision system. Using NASA ephemerides and passing software tests do not establish mission suitability.
+
+The responsible project must define acceptance criteria and independently validate the model for its intended use. [NASA-STD-7009B](https://standards.nasa.gov/standard/NASA/NASA-STD-7009) describes modeling/simulation credibility practices and project-defined acceptance; this repository has not demonstrated compliance or received NASA approval.
+
+Engineering extensions include terrain/DEM horizon masks and observer height; finite Sun/Earth disks and occultation/eclipse treatment; validated event solving and uncertainty/convergence studies; actual power/thermal and radio link-budget constraints; agreed coordinate frames and mission margins; and independent mission-specific review. These extend beyond Member 5’s geometric comparison module. Sampled outages must not be interpreted as proven battery or communication safety margins.

@@ -30,6 +30,11 @@ export interface ScenarioComparison {
   timeline_source: string;
   warnings: string[];
   summary_method: "conditions_service" | "comparison_intervals" | "synthetic";
+  simultaneous_visibility_hours: number | null;
+  longest_darkness_hours: number | null;
+  longest_earth_outage_hours: number | null;
+  retrieved_utc: string | null;
+  request_fingerprint: string | null;
   sun_coverage_fraction: number;
   earth_coverage_fraction: number;
   windows: {

@@ -49,10 +49,34 @@ export function OperationalDetails({
             :{" "}
             {next
               ? `${Math.max(0, next.after_elapsed_hours - cursor).toFixed(2)}–${(next.by_elapsed_hours - cursor).toFixed(2)} h from cursor (${utc(next.after_utc)} → ${utc(next.by_utc)})`
-              : "No known setting bracket in the remaining mission data; visibility beyond this window is unknown."}
+              : "No setting observed in the remaining samples."}
           </p>
         );
       })}
+      <details className="cmp-assumptions">
+        <summary>Ephemeris provenance</summary>
+        <p>
+          {scenario.summary_method === "synthetic"
+            ? "Synthetic fixture; not astronomical observations."
+            : "NASA/JPL Horizons observer ephemeris · Moon (301) · airless target-center angles · reference-ellipsoid altitude 0 km."}
+        </p>
+        <p>
+          Retrieval:{" "}
+          {scenario.retrieved_utc
+            ? utc(scenario.retrieved_utc)
+            : "Timestamp not recorded in this snapshot"}
+        </p>
+        {scenario.request_fingerprint && (
+          <p>
+            Stored request: <code>{scenario.request_fingerprint}</code>
+          </p>
+        )}
+        <p>
+          Samples are held across each interval. The horizon is geometric;
+          terrain and eclipses are not modeled. No setting prediction is made
+          beyond known mission data.
+        </p>
+      </details>
       <details className="cmp-assumptions">
         <summary>
           Sampled operational windows ({scenario.windows.length})

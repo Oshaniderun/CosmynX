@@ -387,7 +387,7 @@ Modules will be developed independently and integrated through shared APIs and d
 
 **Branch:** `Ravindu`
 
-**Implementation:** Side-by-side comparison, UTC mission windows, Recharts visibility timelines, mission-delay analysis, and structured comparison results are implemented. Dev is integrated. Scientific comparisons use real Horizons samples, validated service metrics or complete duration-weighted comparison intervals, explicit coverage, and operational windows. A clearly labeled synthetic preview is also available. See [Member 5 setup and integration guide](docs/member-5-comparison.md).
+**Implementation:** Side-by-side comparison, UTC mission windows, Recharts visibility timelines, mission-delay analysis, and structured comparison results are implemented. Dev is integrated. Scientific comparisons use real Horizons samples, validated service metrics or complete duration-weighted comparison intervals, explicit coverage, and operational windows. A clearly labeled synthetic preview is also available. The Scenario Lab includes a compact trade-off table, simultaneous visibility and sampled outage metrics, scenario reuse, provenance, and CSV/JSON exports. Scientific snapshots were audited against Horizons; this remains a mission-screening prototype, not flight-validated software. See [Member 5 setup and integration guide](docs/member-5-comparison.md) and [data verification evidence](docs/member-5-data-verification.json).
 
 ### Member 6 — HELIOS AI Lunar Landing Advisor
 

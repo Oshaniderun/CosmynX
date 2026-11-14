@@ -16,6 +16,7 @@ import type {
   CompareResponse,
   ScenarioInput,
 } from "../services/comparisonService";
+import { ComparisonOverview } from "./ComparisonOverview";
 import { OperationalDetails } from "./OperationalDetails";
 import { VisibilityTimeline } from "./VisibilityTimeline";
 import "../comparison.css";
@@ -114,6 +115,9 @@ export function ComparisonPanel({
   const [siteStatus, setSiteStatus] = useState("Loading candidate sites…");
   const [siteAttempt, setSiteAttempt] = useState(0);
   const [mode, setMode] = useState<"live" | "demo">("live");
+  const [resultView, setResultView] = useState<"summary" | "timelines">(
+    "summary",
+  );
   const [delay, setDelay] = useState(24);
   const [result, setResult] = useState<CompareResponse | null>(null);
   const [busy, setBusy] = useState(false);
@@ -178,6 +182,21 @@ export function ComparisonPanel({
       ),
     );
   }
+  function duplicateScenario(draft: Draft) {
+    clearResults();
+    sequence.current += 1;
+    setDrafts((current) => [
+      ...current,
+      { ...draft, id: `alternative-${sequence.current}` },
+    ]);
+  }
+  function promoteBaseline(id: string) {
+    clearResults();
+    setDrafts((current) => [
+      current.find((draft) => draft.id === id)!,
+      ...current.filter((draft) => draft.id !== id),
+    ]);
+  }
   function addScenario() {
     clearResults();
     sequence.current += 1;
@@ -233,6 +252,7 @@ export function ComparisonPanel({
           "The backend comparison module needs updating. Restart it with the Ravindu branch.",
         );
       setResult(data);
+      setResultView("summary");
       const max = Math.max(...data.scenarios.map((s) => s.duration_hours));
       setView({ from: 0, to: max, cursor: 0 });
       onComparison?.(data);
@@ -261,6 +281,49 @@ export function ComparisonPanel({
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
+  const exportWindows = () => {
+    if (!result) return;
+    const quote = (value: unknown) =>
+      `"${String(value ?? "").replace(/"/g, '\"\"')}"`;
+    const rows: unknown[][] = [
+      [
+        "data_mode",
+        "scenario_id",
+        "site",
+        "window",
+        "start_utc",
+        "end_utc",
+        "sampled_hours",
+        "step_minutes",
+        "source",
+      ],
+    ];
+    result.scenarios.forEach((scenario) =>
+      scenario.windows.forEach((window) =>
+        rows.push([
+          result.data_mode,
+          scenario.scenario_id,
+          scenario.site_name,
+          window.target,
+          window.start_utc,
+          window.end_utc,
+          window.duration_hours,
+          scenario.conditions.step_minutes,
+          scenario.conditions.source,
+        ]),
+      ),
+    );
+    const url = URL.createObjectURL(
+      new Blob([rows.map((row) => row.map(quote).join(",")).join("\r\n")], {
+        type: "text/csv;charset=utf-8",
+      }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `helios-windows-${result.data_mode}.csv`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
   const maxHours = result
     ? Math.max(...result.scenarios.map((s) => s.duration_hours))
     : 72;
@@ -272,14 +335,19 @@ export function ComparisonPanel({
     >
       <header className="cmp-header">
         <div>
-          <p className="cmp-eyebrow">MISSION PLANNING / 05</p>
+          <p className="cmp-eyebrow">HELIOS / SCENARIO LAB</p>
           <h2 id="comparison-title">
-            <ArrowRightLeft size={22} aria-hidden="true" /> Compare your next
-            move
+            <ArrowRightLeft size={22} aria-hidden="true" /> Compare landing
+            scenarios
           </h2>
-          <p>Explore landing sites, mission dates, and the cost of a delay.</p>
+          <p>
+            One view for landing sites, launch delays, and visibility
+            trade-offs.
+          </p>
         </div>
-        <span className="cmp-badge">Scenario comparison</span>
+        <span className="cmp-badge cmp-model-badge">
+          Geometric horizon model
+        </span>
       </header>
       <form onSubmit={runComparison}>
         <fieldset disabled={busy}>
@@ -354,6 +422,16 @@ export function ComparisonPanel({
               </button>
             </div>
           )}
+          <div className="cmp-step-title">
+            <span>01</span>
+            <div>
+              <h3>Build your scenarios</h3>
+              <p>
+                Keep dates equal to compare sites, or keep a site equal to
+                compare dates.
+              </p>
+            </div>
+          </div>
           <div className="cmp-draft-grid">
             {drafts.map((draft, index) => (
               <div key={draft.id} className="cmp-draft">
@@ -378,6 +456,25 @@ export function ComparisonPanel({
                       <Trash2 size={15} />
                     </button>
                   )}
+                </div>
+                <div className="cmp-scenario-tools">
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      className="cmp-link"
+                      onClick={() => promoteBaseline(draft.id)}
+                    >
+                      Make baseline
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="cmp-link"
+                    disabled={drafts.length >= 4}
+                    onClick={() => duplicateScenario(draft)}
+                  >
+                    Duplicate scenario
+                  </button>
                 </div>
                 <label>
                   Landing site
@@ -404,6 +501,20 @@ export function ComparisonPanel({
                     ))}
                   </select>
                 </label>
+                {draft.siteId !== "custom" && (
+                  <p className="cmp-caption">
+                    {
+                      sites.find((site) => site.site_id === draft.siteId)
+                        ?.latitude_deg
+                    }
+                    ° latitude ·{" "}
+                    {
+                      sites.find((site) => site.site_id === draft.siteId)
+                        ?.longitude_deg
+                    }
+                    ° east longitude
+                  </p>
+                )}
                 {draft.siteId === "custom" && (
                   <div className="cmp-date-grid">
                     <label>
@@ -411,7 +522,7 @@ export function ComparisonPanel({
                       <input
                         required
                         type="number"
-                        step="any"
+                        step="0.000001"
                         min="-90"
                         max="90"
                         value={draft.latitude ?? ""}
@@ -425,7 +536,7 @@ export function ComparisonPanel({
                       <input
                         required
                         type="number"
-                        step="any"
+                        step="0.000001"
                         min="-180"
                         max="180"
                         value={draft.longitude ?? ""}
@@ -468,7 +579,7 @@ export function ComparisonPanel({
                       update(draft.id, { step: Number(e.target.value) })
                     }
                   >
-                    {[15, 30, 60, 180, 360, 1440].map((step) => (
+                    {[5, 15, 30, 60, 180, 360, 1440].map((step) => (
                       <option key={step} value={step}>
                         {step < 60
                           ? `${step} minutes`
@@ -479,6 +590,16 @@ export function ComparisonPanel({
                 </label>
               </div>
             ))}
+          </div>
+          <div className="cmp-step-title">
+            <span>02</span>
+            <div>
+              <h3>Explore a schedule change</h3>
+              <p>
+                Shift the baseline window while preserving its location and
+                mission duration.
+              </p>
+            </div>
           </div>
           <div className="cmp-actions">
             <button
@@ -566,13 +687,22 @@ export function ComparisonPanel({
                 : "Comparison results"}{" "}
               <span className="cmp-badge">{result.status}</span>
             </h3>
-            <button
-              type="button"
-              className="cmp-secondary"
-              onClick={exportResult}
-            >
-              <Download size={15} /> Export JSON
-            </button>
+            <div className="cmp-export-actions">
+              <button
+                type="button"
+                className="cmp-secondary"
+                onClick={exportWindows}
+              >
+                <Download size={15} /> Windows CSV
+              </button>
+              <button
+                type="button"
+                className="cmp-secondary"
+                onClick={exportResult}
+              >
+                <Download size={15} /> Full JSON
+              </button>
+            </div>
           </div>
           {result.status !== "ok" && (
             <p className="cmp-notice">
@@ -581,7 +711,28 @@ export function ComparisonPanel({
               preview to explore the interface.
             </p>
           )}
-          <div className="cmp-summary-grid">
+          <ComparisonOverview result={result} />
+          <div
+            className="cmp-result-tabs"
+            role="group"
+            aria-label="Comparison result view"
+          >
+            <button
+              type="button"
+              aria-pressed={resultView === "summary"}
+              onClick={() => setResultView("summary")}
+            >
+              Scenario details
+            </button>
+            <button
+              type="button"
+              aria-pressed={resultView === "timelines"}
+              onClick={() => setResultView("timelines")}
+            >
+              Timelines & operational windows
+            </button>
+          </div>
+          <div className="cmp-summary-grid" hidden={resultView !== "summary"}>
             {result.scenarios.map((scenario, index) => {
               const conditions = scenario.conditions;
               const metrics = conditions.metrics;
@@ -668,118 +819,123 @@ export function ComparisonPanel({
                     Source: {conditions.source} · Model:{" "}
                     {conditions.horizon_model}
                   </p>
-                  {scenario.warnings.map((warning) => (
-                    <p className="cmp-warning" key={warning}>
-                      {warning}
+                  <details className="cmp-quality-details">
+                    <summary>Data quality & assumptions</summary>
+                    {scenario.warnings.map((warning) => (
+                      <p className="cmp-warning" key={warning}>
+                        {warning}
+                      </p>
+                    ))}
+                  </details>
+                </article>
+              );
+            })}
+          </div>
+          <div hidden={resultView !== "timelines"}>
+            <div className="cmp-timeline-header">
+              <h3>Visibility over the mission</h3>
+              <p>
+                Aligned by elapsed hours so different mission dates can be
+                compared.
+              </p>
+            </div>
+            <div className="cmp-range-controls">
+              <label>
+                View from: {view.from.toFixed(2)} h
+                <input
+                  type="range"
+                  min="0"
+                  max={maxHours}
+                  step="0.25"
+                  value={view.from}
+                  onChange={(e) => {
+                    const from = Math.min(
+                      Number(e.target.value),
+                      view.to - Math.min(0.25, maxHours),
+                    );
+                    setView({
+                      ...view,
+                      from,
+                      cursor: Math.max(from, view.cursor),
+                    });
+                  }}
+                />
+              </label>
+              <label>
+                View to: {view.to.toFixed(2)} h
+                <input
+                  type="range"
+                  min="0"
+                  max={maxHours}
+                  step="0.25"
+                  value={view.to}
+                  onChange={(e) => {
+                    const to = Math.max(
+                      Number(e.target.value),
+                      view.from + Math.min(0.25, maxHours),
+                    );
+                    setView({ ...view, to, cursor: Math.min(to, view.cursor) });
+                  }}
+                />
+              </label>
+              <label>
+                Inspect: {view.cursor.toFixed(2)} h
+                <input
+                  type="range"
+                  min={view.from}
+                  max={view.to}
+                  step="0.25"
+                  value={view.cursor}
+                  onChange={(e) =>
+                    setView({ ...view, cursor: Number(e.target.value) })
+                  }
+                />
+              </label>
+            </div>
+            <div className="cmp-summary-grid">
+              {result.scenarios.map((scenario) => {
+                const instant =
+                  Date.parse(scenario.conditions.start_utc) +
+                  view.cursor * 3600000;
+                const point = scenario.timeline.find(
+                  (p) =>
+                    Date.parse(p.start_utc) <= instant &&
+                    Date.parse(p.end_utc) > instant,
+                );
+                const state = (value: boolean | null | undefined) =>
+                  value === true
+                    ? "Visible"
+                    : value === false
+                      ? "Below horizon"
+                      : "Unknown";
+                return (
+                  <article className="cmp-summary" key={scenario.scenario_id}>
+                    <h4>{scenario.site_name}</h4>
+                    <p className="cmp-caption">
+                      {dateLabel(new Date(instant).toISOString())}
                     </p>
-                  ))}
-                </article>
-              );
-            })}
-          </div>
-          <div className="cmp-timeline-header">
-            <h3>Visibility over the mission</h3>
-            <p>
-              Aligned by elapsed hours so different mission dates can be
-              compared.
-            </p>
-          </div>
-          <div className="cmp-range-controls">
-            <label>
-              View from: {view.from.toFixed(2)} h
-              <input
-                type="range"
-                min="0"
-                max={maxHours}
-                step="0.25"
-                value={view.from}
-                onChange={(e) => {
-                  const from = Math.min(
-                    Number(e.target.value),
-                    view.to - Math.min(0.25, maxHours),
-                  );
-                  setView({
-                    ...view,
-                    from,
-                    cursor: Math.max(from, view.cursor),
-                  });
-                }}
-              />
-            </label>
-            <label>
-              View to: {view.to.toFixed(2)} h
-              <input
-                type="range"
-                min="0"
-                max={maxHours}
-                step="0.25"
-                value={view.to}
-                onChange={(e) => {
-                  const to = Math.max(
-                    Number(e.target.value),
-                    view.from + Math.min(0.25, maxHours),
-                  );
-                  setView({ ...view, to, cursor: Math.min(to, view.cursor) });
-                }}
-              />
-            </label>
-            <label>
-              Inspect: {view.cursor.toFixed(2)} h
-              <input
-                type="range"
-                min={view.from}
-                max={view.to}
-                step="0.25"
-                value={view.cursor}
-                onChange={(e) =>
-                  setView({ ...view, cursor: Number(e.target.value) })
-                }
-              />
-            </label>
-          </div>
-          <div className="cmp-summary-grid">
-            {result.scenarios.map((scenario) => {
-              const instant =
-                Date.parse(scenario.conditions.start_utc) +
-                view.cursor * 3600000;
-              const point = scenario.timeline.find(
-                (p) =>
-                  Date.parse(p.start_utc) <= instant &&
-                  Date.parse(p.end_utc) > instant,
-              );
-              const state = (value: boolean | null | undefined) =>
-                value === true
-                  ? "Visible"
-                  : value === false
-                    ? "Below horizon"
-                    : "Unknown";
-              return (
-                <article className="cmp-summary" key={scenario.scenario_id}>
-                  <h4>{scenario.site_name}</h4>
-                  <p className="cmp-caption">
-                    {dateLabel(new Date(instant).toISOString())}
-                  </p>
-                  <p className="cmp-inspect">
-                    Sun: {state(point?.sunlit)} · Earth:{" "}
-                    {state(point?.earth_visible)}
-                  </p>
-                  <OperationalDetails
-                    scenario={scenario}
-                    cursor={view.cursor}
-                  />
-                  <VisibilityTimeline
-                    scenario={scenario}
-                    from={view.from}
-                    to={view.to}
-                    cursor={view.cursor}
-                  />
-                  <p className="cmp-caption">
-                    Timeline: {scenario.timeline_source} ·{" "}
-                    {scenario.timeline_status}
-                  </p>
-                </article>
-              );
-            })}
+                    <p className="cmp-inspect">
+                      Sun: {state(point?.sunlit)} · Earth:{" "}
+                      {state(point?.earth_visible)}
+                    </p>
+                    <OperationalDetails
+                      scenario={scenario}
+                      cursor={view.cursor}
+                    />
+                    <VisibilityTimeline
+                      scenario={scenario}
+                      from={view.from}
+                      to={view.to}
+                      cursor={view.cursor}
+                    />
+                    <p className="cmp-caption">
+                      Timeline: {scenario.timeline_source} ·{" "}
+                      {scenario.timeline_status}
+                    </p>
+                  </article>
+                );
+              })}
+            </div>
           </div>
           <details className="cmp-assumptions">
             <summary>Sources, assumptions & integration notes</summary>
