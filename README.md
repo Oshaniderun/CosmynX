@@ -1153,6 +1153,86 @@ Rather than simply presenting raw data, HELIOS helps users understand:
 - Why one landing scenario may be preferable to another.
 - What trade-offs should be considered when mission conditions change.
 
+---
+
+## 23. Quick Start — Running the Project Locally
+
+Follow these steps if you are a new team member setting up the project for the first time.
+
+### Prerequisites
+
+- **Git**
+- **Python 3.10+** (tested with Python 3.12)
+- **Node.js 20+** and **npm**
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Oshaniderun/CosmynX.git
+cd CosmynX
+```
+
+Create or switch to your assigned feature branch (see Section 7):
+
+```bash
+git switch main
+git pull origin main
+git switch -c feature/your-module-name
+```
+
+### 2. Start the Backend (FastAPI)
+
+Open a terminal in the repository root:
+
+```bash
+cd backend
+python -m venv .venv
+```
+
+Activate the virtual environment:
+
+- **Windows (PowerShell):**
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+- **macOS / Linux:**
+  ```bash
+  source .venv/bin/activate
+  ```
+
+Install dependencies, create your local `.env` file, and start the API server:
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload
+```
+
+- Backend runs at: `http://localhost:8000`
+- Interactive API docs (Swagger): `http://localhost:8000/docs`
+- Health check: `http://localhost:8000/api/health`
+
+### 3. Start the Frontend (React + Vite)
+
+Open a **second terminal** in the repository root:
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+- Frontend runs at: `http://localhost:5173`
+
+### 4. Where to Add Your Code
+
+- **Backend API routes:** `backend/app/api/`
+- **Backend services (business & scientific logic):** `backend/app/services/`
+- **Shared backend schemas:** `backend/app/models/schemas.py`
+- **Frontend feature modules:** `frontend/src/features/<your-module>/`
+- **Shared frontend types & API client:** `frontend/src/types/helios.ts` and `frontend/src/services/api.ts`
+
 ### HELIOS — Explore the Moon. Understand the Conditions. Choose with Confidence. 🌕🚀
 
 **Built with curiosity, collaboration, science, and AI for NASA Space Apps Challenge 2026.**
