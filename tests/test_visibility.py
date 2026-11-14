@@ -1,127 +1,124 @@
 """Unit tests for Member 4 — Solar Power & Communication Analysis."""
 
-import os
-import sys
-
-# Ensure backend directory is in Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend")))
-
-from app.models.schemas import EphemerisPoint
-from app.services.visibility import (
-    analyze_site_conditions,
-    compute_visibility_metrics,
-    generate_simulated_ephemeris,
-)
+from unittest.mock import patch
+from app.services.visibility import analyze_site_conditions
 
 
-def test_compute_visibility_metrics_all_sunlit_and_visible():
-    points = [
-        EphemerisPoint(
-            timestamp_utc=f"2026-11-20T0{i}:00:00Z",
-            sun_azimuth_deg=90.0 + i,
-            sun_elevation_deg=2.0,
-            earth_azimuth_deg=40.0,
-            earth_elevation_deg=5.0,
-        )
-        for i in range(5)
-    ]
-    metrics, windows, timeline, current, next_trans = compute_visibility_metrics(
-        points=points,
-        step_minutes=60,
-        start_utc="2026-11-20T00:00:00Z",
-        end_utc="2026-11-20T04:00:00Z",
-    )
-
-    assert metrics.sunlit_fraction == 1.0
-    assert metrics.earth_visible_fraction == 1.0
-    assert metrics.sunlit_hours == 4.0
-    assert metrics.earth_visible_hours == 4.0
-    assert len(windows) == 1
-    assert windows[0].duration_hours == 5.0
-    assert len(timeline) == 5
-    assert current == "Illuminated | DTE Available"
-    assert next_trans is None
-
-
-def test_compute_visibility_metrics_dark_and_blackout():
-    points = [
-        EphemerisPoint(
-            timestamp_utc=f"2026-11-20T0{i}:00:00Z",
-            sun_azimuth_deg=90.0,
-            sun_elevation_deg=-2.5,
-            earth_azimuth_deg=40.0,
-            earth_elevation_deg=-3.0,
-        )
-        for i in range(4)
-    ]
-    metrics, windows, timeline, current, next_trans = compute_visibility_metrics(
-        points=points,
-        step_minutes=60,
-        start_utc="2026-11-20T00:00:00Z",
-        end_utc="2026-11-20T03:00:00Z",
-    )
-
-    assert metrics.sunlit_fraction == 0.0
-    assert metrics.earth_visible_fraction == 0.0
-    assert metrics.sunlit_hours == 0.0
-    assert metrics.earth_visible_hours == 0.0
-    assert len(windows) == 0
-    assert current == "In Shadow | DTE Blackout"
-
-
-def test_communication_windows_detection():
-    # 2 hours visible, 2 hours blackout, 2 hours visible
-    elevations = [2.0, 1.5, -1.0, -2.0, 3.0, 4.0]
-    points = [
-        EphemerisPoint(
-            timestamp_utc=f"2026-11-20T0{i}:00:00Z",
-            sun_elevation_deg=1.0,
-            earth_elevation_deg=elevations[i],
-        )
-        for i in range(6)
-    ]
-
-    metrics, windows, timeline, current, next_trans = compute_visibility_metrics(
-        points=points,
-        step_minutes=60,
-        start_utc="2026-11-20T00:00:00Z",
-        end_utc="2026-11-20T05:00:00Z",
-    )
-
-    assert len(windows) == 2
-    assert windows[0].window_id == 1
-    assert windows[0].start_utc == "2026-11-20T00:00:00Z"
-    assert windows[0].end_utc == "2026-11-20T01:00:00Z"
-    assert windows[1].window_id == 2
-    assert windows[1].start_utc == "2026-11-20T04:00:00Z"
-    assert windows[1].end_utc == "2026-11-20T05:00:00Z"
-
-
-def test_generate_simulated_ephemeris():
-    points = generate_simulated_ephemeris(
-        latitude_deg=-89.54,
-        longitude_deg=0.0,
-        start_utc="2026-11-20T00:00:00Z",
-        end_utc="2026-11-21T00:00:00Z",
-        step_minutes=60,
-    )
-    assert len(points) == 25
-    for pt in points:
-        assert pt.sun_elevation_deg is not None
-        assert pt.earth_elevation_deg is not None
-        assert 0.0 <= pt.sun_azimuth_deg < 360.0
-
-
-def test_analyze_site_conditions_endpoint_integration():
+def test_analyze_site_conditions_with_cached_data():
+    """Verify integration with Member 2 cached JPL Horizons ephemeris data."""
     res = analyze_site_conditions(
         site_id="candidate_001",
         latitude_deg=-89.54,
         longitude_deg=0.0,
         start_utc="2026-11-20T00:00:00Z",
-        end_utc="2026-11-23T00:00:00Z",
+        end_utc="2026-11-20T06:00:00Z",
         step_minutes=60,
     )
+
     assert res.status == "ok"
+    assert res.horizon_model == "geometric"
+    assert res.source == "JPL Horizons"
+    assert res.site_id == "candidate_001"
     assert res.metrics.sunlit_fraction is not None
+    assert 0.0 <= res.metrics.sunlit_fraction <= 1.0
     assert res.metrics.earth_visible_fraction is not None
-    assert len(res.timeline) > 0
+    assert 0.0 <= res.metrics.earth_visible_fraction <= 1.0
+    assert res.metrics.sunlit_hours is not None
+    assert res.metrics.earth_visible_hours is not None
+
+
+def test_analyze_site_conditions_unavailable_when_no_points():
+    """When ephemeris data is unavailable, return status='unavailable' with None metrics."""
+    with patch("app.services.visibility.fetch_jpl_horizons_ephemeris", return_value=[]):
+        res = analyze_site_conditions(
+            site_id="site_empty",
+            latitude_deg=-89.0,
+            longitude_deg=0.0,
+            start_utc="2026-11-20T00:00:00Z",
+            end_utc="2026-11-21T00:00:00Z",
+            step_minutes=60,
+        )
+
+        assert res.status == "unavailable"
+        assert res.horizon_model == "geometric"
+        assert res.source == "JPL Horizons"
+        assert res.metrics.sunlit_fraction is None
+        assert res.metrics.earth_visible_fraction is None
+        assert res.metrics.sunlit_hours is None
+        assert res.metrics.earth_visible_hours is None
+
+
+def test_geometric_horizon_calculation():
+    """Verify correct counting of points above horizon (elevation_deg > 0)."""
+    mock_points = [
+        {
+            "timestamp_utc": "2026-11-20T00:00:00Z",
+            "sun_elevation_deg": 1.5,
+            "earth_elevation_deg": 4.0,
+        },
+        {
+            "timestamp_utc": "2026-11-20T01:00:00Z",
+            "sun_elevation_deg": -0.5,
+            "earth_elevation_deg": 2.0,
+        },
+        {
+            "timestamp_utc": "2026-11-20T02:00:00Z",
+            "sun_elevation_deg": 0.0,  # geometric horizon boundary, not > 0
+            "earth_elevation_deg": -1.0,
+        },
+        {
+            "timestamp_utc": "2026-11-20T03:00:00Z",
+            "sun_elevation_deg": 2.2,
+            "earth_elevation_deg": 0.5,
+        },
+    ]
+
+    with patch("app.services.visibility.fetch_jpl_horizons_ephemeris", return_value=mock_points):
+        res = analyze_site_conditions(
+            site_id="site_calc",
+            latitude_deg=-89.0,
+            longitude_deg=0.0,
+            start_utc="2026-11-20T00:00:00Z",
+            end_utc="2026-11-20T03:00:00Z",
+            step_minutes=60,
+        )
+
+        assert res.status == "ok"
+        # 2 out of 4 points have sun_elevation_deg > 0 (1.5, 2.2)
+        assert res.metrics.sunlit_fraction == 0.5
+        assert res.metrics.sunlit_hours == 2.0
+        # 3 out of 4 points have earth_elevation_deg > 0 (4.0, 2.0, 0.5)
+        assert res.metrics.earth_visible_fraction == 0.75
+        assert res.metrics.earth_visible_hours == 3.0
+
+
+def test_handling_none_elevation_fields():
+    """Points with None elevations must not cause errors and are excluded from counts."""
+    mock_points = [
+        {
+            "timestamp_utc": "2026-11-20T00:00:00Z",
+            "sun_elevation_deg": 2.0,
+            "earth_elevation_deg": None,
+        },
+        {
+            "timestamp_utc": "2026-11-20T01:00:00Z",
+            "sun_elevation_deg": None,
+            "earth_elevation_deg": 3.0,
+        },
+    ]
+
+    with patch("app.services.visibility.fetch_jpl_horizons_ephemeris", return_value=mock_points):
+        res = analyze_site_conditions(
+            site_id="site_partial",
+            latitude_deg=-89.0,
+            longitude_deg=0.0,
+            start_utc="2026-11-20T00:00:00Z",
+            end_utc="2026-11-20T01:00:00Z",
+            step_minutes=60,
+        )
+
+        assert res.status == "ok"
+        assert res.metrics.sunlit_fraction == 1.0
+        assert res.metrics.sunlit_hours == 1.0
+        assert res.metrics.earth_visible_fraction == 1.0
+        assert res.metrics.earth_visible_hours == 1.0

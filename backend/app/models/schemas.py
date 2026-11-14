@@ -1,4 +1,4 @@
-from typing import Any, Literal, Optional
+from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 
@@ -37,27 +37,6 @@ class EphemerisResponse(BaseModel):
     points: list[EphemerisPoint] = Field(default_factory=list)
 
 
-class CommunicationWindow(BaseModel):
-    """Continuous direct-to-Earth communication window."""
-
-    window_id: int
-    start_utc: str
-    end_utc: str
-    duration_hours: float
-    max_elevation_deg: float
-    min_elevation_deg: float
-
-
-class ConditionTimelinePoint(BaseModel):
-    """Discrete timestamp condition for timeline charts."""
-
-    timestamp_utc: str
-    sun_elevation_deg: Optional[float] = None
-    earth_elevation_deg: Optional[float] = None
-    is_sunlit: bool
-    is_earth_visible: bool
-
-
 class VisibilityMetrics(BaseModel):
     """Solar illumination and Earth visibility summary metrics."""
 
@@ -65,13 +44,6 @@ class VisibilityMetrics(BaseModel):
     earth_visible_fraction: Optional[float] = Field(default=None, ge=0.0, le=1.0)
     sunlit_hours: Optional[float] = Field(default=None, ge=0.0)
     earth_visible_hours: Optional[float] = Field(default=None, ge=0.0)
-    mean_sun_elevation_deg: Optional[float] = None
-    max_sun_elevation_deg: Optional[float] = None
-    mean_earth_elevation_deg: Optional[float] = None
-    max_earth_elevation_deg: Optional[float] = None
-    longest_sunlit_stretch_hours: Optional[float] = None
-    longest_dark_stretch_hours: Optional[float] = None
-    communication_windows_count: int = 0
 
 
 class ConditionsResponse(BaseModel):
@@ -87,10 +59,6 @@ class ConditionsResponse(BaseModel):
     horizon_model: str = "geometric"
     status: Literal["ok", "pending", "unavailable"] = "pending"
     source: str = "JPL Horizons"
-    current_condition: Optional[str] = None
-    next_transition: Optional[dict[str, Any]] = None
-    windows: list[CommunicationWindow] = Field(default_factory=list)
-    timeline: list[ConditionTimelinePoint] = Field(default_factory=list)
 
 
 class ScenarioInput(BaseModel):
