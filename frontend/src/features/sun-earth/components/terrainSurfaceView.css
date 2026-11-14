@@ -2,6 +2,53 @@
   background: radial-gradient(ellipse at 71% 48%, #1b2533 0%, #09121e 44%, #040811 78%);
 }
 
+.terrain-visor {
+  pointer-events: none;
+  box-shadow: inset 0 0 2px 2px #bacce330;
+}
+
+.terrain-visor::after {
+  position: absolute;
+  inset: 2.5% 2%;
+  border: 1px solid #a2c8e334;
+  border-top-color: #a2c8e35c;
+  border-bottom-color: #0b192a8c;
+  border-radius: 12% 12% 16% 16% / 24% 24% 32% 32%;
+  content: "";
+}
+
+.terrain-pan-area {
+  cursor: grab;
+  touch-action: none;
+}
+
+.terrain-pan-area:active {
+  cursor: grabbing;
+}
+
+.terrain-view-control {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.terrain-view-control:hover:not(:disabled) {
+  background: #4ebbd025;
+  color: #d3faff;
+}
+
+.terrain-view-control:focus-visible {
+  outline: 2px solid #a5f3fc;
+  outline-offset: -2px;
+}
+
+.terrain-view-control:disabled {
+  opacity: 0.35;
+}
+
 .terrain-stars {
   background-image:
     radial-gradient(circle at 11% 23%, #d1e3ff 0.65px, transparent 1.4px),
@@ -13,75 +60,39 @@
 }
 
 .terrain-ridge {
-  background: linear-gradient(166deg, #526678 8%, #293746 47%, #151c27 73%, #080d16 100%);
-}
-
-.terrain-ridge::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background: linear-gradient(0deg, #02050da6, transparent 51%);
+  container-type: size;
+  background: #a8a7a5;
 }
 
 .terrain-ground-texture {
-  opacity: 0.25;
-  mix-blend-mode: luminosity;
-  filter: contrast(1.25);
-  transition: opacity 400ms ease;
+  /* Frame the cratered highlands on the right of the texture at every viewport size. */
+  top: 50%;
+  left: 50%;
+  width: max(410cqw, 680cqh);
+  max-width: none;
+  height: auto;
+  transform: translate(-86%, -44%);
+  filter: brightness(0.92) contrast(0.9);
 }
 
 .terrain-sun-position {
+  aspect-ratio: 1;
   transform: translate(-50%, -50%);
-  transition: left 440ms ease, top 440ms ease;
 }
 
 .terrain-sun-disk {
-  display: block;
-  width: 19px;
-  height: 19px;
   border-radius: 50%;
   background: radial-gradient(circle at 42% 40%, #fffaf0 24%, #ffe5a0 62%, #ffa73c);
-  box-shadow: 0 0 13px #ffba607a;
-}
-
-.terrain-sun-glow {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  box-shadow: 0 0 65px 20px #f58c314d;
-}
-
-.terrain-sun-disk, .terrain-sun-glow, .terrain-hidden-marker {
+  box-shadow: 0 0 15px #ffba607a, 0 0 50px #f58c313d;
   transition: opacity 350ms ease;
 }
 
-.terrain-scene[data-clear="true"] .terrain-hidden-marker,
-.terrain-scene[data-clear="false"] :is(.terrain-sun-disk, .terrain-sun-glow) {
+.terrain-scene[data-visibility="hidden"] .terrain-sun-disk {
   opacity: 0;
-}
-
-.terrain-astronaut img {
-  animation: terrain-observer-enter 460ms ease-out both;
-  filter: drop-shadow(0 5px 8px #000b) brightness(0.87);
-  transition: filter 500ms ease;
-}
-
-.terrain-scene[data-clear="false"] .terrain-ground-texture {
-  opacity: 0.12;
-}
-
-.terrain-scene[data-clear="false"] .terrain-astronaut img {
-  filter: drop-shadow(0 5px 8px #000d) brightness(0.56) saturate(0.72);
-}
-
-@keyframes terrain-observer-enter {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .terrain-scene * {
-    animation: none;
     transition: none;
   }
 }
