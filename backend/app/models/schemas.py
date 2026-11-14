@@ -140,6 +140,7 @@ class ConditionsResponse(BaseModel):
     windows: list[OperationalWindow] = Field(default_factory=list)
     timeline: list[dict[str, Any]] = Field(default_factory=list)
     power_modeling: Optional[dict[str, Any]] = None
+    transitions: Optional[dict[str, Any]] = None
 
 
 class ScenarioInput(BaseModel):

@@ -49,7 +49,7 @@ const controlClass = "rounded-md border border-slate-700 bg-slate-950 px-3 py-2 
 const modeClass = controlClass + " inline-flex items-center gap-2 aria-pressed:border-sky-400/70 aria-pressed:bg-sky-400/10 aria-pressed:text-sky-200";
 
 export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } = {}) {
-  const { selectedSite, setSelectedSite } = useMission();
+  const { selectedSite, setSelectedSite, missionDates, setMissionDates } = useMission();
   const [mode, setMode] = useState<"eclipse" | "site">("site");
   const [eventIndex, setEventIndex] = useState(0);
   const [replayOffset, setReplayOffset] = useState(0);
@@ -60,11 +60,11 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   const [terrainView, setTerrainView] = useState<"surface" | "orbit">("surface");
   const [sites, setSites] = useState<LandingSite[]>([]);
   const [siteId, setSiteId] = useState(selectedSite?.site_id ?? "");
-  const [startTime, setStartTime] = useState(initialMissionWindow.start_utc.slice(0, 16));
-  const [endTime, setEndTime] = useState(initialMissionWindow.end_utc.slice(0, 16));
+  const [startTime, setStartTime] = useState(missionDates.startUtc.slice(0, 16));
+  const [endTime, setEndTime] = useState(missionDates.endUtc.slice(0, 16));
   const [request, setRequest] = useState<{ siteId: string; window: MissionWindow }>({
     siteId: selectedSite?.site_id ?? "",
-    window: initialMissionWindow,
+    window: { ...initialMissionWindow, start_utc: missionDates.startUtc, end_utc: missionDates.endUtc },
   });
   const [dateError, setDateError] = useState("");
   const [result, setResult] = useState<EphemerisResponse>();
@@ -73,6 +73,15 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   const [requestVersion, setRequestVersion] = useState(0);
   const scrubberId = useId();
   const dateErrorId = useId();
+
+  useEffect(() => {
+    setStartTime(missionDates.startUtc.slice(0, 16));
+    setEndTime(missionDates.endUtc.slice(0, 16));
+    setRequest((previous) => ({
+      ...previous,
+      window: { ...previous.window, start_utc: missionDates.startUtc, end_utc: missionDates.endUtc },
+    }));
+  }, [missionDates.startUtc, missionDates.endUtc]);
 
   // Sync siteId and request when selectedSite changes in MissionContext
   useEffect(() => {
@@ -186,6 +195,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       return;
     }
 
+    setMissionDates({ startUtc, endUtc });
     requestPositions(selectedSite, {
       start_utc: startUtc,
       end_utc: endUtc,
@@ -246,7 +256,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   useEffect(() => { if (replayFinished) setPlaying(false); }, [replayFinished]);
 
   return (
-    <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-[#0a101b] shadow-lg md:col-span-2">
+    <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-[#0a101b] shadow-lg">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-4 py-4 sm:px-6">
         <div className="flex flex-wrap items-center gap-3">
           <h2 id="space-explorer-title" className="text-lg font-semibold tracking-tight text-slate-100">Sun, Earth & Moon</h2>

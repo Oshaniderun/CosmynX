@@ -125,4 +125,20 @@ export const demoConditions: ConditionsResponse = {
       battery_chemistry: "Space-Grade Li-ion (150 Wh/kg)",
     },
   },
+  transitions: {
+    solar: {
+      current_state: "sunlit",
+      next_event: "sunset",
+      transition_utc: "2026-11-20T05:00:00Z",
+      hours_until: 5.0,
+      description: "Sunset in 5.0h (at 2026-11-20T05:00:00Z)",
+    },
+    earth: {
+      current_state: "contact_active",
+      next_event: "none",
+      transition_utc: null,
+      hours_until: null,
+      description: "Continuous direct contact throughout window",
+    },
+  },
 };
