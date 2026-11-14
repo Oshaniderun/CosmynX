@@ -1,26 +1,157 @@
-import { MissionProvider } from "./context/MissionContext";
+import { lazy, Suspense } from "react";
+import { ArrowDown, ArrowUpRight, Compass, Orbit, Radio, Sparkles } from "lucide-react";
 import { Navbar } from "./components/layout/Navbar";
 import { CosmicBackground } from "./components/layout/CosmicBackground";
 import { LunarMapPanel } from "./features/lunar-map/components/LunarMapPanel";
 import { SunEarthPanel } from "./features/sun-earth/components/SunEarthPanel";
 import { PowerCommunicationPanel } from "./features/power-communication/components/PowerCommunicationPanel";
-import { ComparisonPanel } from "./features/comparison/components/ComparisonPanel";
 import { HeliosAdvisorPanel } from "./features/helios-ai/components/HeliosAdvisorPanel";
+import { MissionProvider } from "./context/MissionContext";
+import lunarHorizon from "./assets/lunar-horizon.webp";
+
+const ComparisonPanel = lazy(() => import("./features/comparison/components/ComparisonPanel").then((module) => ({ default: module.ComparisonPanel })));
+
+const overviewItems = [
+  { icon: Orbit, label: "Orbital geometry", description: "Sun, Earth & lunar position" },
+  { icon: Radio, label: "Surface conditions", description: "Illumination & line of sight" },
+  { icon: Sparkles, label: "Site intelligence", description: "Mission-aware recommendations" },
+];
+
+function SectionHeading({
+  id,
+  index,
+  eyebrow,
+  title,
+  detail,
+}: {
+  id: string;
+  index: string;
+  eyebrow: string;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="section-heading">
+      <div>
+        <p className="section-eyebrow font-mono text-xs text-sky-400"><span>{index}</span>{eyebrow}</p>
+        <h2 id={id} className="font-heading text-2xl sm:text-3xl font-semibold text-slate-100">{title}</h2>
+      </div>
+      <p className="section-detail text-sm text-slate-300">{detail}</p>
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <MissionProvider>
-      <div className="relative min-h-screen text-slate-100 flex flex-col antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+      <div className="relative app-shell min-h-screen text-slate-100 flex flex-col antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
         <CosmicBackground />
         <Navbar />
-        <main className="mx-auto w-full max-w-7xl flex-1 grid gap-6 px-4 py-6 sm:px-6 sm:py-8 md:grid-cols-2">
-          <div className="md:col-span-2">
-            <LunarMapPanel />
+        <main>
+          <section
+            id="mission"
+            className="mission-hero"
+            style={{ backgroundImage: `url("${lunarHorizon}")` }}
+            aria-labelledby="mission-title"
+          >
+            <div className="mission-hero__shade" aria-hidden="true" />
+            <div className="mission-hero__stars" aria-hidden="true" />
+            <div className="mission-hero__content">
+              <div className="mission-hero__copy">
+                <p className="hero-kicker font-mono"><span /> LUNAR SURFACE OPERATIONS <span className="hero-kicker__slash">/</span> SOUTH POLE</p>
+                <h1 id="mission-title" className="font-heading">A clearer view<br />of the <em>Moon.</em></h1>
+                <p className="mission-hero__lead">
+                  Explore the lunar environment, compare surface conditions, and plan a landing site with one connected mission workspace.
+                </p>
+                <div className="mission-hero__actions">
+                  <a className="button-primary" href="#environment">
+                    Explore the environment <ArrowDown size={16} aria-hidden="true" />
+                  </a>
+                  <a className="button-quiet" href="#helios-advisor">
+                    Open HELIOS advisor <ArrowUpRight size={16} aria-hidden="true" />
+                  </a>
+                </div>
+                <div className="hero-caption">
+                  <span className="hero-caption__line" />
+                  <span>Lunar horizon visual · supplied project reference</span>
+                </div>
+              </div>
+
+              <aside className="hero-overview" aria-label="Mission workspace capabilities">
+                <div className="hero-overview__topline font-mono">
+                  <span>MISSION WORKSPACE</span>
+                  <Compass size={15} aria-hidden="true" />
+                </div>
+                <p className="hero-overview__title font-heading">One lunar environment.<br />Three ways to explore.</p>
+                <div className="hero-overview__items">
+                  {overviewItems.map(({ icon: Icon, label, description }, index) => (
+                    <div className="hero-overview__item" key={label}>
+                      <span className="hero-overview__icon"><Icon size={16} aria-hidden="true" /></span>
+                      <span className="hero-overview__text"><strong>{label}</strong><small>{description}</small></span>
+                      <span className="hero-overview__index font-mono">0{index + 1}</span>
+                    </div>
+                  ))}
+                </div>
+                <a className="hero-overview__link" href="#environment">
+                  View mission tools <ArrowUpRight size={14} aria-hidden="true" />
+                </a>
+              </aside>
+            </div>
+            <div className="mission-hero__bottom font-mono" aria-hidden="true">
+              <span>01 — OBSERVE</span><span>02 — COMPARE</span><span>03 — PLAN</span>
+              <span className="mission-hero__bottom-rule" />
+              <span>GEOMETRIC DATA · MISSION CONTEXT</span>
+            </div>
+          </section>
+
+          <div className="dashboard-content">
+            <section id="environment" className="dashboard-section" aria-labelledby="environment-heading">
+              <SectionHeading
+                id="environment-heading"
+                index="01"
+                eyebrow="Mission environment"
+                title="See the system in motion."
+                detail="Explore Sun, Earth, and lunar geometry, then inspect measured illumination and direct-to-Earth line of sight for the selected mission window."
+              />
+              <div className="environment-grid">
+                <div className="environment-grid__orbital"><SunEarthPanel /></div>
+                <div className="environment-grid__conditions"><PowerCommunicationPanel /></div>
+              </div>
+            </section>
+
+            <section id="site-workspace" className="dashboard-section" aria-labelledby="workspace-heading">
+              <SectionHeading
+                id="workspace-heading"
+                index="02"
+                eyebrow="Site workspace"
+                title="Put candidate sites in context."
+                detail="Review the available south-pole landing-site workspace and compare mission scenarios using the connected scientific services."
+              />
+              <div className="workspace-grid">
+                <LunarMapPanel />
+                <Suspense fallback={<div className="mission-panel comparison-loading p-6 text-center text-slate-400 font-mono text-sm" role="status">Loading comparison workspace…</div>}>
+                  <ComparisonPanel />
+                </Suspense>
+              </div>
+            </section>
+
+            <section id="helios-advisor" className="dashboard-section dashboard-section--advisor" aria-labelledby="advisor-heading">
+              <SectionHeading
+                id="advisor-heading"
+                index="03"
+                eyebrow="Mission planning"
+                title="Make the next decision with HELIOS."
+                detail="Translate mission criteria into a transparent, evidence-based site assessment. Every recommendation keeps its constraints and scientific provenance in view."
+              />
+              <HeliosAdvisorPanel />
+            </section>
+
+            <footer className="dashboard-footer">
+              <a className="dashboard-footer__brand" href="#mission"><span className="brand-mark"><Orbit size={16} aria-hidden="true" /></span>CosmynX</a>
+              <p>Lunar mission analysis · Geometric visibility is not communication reliability.</p>
+              <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/" target="_blank" rel="noreferrer">NASA Blue Marble imagery <ArrowUpRight size={13} aria-hidden="true" /></a>
+            </footer>
           </div>
-          <SunEarthPanel />
-          <PowerCommunicationPanel />
-          <ComparisonPanel />
-          <HeliosAdvisorPanel />
         </main>
       </div>
     </MissionProvider>

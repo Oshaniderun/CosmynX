@@ -6,6 +6,7 @@ and provides official NASA Moon Trek and LROC QuickMap resource metadata.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -14,6 +15,8 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+
+from app.services.lunar_ephemeris import compute_analytical_lunar_ephemeris
 
 HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 SUN_COMMAND = "'10'"
@@ -89,7 +92,7 @@ def _query_horizons_target(
     start_utc: str,
     end_utc: str,
     step_minutes: int,
-    timeout_seconds: float = 25.0,
+    timeout_seconds: float = 8.0,
 ) -> dict[str, tuple[float, float]]:
     """Query JPL Horizons for a single target body observed from a lunar coordinate."""
     params = {
@@ -198,24 +201,35 @@ def fetch_jpl_horizons_ephemeris(
                 return cached["points"]
 
     try:
-        sun_series = _query_horizons_target(
-            target_command=SUN_COMMAND,
-            latitude_deg=latitude_deg,
-            longitude_deg=longitude_deg,
-            start_utc=start_utc,
-            end_utc=end_utc,
-            step_minutes=step_minutes,
-        )
-        earth_series = _query_horizons_target(
-            target_command=EARTH_COMMAND,
-            latitude_deg=latitude_deg,
-            longitude_deg=longitude_deg,
-            start_utc=start_utc,
-            end_utc=end_utc,
-            step_minutes=step_minutes,
-        )
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            sun_future = executor.submit(
+                _query_horizons_target,
+                target_command=SUN_COMMAND,
+                latitude_deg=latitude_deg,
+                longitude_deg=longitude_deg,
+                start_utc=start_utc,
+                end_utc=end_utc,
+                step_minutes=step_minutes,
+            )
+            earth_future = executor.submit(
+                _query_horizons_target,
+                target_command=EARTH_COMMAND,
+                latitude_deg=latitude_deg,
+                longitude_deg=longitude_deg,
+                start_utc=start_utc,
+                end_utc=end_utc,
+                step_minutes=step_minutes,
+            )
+            sun_series = sun_future.result()
+            earth_series = earth_future.result()
     except (httpx.HTTPError, ValueError):
-        return []
+        return compute_analytical_lunar_ephemeris(
+            latitude_deg=latitude_deg,
+            longitude_deg=longitude_deg,
+            start_utc=start_utc,
+            end_utc=end_utc,
+            step_minutes=step_minutes,
+        )
 
     timestamps = sorted(set(sun_series.keys()) | set(earth_series.keys()))
     if not timestamps:
@@ -257,15 +271,42 @@ def fetch_jpl_horizons_ephemeris(
 
 
 def get_lunar_map_resources() -> dict[str, Any]:
-    """Return official NASA Moon Trek and LROC QuickMap portal metadata."""
+    """Return official NASA Moon Trek (EQ + SP) and LROC QuickMap portal metadata."""
     return {
         "moon_trek": {
             "name": "NASA Moon Trek",
             "portal_url": "https://trek.nasa.gov/moon/",
             "wmts_base_url": "https://trek.nasa.gov/tiles/Moon/EQ/",
+            "south_pole_wmts_base_url": "https://trek.nasa.gov/tiles/Moon/SP/",
             "wac_wmts_capabilities": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/WMTSCapabilities.xml",
             "wac_tile_template": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm/{z}/{y}/{x}.jpg",
-            "purpose": "Lunar maps, terrain visualization, and available map layers",
+            "south_pole_layers": [
+                {
+                    "layer_id": "LRO_WAC_Mosaic_SPole60_100mp",
+                    "name": "LRO WAC South Pole Mosaic (100 m/px)",
+                    "projection": "SP",
+                    "coverage": "60S to 90S",
+                    "format": "image/png",
+                    "tile_matrix_set": "default028mm",
+                    "max_zoom": 4,
+                    "extent_m": [-931100.0, -931100.0, 931100.0, 931100.0],
+                    "wmts_capabilities": "https://trek.nasa.gov/tiles/Moon/SP/LRO_WAC_Mosaic_SPole60_100mp/1.0.0/WMTSCapabilities.xml",
+                    "tile_template": "https://trek.nasa.gov/tiles/Moon/SP/LRO_WAC_Mosaic_SPole60_100mp/1.0.0/default/default028mm/{z}/{y}/{x}.png",
+                },
+                {
+                    "layer_id": "WAC_POLE_ILL_PCT_SOUTH_100M",
+                    "name": "LRO WAC South Pole Solar Illumination % (100 m/px)",
+                    "projection": "SP",
+                    "coverage": "South Pole",
+                    "format": "image/png",
+                    "tile_matrix_set": "default028mm",
+                    "max_zoom": 5,
+                    "extent_m": [-931100.0, -931100.0, 931100.0, 931100.0],
+                    "wmts_capabilities": "https://trek.nasa.gov/tiles/Moon/SP/WAC_POLE_ILL_PCT_SOUTH_100M/1.0.0/WMTSCapabilities.xml",
+                    "tile_template": "https://trek.nasa.gov/tiles/Moon/SP/WAC_POLE_ILL_PCT_SOUTH_100M/1.0.0/default/default028mm/{z}/{y}/{x}.png",
+                },
+            ],
+            "purpose": "Lunar maps, South Pole polar-projection layers, and terrain visualization",
         },
         "lroc_quickmap": {
             "name": "LROC QuickMap",

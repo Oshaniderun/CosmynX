@@ -99,7 +99,7 @@ export function LunarMapPanel() {
     } catch {
       // Local fallback if backend endpoint is unavailable
       const fallbackSite: LandingSite = {
-        site_id: `custom_${Math.abs(Math.round(targetLat * 100))}`,
+        site_id: `custom_${targetLat.toFixed(3)}_${(targetLon > 180 ? targetLon - 360 : targetLon).toFixed(3)}`,
         name: customName.trim() || "Custom Polar Target",
         region: "Lunar South Pole (Custom)",
         latitude_deg: targetLat,
@@ -140,8 +140,8 @@ export function LunarMapPanel() {
   return (
     <ModuleCard
       title="Interactive Lunar Map & Landing Site Selection"
-      owner="Member 1"
-      branch="feature/lunar-map"
+      eyebrow="Lunar south-pole site workspace"
+      icon={<MapPin className="h-4 w-4" />}
     >
       {/* Top Mission Status Banner */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/[0.08] border-t-white/[0.18] bg-[#0A1322]/75 px-4 py-3 text-xs shadow-lg backdrop-blur-xl">

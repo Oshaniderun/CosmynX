@@ -136,9 +136,10 @@ export function ComparisonPanel({
       if (current.length === 0) return current;
       const baseline = current[0];
       if (baseline.siteId === selectedSite.site_id) return current;
+      const isCustomSite = selectedSite.coordinate_type === "custom_user_pin" || selectedSite.site_id.startsWith("custom_");
       const updatedBaseline: Draft = {
         ...baseline,
-        siteId: selectedSite.site_id,
+        siteId: isCustomSite ? "custom" : selectedSite.site_id,
         latitude:
           selectedSite.latitude_deg !== undefined
             ? String(selectedSite.latitude_deg)
@@ -217,12 +218,27 @@ export function ComparisonPanel({
   }
   function promoteBaseline(id: string) {
     clearResults();
-    setDrafts((current) => {
-      const match = current.find((draft) => draft.id === id);
-      if (match) {
-        const siteMatch = sites.find((s) => s.site_id === match.siteId);
-        if (siteMatch) setSelectedSite(siteMatch);
+    const match = drafts.find((draft) => draft.id === id);
+    if (match) {
+      const siteMatch = sites.find((s) => s.site_id === match.siteId);
+      if (siteMatch) setSelectedSite(siteMatch);
+      else if (match.siteId === "custom" && match.latitude && match.longitude) {
+        const latitude = Number(match.latitude);
+        const longitude = Number(match.longitude);
+        if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
+          setSelectedSite({
+            site_id: `custom_${latitude.toFixed(6)}_${longitude.toFixed(6)}`,
+            name: "Custom scenario site",
+            region: "Lunar South Pole (Custom)",
+            latitude_deg: latitude,
+            longitude_deg: longitude,
+            source: "User Coordinate Input",
+            coordinate_type: "custom_user_pin",
+          });
+        }
       }
+    }
+    setDrafts((current) => {
       return [
         current.find((draft) => draft.id === id)!,
         ...current.filter((draft) => draft.id !== id),
@@ -362,7 +378,7 @@ export function ComparisonPanel({
 
   return (
     <section
-      className="comparison-panel md:col-span-2"
+      className="comparison-panel"
       aria-labelledby="comparison-title"
     >
       <header className="cmp-header">

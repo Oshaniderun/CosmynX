@@ -34,7 +34,7 @@ export default function SpaceViewport({ frame }: { frame: SceneFrame }) {
   useEffect(() => { scene.current?.rotate(rotating); }, [mode, rotating]);
 
   return (
-    <div className="relative h-[280px] overflow-hidden bg-[radial-gradient(ellipse_at_22%_50%,#1e1435_0%,#0D1728_50%,#080E1B_85%)] sm:h-[380px]">
+    <div className="relative h-[340px] overflow-hidden bg-[radial-gradient(ellipse_at_22%_50%,#1e1435_0%,#0D1728_50%,#080E1B_85%)] sm:h-[460px] lg:h-[510px]">
       <div ref={host} className="absolute inset-0 cursor-grab active:cursor-grabbing [&>canvas]:block [&>canvas]:h-full [&>canvas]:w-full" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <span ref={sunLabel} hidden className="absolute -translate-x-1/2 rounded-md border border-amber-500/30 bg-[#080E1B]/90 px-2.5 py-1 text-xs font-mono font-medium text-amber-300 backdrop-blur-md">Sun</span>

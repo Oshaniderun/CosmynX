@@ -1,6 +1,13 @@
 from fastapi import APIRouter, HTTPException, status
 
-from app.models.schemas import CustomSiteRequest, LandingSite
+from app.models.schemas import (
+    CustomSiteRequest,
+    LandingSite,
+    MapLayerResource,
+    MapLayersResponse,
+)
+from app.services.nasa_data import get_lunar_map_resources
+from app.services.terrain import get_terrain_for_site
 
 router = APIRouter()
 
@@ -119,8 +126,45 @@ DEFAULT_SITES: list[LandingSite] = [
 
 @router.get("/sites", response_model=list[LandingSite])
 def get_sites() -> list[LandingSite]:
-    """Return available candidate lunar landing sites."""
-    return DEFAULT_SITES
+    """Return available candidate lunar landing sites with LOLA terrain metrics."""
+    enriched: list[LandingSite] = []
+    for site in DEFAULT_SITES:
+        terrain = get_terrain_for_site(
+            site_id=site.site_id,
+            latitude_deg=site.latitude_deg,
+            longitude_deg=site.longitude_deg,
+        )
+        enriched.append(
+            site.model_copy(
+                update={"terrain": terrain.metrics if terrain.status == "ok" else None}
+            )
+        )
+    return enriched
+
+
+@router.get("/sites/layers", response_model=MapLayersResponse)
+def get_map_layers() -> MapLayersResponse:
+    """Return NASA Moon Trek South Pole (SP) and Global (EQ) WMTS layer configs."""
+    moon_trek = get_lunar_map_resources()["moon_trek"]
+    south_pole_layers = [
+        MapLayerResource(**layer) for layer in moon_trek["south_pole_layers"]
+    ]
+    global_layer = MapLayerResource(
+        layer_id="LRO_WAC_Mosaic_Global_303ppd_v02",
+        name="LRO WAC Global Mosaic (303 ppd)",
+        projection="EQ",
+        coverage="Global",
+        format="image/jpeg",
+        tile_matrix_set="default028mm",
+        max_zoom=7,
+        wmts_capabilities=moon_trek["wac_wmts_capabilities"],
+        tile_template=moon_trek["wac_tile_template"],
+    )
+    return MapLayersResponse(
+        portal_url=moon_trek["portal_url"],
+        south_pole_layers=south_pole_layers,
+        global_layer=global_layer,
+    )
 
 
 @router.get("/sites/{site_id}", response_model=LandingSite)
@@ -128,7 +172,14 @@ def get_site(site_id: str) -> LandingSite:
     """Retrieve details for a specific candidate lunar landing site."""
     for site in DEFAULT_SITES:
         if site.site_id == site_id:
-            return site
+            terrain = get_terrain_for_site(
+                site_id=site.site_id,
+                latitude_deg=site.latitude_deg,
+                longitude_deg=site.longitude_deg,
+            )
+            return site.model_copy(
+                update={"terrain": terrain.metrics if terrain.status == "ok" else None}
+            )
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Landing site '{site_id}' not found.",
@@ -142,8 +193,15 @@ def validate_custom_site(request: CustomSiteRequest) -> LandingSite:
     if lon > 180.0:
         lon -= 360.0
 
+    site_id = f"custom_{abs(int(request.latitude_deg * 100))}_{abs(int(lon * 100))}"
+    terrain = get_terrain_for_site(
+        site_id=site_id,
+        latitude_deg=request.latitude_deg,
+        longitude_deg=lon,
+    )
+
     return LandingSite(
-        site_id=f"custom_{abs(int(request.latitude_deg * 100))}_{abs(int(lon * 100))}",
+        site_id=site_id,
         name=request.name or "Custom Lunar Site",
         region="Lunar South Pole (Custom)",
         latitude_deg=request.latitude_deg,
@@ -152,5 +210,5 @@ def validate_custom_site(request: CustomSiteRequest) -> LandingSite:
         or f"Custom site selected at lat {request.latitude_deg:.3f}°, lon {lon:.3f}°.",
         source="User Coordinate Input",
         coordinate_type="custom_user_pin",
+        terrain=terrain.metrics if terrain.status == "ok" else None,
     )
-
