@@ -1,6 +1,6 @@
 # Member 5 — Scenario Comparison & Timelines
 
-Owner: Ravindu. Branch: `Ravindu`. Integrated `Dev` commit `54385e8` (NASA retrieval and Member 3 visualizations) on 14 November 2026. No other members’ feature branches were merged separately.
+Owner: Ravindu. Branch: `feature/scenario-comparison` (renamed from `Ravindu`). Integrated `Dev` commit `51c22f6`, including NASA retrieval, Member 3 visualizations, and Member 4 analysis, on 14 November 2026. No other members’ feature branches were merged separately.
 
 ## Run and try it
 
@@ -13,7 +13,7 @@ Use the frontend and backend setup in the main README. The comparison panel is a
 5. Set a delay in hours and press **Apply to B**. B copies A's site, duration, and sampling resolution, then shifts both UTC endpoints. Press **Compare scenarios** again.
 6. Use timeline range controls and the shared inspection cursor. JSON export contains the complete structured result and provenance.
 
-Scientific services are the default. Member 2’s real Horizons retrieval and Member 3’s updated visualizations are integrated from Dev. Member 4’s conditions service is still pending on that branch. Member 5 therefore derives comparison-only duration-weighted summaries from complete real ephemeris intervals when the conditions service is unavailable, pending, incomplete, or inconsistent with mission duration. The separate Member 4 implementation is untouched. Each result identifies `summary_method`. Incomplete intervals never produce full-mission fallback metrics, and live requests never switch to synthetic values.
+Scientific services are the default. Member 2’s real Horizons retrieval and Member 3’s updated visualizations are integrated from Dev. Member 4’s conditions service is now integrated from Dev. Member 5 validates its returned metrics and derives comparison-only duration-weighted summaries from complete real ephemeris intervals when those metrics are unavailable, pending, incomplete, or inconsistent with mission duration. This also prevents an inclusive endpoint sample from being counted as an extra duration bin. The Member 4 implementation is preserved as merged from Dev. Each result identifies `summary_method`. Incomplete intervals never produce full-mission fallback metrics, and live requests never switch to synthetic values.
 
 Press **Load cached NASA example · 6 hours**, then **Compare scenarios** to use the committed real Horizons data for 20 November 2026, 00:00–06:00 UTC. This does not require a fresh NASA request. New locations/dates require the upstream service and network. The frontend can cancel a request and enforces a four-minute timeout; validation errors from the API are displayed directly.
 

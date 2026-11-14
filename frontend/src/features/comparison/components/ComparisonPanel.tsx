@@ -249,7 +249,7 @@ export function ComparisonPanel({
       if (request !== activeRequest.current) return;
       if (!Array.isArray(data.scenarios) || !Array.isArray(data.deltas))
         throw new Error(
-          "The backend comparison module needs updating. Restart it with the Ravindu branch.",
+          "The comparison service returned an incomplete response. Update and restart the backend, then retry.",
         );
       setResult(data);
       setResultView("summary");

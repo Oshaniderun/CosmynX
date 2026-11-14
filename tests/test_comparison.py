@@ -79,7 +79,8 @@ class ValidationTests(unittest.TestCase):
 
 class ScientificComparisonTests(unittest.TestCase):
     @patch("app.services.comparison.get_ephemeris_for_site", side_effect=lambda **params: EphemerisResponse(**params, status="unavailable"))
-    def test_live_pending_is_not_synthetic(self, _):
+    @patch("app.services.comparison.analyze_site_conditions", side_effect=lambda **params: ConditionsResponse(**params))
+    def test_live_pending_is_not_synthetic(self, *_):
         result = compare_scenarios(request())
         self.assertEqual(result.data_mode, "live")
         self.assertEqual(result.status, "pending")
