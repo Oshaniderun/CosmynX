@@ -293,7 +293,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 px-4 py-3 sm:px-6">
           <div className="flex flex-wrap gap-2" role="group" aria-label="Terrain case shortcuts">
             {[
-              { index: beforeCrossing, label: "Before crossing" },
+              { index: beforeCrossing, label: "Before center crossing" },
               { index: behindRidge, label: "Behind the ridge" },
             ].map(({ index, label }) => (
               <button type="button" key={label} className={modeClass}
@@ -304,7 +304,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
             ))}
           </div>
           <div className="flex gap-2" role="group" aria-label="Terrain case view">
-            <button type="button" className={modeClass} aria-pressed={terrainView === "surface"} onClick={() => setTerrainView("surface")}>Surface view</button>
+            <button type="button" className={modeClass} aria-pressed={terrainView === "surface"} onClick={() => setTerrainView("surface")}>Helmet POV</button>
             <button type="button" className={modeClass} aria-pressed={terrainView === "orbit"} onClick={() => setTerrainView("orbit")}>3D orbit</button>
           </div>
         </div>
@@ -445,7 +445,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                 </p>
                 {solarObstruction.crossing && (
                   <p className="text-xs text-slate-300">
-                    First sampled crossing · {timeFormat.format(Date.parse(solarObstruction.crossing.from))}–{timeFormat.format(Date.parse(solarObstruction.crossing.to))} UTC
+                    Sun’s center crosses the skyline between the {timeFormat.format(Date.parse(solarObstruction.crossing.from))} and {timeFormat.format(Date.parse(solarObstruction.crossing.to))} UTC samples.
                   </p>
                 )}
               </div>
@@ -547,8 +547,9 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
               </p>
               <p className="mt-2">
                 We subtract the highest terrain angle within {terrain.max_distance_m / 1_000} km in the Sun’s direction from the Sun’s elevation, for an observer {terrain.observer_height_m} m above the surface.
-                The results describe the center of the Sun. Part of its disk may still be visible near the crossing.
+                Clearance refers to the Sun’s center. The helmet view illustrates which part of the solar disk clears the skyline.
               </p>
+              <p className="mt-2">UTC is the time reference for the replay. Each step shows a prediction one Earth hour apart from the same location on the Moon.</p>
             </details>
           )}
           {point && terrain && !showObstructionReplay && (
