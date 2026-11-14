@@ -1,0 +1,4054 @@
+{
+  "source": "JPL Horizons",
+  "body": "Moon (301)",
+  "longitude_convention": "East-positive (-180 to 180 deg)",
+  "latitude_deg": -89.54,
+  "longitude_deg": 0.0,
+  "start_utc": "2026-11-27T00:00:00Z",
+  "end_utc": "2026-12-03T00:00:00Z",
+  "step_minutes": 15,
+  "retrieved_utc": "2026-11-14T16:35:05.534480Z",
+  "observer_altitude_km": 0,
+  "apparent": "AIRLESS",
+  "points": [
+    {
+      "timestamp_utc": "2026-11-27T00:00:00Z",
+      "sun_azimuth_deg": 328.63963,
+      "sun_elevation_deg": 1.893333,
+      "earth_azimuth_deg": 2.135078,
+      "earth_elevation_deg": 4.886933
+    },
+    {
+      "timestamp_utc": "2026-11-27T00:15:00Z",
+      "sun_azimuth_deg": 328.513203,
+      "sun_elevation_deg": 1.892713,
+      "earth_azimuth_deg": 2.153868,
+      "earth_elevation_deg": 4.874493
+    },
+    {
+      "timestamp_utc": "2026-11-27T00:30:00Z",
+      "sun_azimuth_deg": 328.386775,
+      "sun_elevation_deg": 1.892092,
+      "earth_azimuth_deg": 2.172633,
+      "earth_elevation_deg": 4.86202
+    },
+    {
+      "timestamp_utc": "2026-11-27T00:45:00Z",
+      "sun_azimuth_deg": 328.260347,
+      "sun_elevation_deg": 1.891468,
+      "earth_azimuth_deg": 2.191373,
+      "earth_elevation_deg": 4.849512
+    },
+    {
+      "timestamp_utc": "2026-11-27T01:00:00Z",
+      "sun_azimuth_deg": 328.133919,
+      "sun_elevation_deg": 1.890843,
+      "earth_azimuth_deg": 2.210086,
+      "earth_elevation_deg": 4.836972
+    },
+    {
+      "timestamp_utc": "2026-11-27T01:15:00Z",
+      "sun_azimuth_deg": 328.00749,
+      "sun_elevation_deg": 1.890215,
+      "earth_azimuth_deg": 2.228774,
+      "earth_elevation_deg": 4.824398
+    },
+    {
+      "timestamp_utc": "2026-11-27T01:30:00Z",
+      "sun_azimuth_deg": 327.881061,
+      "sun_elevation_deg": 1.889586,
+      "earth_azimuth_deg": 2.247435,
+      "earth_elevation_deg": 4.811792
+    },
+    {
+      "timestamp_utc": "2026-11-27T01:45:00Z",
+      "sun_azimuth_deg": 327.754632,
+      "sun_elevation_deg": 1.888955,
+      "earth_azimuth_deg": 2.266069,
+      "earth_elevation_deg": 4.799152
+    },
+    {
+      "timestamp_utc": "2026-11-27T02:00:00Z",
+      "sun_azimuth_deg": 327.628202,
+      "sun_elevation_deg": 1.888322,
+      "earth_azimuth_deg": 2.284678,
+      "earth_elevation_deg": 4.786479
+    },
+    {
+      "timestamp_utc": "2026-11-27T02:15:00Z",
+      "sun_azimuth_deg": 327.501771,
+      "sun_elevation_deg": 1.887687,
+      "earth_azimuth_deg": 2.303259,
+      "earth_elevation_deg": 4.773774
+    },
+    {
+      "timestamp_utc": "2026-11-27T02:30:00Z",
+      "sun_azimuth_deg": 327.375341,
+      "sun_elevation_deg": 1.88705,
+      "earth_azimuth_deg": 2.321814,
+      "earth_elevation_deg": 4.761036
+    },
+    {
+      "timestamp_utc": "2026-11-27T02:45:00Z",
+      "sun_azimuth_deg": 327.24891,
+      "sun_elevation_deg": 1.886411,
+      "earth_azimuth_deg": 2.340342,
+      "earth_elevation_deg": 4.748266
+    },
+    {
+      "timestamp_utc": "2026-11-27T03:00:00Z",
+      "sun_azimuth_deg": 327.122478,
+      "sun_elevation_deg": 1.885771,
+      "earth_azimuth_deg": 2.358843,
+      "earth_elevation_deg": 4.735463
+    },
+    {
+      "timestamp_utc": "2026-11-27T03:15:00Z",
+      "sun_azimuth_deg": 326.996046,
+      "sun_elevation_deg": 1.885128,
+      "earth_azimuth_deg": 2.377316,
+      "earth_elevation_deg": 4.722628
+    },
+    {
+      "timestamp_utc": "2026-11-27T03:30:00Z",
+      "sun_azimuth_deg": 326.869614,
+      "sun_elevation_deg": 1.884484,
+      "earth_azimuth_deg": 2.395763,
+      "earth_elevation_deg": 4.70976
+    },
+    {
+      "timestamp_utc": "2026-11-27T03:45:00Z",
+      "sun_azimuth_deg": 326.743181,
+      "sun_elevation_deg": 1.883838,
+      "earth_azimuth_deg": 2.414181,
+      "earth_elevation_deg": 4.696861
+    },
+    {
+      "timestamp_utc": "2026-11-27T04:00:00Z",
+      "sun_azimuth_deg": 326.616748,
+      "sun_elevation_deg": 1.88319,
+      "earth_azimuth_deg": 2.432573,
+      "earth_elevation_deg": 4.68393
+    },
+    {
+      "timestamp_utc": "2026-11-27T04:15:00Z",
+      "sun_azimuth_deg": 326.490315,
+      "sun_elevation_deg": 1.88254,
+      "earth_azimuth_deg": 2.450936,
+      "earth_elevation_deg": 4.670967
+    },
+    {
+      "timestamp_utc": "2026-11-27T04:30:00Z",
+      "sun_azimuth_deg": 326.363881,
+      "sun_elevation_deg": 1.881888,
+      "earth_azimuth_deg": 2.469271,
+      "earth_elevation_deg": 4.657973
+    },
+    {
+      "timestamp_utc": "2026-11-27T04:45:00Z",
+      "sun_azimuth_deg": 326.237447,
+      "sun_elevation_deg": 1.881234,
+      "earth_azimuth_deg": 2.487579,
+      "earth_elevation_deg": 4.644947
+    },
+    {
+      "timestamp_utc": "2026-11-27T05:00:00Z",
+      "sun_azimuth_deg": 326.111012,
+      "sun_elevation_deg": 1.880579,
+      "earth_azimuth_deg": 2.505858,
+      "earth_elevation_deg": 4.631889
+    },
+    {
+      "timestamp_utc": "2026-11-27T05:15:00Z",
+      "sun_azimuth_deg": 325.984577,
+      "sun_elevation_deg": 1.879922,
+      "earth_azimuth_deg": 2.524109,
+      "earth_elevation_deg": 4.618801
+    },
+    {
+      "timestamp_utc": "2026-11-27T05:30:00Z",
+      "sun_azimuth_deg": 325.858141,
+      "sun_elevation_deg": 1.879262,
+      "earth_azimuth_deg": 2.542331,
+      "earth_elevation_deg": 4.605681
+    },
+    {
+      "timestamp_utc": "2026-11-27T05:45:00Z",
+      "sun_azimuth_deg": 325.731705,
+      "sun_elevation_deg": 1.878601,
+      "earth_azimuth_deg": 2.560525,
+      "earth_elevation_deg": 4.59253
+    },
+    {
+      "timestamp_utc": "2026-11-27T06:00:00Z",
+      "sun_azimuth_deg": 325.605269,
+      "sun_elevation_deg": 1.877938,
+      "earth_azimuth_deg": 2.57869,
+      "earth_elevation_deg": 4.579348
+    },
+    {
+      "timestamp_utc": "2026-11-27T06:15:00Z",
+      "sun_azimuth_deg": 325.478832,
+      "sun_elevation_deg": 1.877274,
+      "earth_azimuth_deg": 2.596826,
+      "earth_elevation_deg": 4.566136
+    },
+    {
+      "timestamp_utc": "2026-11-27T06:30:00Z",
+      "sun_azimuth_deg": 325.352395,
+      "sun_elevation_deg": 1.876607,
+      "earth_azimuth_deg": 2.614933,
+      "earth_elevation_deg": 4.552893
+    },
+    {
+      "timestamp_utc": "2026-11-27T06:45:00Z",
+      "sun_azimuth_deg": 325.225957,
+      "sun_elevation_deg": 1.875939,
+      "earth_azimuth_deg": 2.633012,
+      "earth_elevation_deg": 4.539619
+    },
+    {
+      "timestamp_utc": "2026-11-27T07:00:00Z",
+      "sun_azimuth_deg": 325.099519,
+      "sun_elevation_deg": 1.875268,
+      "earth_azimuth_deg": 2.65106,
+      "earth_elevation_deg": 4.526315
+    },
+    {
+      "timestamp_utc": "2026-11-27T07:15:00Z",
+      "sun_azimuth_deg": 324.973081,
+      "sun_elevation_deg": 1.874596,
+      "earth_azimuth_deg": 2.66908,
+      "earth_elevation_deg": 4.512981
+    },
+    {
+      "timestamp_utc": "2026-11-27T07:30:00Z",
+      "sun_azimuth_deg": 324.846642,
+      "sun_elevation_deg": 1.873922,
+      "earth_azimuth_deg": 2.68707,
+      "earth_elevation_deg": 4.499616
+    },
+    {
+      "timestamp_utc": "2026-11-27T07:45:00Z",
+      "sun_azimuth_deg": 324.720203,
+      "sun_elevation_deg": 1.873247,
+      "earth_azimuth_deg": 2.70503,
+      "earth_elevation_deg": 4.486222
+    },
+    {
+      "timestamp_utc": "2026-11-27T08:00:00Z",
+      "sun_azimuth_deg": 324.593763,
+      "sun_elevation_deg": 1.872569,
+      "earth_azimuth_deg": 2.722961,
+      "earth_elevation_deg": 4.472797
+    },
+    {
+      "timestamp_utc": "2026-11-27T08:15:00Z",
+      "sun_azimuth_deg": 324.467323,
+      "sun_elevation_deg": 1.87189,
+      "earth_azimuth_deg": 2.740861,
+      "earth_elevation_deg": 4.459343
+    },
+    {
+      "timestamp_utc": "2026-11-27T08:30:00Z",
+      "sun_azimuth_deg": 324.340882,
+      "sun_elevation_deg": 1.871209,
+      "earth_azimuth_deg": 2.758732,
+      "earth_elevation_deg": 4.44586
+    },
+    {
+      "timestamp_utc": "2026-11-27T08:45:00Z",
+      "sun_azimuth_deg": 324.214441,
+      "sun_elevation_deg": 1.870526,
+      "earth_azimuth_deg": 2.776572,
+      "earth_elevation_deg": 4.432346
+    },
+    {
+      "timestamp_utc": "2026-11-27T09:00:00Z",
+      "sun_azimuth_deg": 324.088,
+      "sun_elevation_deg": 1.869841,
+      "earth_azimuth_deg": 2.794383,
+      "earth_elevation_deg": 4.418804
+    },
+    {
+      "timestamp_utc": "2026-11-27T09:15:00Z",
+      "sun_azimuth_deg": 323.961558,
+      "sun_elevation_deg": 1.869154,
+      "earth_azimuth_deg": 2.812162,
+      "earth_elevation_deg": 4.405232
+    },
+    {
+      "timestamp_utc": "2026-11-27T09:30:00Z",
+      "sun_azimuth_deg": 323.835116,
+      "sun_elevation_deg": 1.868466,
+      "earth_azimuth_deg": 2.829912,
+      "earth_elevation_deg": 4.391631
+    },
+    {
+      "timestamp_utc": "2026-11-27T09:45:00Z",
+      "sun_azimuth_deg": 323.708673,
+      "sun_elevation_deg": 1.867776,
+      "earth_azimuth_deg": 2.84763,
+      "earth_elevation_deg": 4.378001
+    },
+    {
+      "timestamp_utc": "2026-11-27T10:00:00Z",
+      "sun_azimuth_deg": 323.58223,
+      "sun_elevation_deg": 1.867084,
+      "earth_azimuth_deg": 2.865318,
+      "earth_elevation_deg": 4.364342
+    },
+    {
+      "timestamp_utc": "2026-11-27T10:15:00Z",
+      "sun_azimuth_deg": 323.455786,
+      "sun_elevation_deg": 1.86639,
+      "earth_azimuth_deg": 2.882975,
+      "earth_elevation_deg": 4.350655
+    },
+    {
+      "timestamp_utc": "2026-11-27T10:30:00Z",
+      "sun_azimuth_deg": 323.329342,
+      "sun_elevation_deg": 1.865695,
+      "earth_azimuth_deg": 2.900601,
+      "earth_elevation_deg": 4.336939
+    },
+    {
+      "timestamp_utc": "2026-11-27T10:45:00Z",
+      "sun_azimuth_deg": 323.202897,
+      "sun_elevation_deg": 1.864998,
+      "earth_azimuth_deg": 2.918196,
+      "earth_elevation_deg": 4.323194
+    },
+    {
+      "timestamp_utc": "2026-11-27T11:00:00Z",
+      "sun_azimuth_deg": 323.076452,
+      "sun_elevation_deg": 1.864299,
+      "earth_azimuth_deg": 2.935759,
+      "earth_elevation_deg": 4.309421
+    },
+    {
+      "timestamp_utc": "2026-11-27T11:15:00Z",
+      "sun_azimuth_deg": 322.950007,
+      "sun_elevation_deg": 1.863598,
+      "earth_azimuth_deg": 2.953291,
+      "earth_elevation_deg": 4.29562
+    },
+    {
+      "timestamp_utc": "2026-11-27T11:30:00Z",
+      "sun_azimuth_deg": 322.823561,
+      "sun_elevation_deg": 1.862895,
+      "earth_azimuth_deg": 2.970792,
+      "earth_elevation_deg": 4.281791
+    },
+    {
+      "timestamp_utc": "2026-11-27T11:45:00Z",
+      "sun_azimuth_deg": 322.697115,
+      "sun_elevation_deg": 1.862191,
+      "earth_azimuth_deg": 2.988261,
+      "earth_elevation_deg": 4.267934
+    },
+    {
+      "timestamp_utc": "2026-11-27T12:00:00Z",
+      "sun_azimuth_deg": 322.570668,
+      "sun_elevation_deg": 1.861485,
+      "earth_azimuth_deg": 3.005698,
+      "earth_elevation_deg": 4.254049
+    },
+    {
+      "timestamp_utc": "2026-11-27T12:15:00Z",
+      "sun_azimuth_deg": 322.444221,
+      "sun_elevation_deg": 1.860777,
+      "earth_azimuth_deg": 3.023103,
+      "earth_elevation_deg": 4.240136
+    },
+    {
+      "timestamp_utc": "2026-11-27T12:30:00Z",
+      "sun_azimuth_deg": 322.317773,
+      "sun_elevation_deg": 1.860067,
+      "earth_azimuth_deg": 3.040477,
+      "earth_elevation_deg": 4.226196
+    },
+    {
+      "timestamp_utc": "2026-11-27T12:45:00Z",
+      "sun_azimuth_deg": 322.191325,
+      "sun_elevation_deg": 1.859356,
+      "earth_azimuth_deg": 3.057818,
+      "earth_elevation_deg": 4.212228
+    },
+    {
+      "timestamp_utc": "2026-11-27T13:00:00Z",
+      "sun_azimuth_deg": 322.064876,
+      "sun_elevation_deg": 1.858643,
+      "earth_azimuth_deg": 3.075127,
+      "earth_elevation_deg": 4.198233
+    },
+    {
+      "timestamp_utc": "2026-11-27T13:15:00Z",
+      "sun_azimuth_deg": 321.938427,
+      "sun_elevation_deg": 1.857928,
+      "earth_azimuth_deg": 3.092404,
+      "earth_elevation_deg": 4.184211
+    },
+    {
+      "timestamp_utc": "2026-11-27T13:30:00Z",
+      "sun_azimuth_deg": 321.811978,
+      "sun_elevation_deg": 1.857211,
+      "earth_azimuth_deg": 3.109649,
+      "earth_elevation_deg": 4.170162
+    },
+    {
+      "timestamp_utc": "2026-11-27T13:45:00Z",
+      "sun_azimuth_deg": 321.685528,
+      "sun_elevation_deg": 1.856493,
+      "earth_azimuth_deg": 3.126861,
+      "earth_elevation_deg": 4.156086
+    },
+    {
+      "timestamp_utc": "2026-11-27T14:00:00Z",
+      "sun_azimuth_deg": 321.559077,
+      "sun_elevation_deg": 1.855773,
+      "earth_azimuth_deg": 3.14404,
+      "earth_elevation_deg": 4.141983
+    },
+    {
+      "timestamp_utc": "2026-11-27T14:15:00Z",
+      "sun_azimuth_deg": 321.432627,
+      "sun_elevation_deg": 1.855051,
+      "earth_azimuth_deg": 3.161186,
+      "earth_elevation_deg": 4.127853
+    },
+    {
+      "timestamp_utc": "2026-11-27T14:30:00Z",
+      "sun_azimuth_deg": 321.306175,
+      "sun_elevation_deg": 1.854328,
+      "earth_azimuth_deg": 3.1783,
+      "earth_elevation_deg": 4.113697
+    },
+    {
+      "timestamp_utc": "2026-11-27T14:45:00Z",
+      "sun_azimuth_deg": 321.179723,
+      "sun_elevation_deg": 1.853602,
+      "earth_azimuth_deg": 3.195381,
+      "earth_elevation_deg": 4.099515
+    },
+    {
+      "timestamp_utc": "2026-11-27T15:00:00Z",
+      "sun_azimuth_deg": 321.053271,
+      "sun_elevation_deg": 1.852875,
+      "earth_azimuth_deg": 3.212428,
+      "earth_elevation_deg": 4.085306
+    },
+    {
+      "timestamp_utc": "2026-11-27T15:15:00Z",
+      "sun_azimuth_deg": 320.926818,
+      "sun_elevation_deg": 1.852147,
+      "earth_azimuth_deg": 3.229442,
+      "earth_elevation_deg": 4.071071
+    },
+    {
+      "timestamp_utc": "2026-11-27T15:30:00Z",
+      "sun_azimuth_deg": 320.800365,
+      "sun_elevation_deg": 1.851416,
+      "earth_azimuth_deg": 3.246423,
+      "earth_elevation_deg": 4.05681
+    },
+    {
+      "timestamp_utc": "2026-11-27T15:45:00Z",
+      "sun_azimuth_deg": 320.673911,
+      "sun_elevation_deg": 1.850684,
+      "earth_azimuth_deg": 3.263371,
+      "earth_elevation_deg": 4.042524
+    },
+    {
+      "timestamp_utc": "2026-11-27T16:00:00Z",
+      "sun_azimuth_deg": 320.547457,
+      "sun_elevation_deg": 1.84995,
+      "earth_azimuth_deg": 3.280285,
+      "earth_elevation_deg": 4.028211
+    },
+    {
+      "timestamp_utc": "2026-11-27T16:15:00Z",
+      "sun_azimuth_deg": 320.421002,
+      "sun_elevation_deg": 1.849215,
+      "earth_azimuth_deg": 3.297165,
+      "earth_elevation_deg": 4.013873
+    },
+    {
+      "timestamp_utc": "2026-11-27T16:30:00Z",
+      "sun_azimuth_deg": 320.294547,
+      "sun_elevation_deg": 1.848478,
+      "earth_azimuth_deg": 3.314012,
+      "earth_elevation_deg": 3.99951
+    },
+    {
+      "timestamp_utc": "2026-11-27T16:45:00Z",
+      "sun_azimuth_deg": 320.168092,
+      "sun_elevation_deg": 1.847739,
+      "earth_azimuth_deg": 3.330825,
+      "earth_elevation_deg": 3.985121
+    },
+    {
+      "timestamp_utc": "2026-11-27T17:00:00Z",
+      "sun_azimuth_deg": 320.041635,
+      "sun_elevation_deg": 1.846998,
+      "earth_azimuth_deg": 3.347604,
+      "earth_elevation_deg": 3.970707
+    },
+    {
+      "timestamp_utc": "2026-11-27T17:15:00Z",
+      "sun_azimuth_deg": 319.915179,
+      "sun_elevation_deg": 1.846256,
+      "earth_azimuth_deg": 3.364349,
+      "earth_elevation_deg": 3.956268
+    },
+    {
+      "timestamp_utc": "2026-11-27T17:30:00Z",
+      "sun_azimuth_deg": 319.788722,
+      "sun_elevation_deg": 1.845512,
+      "earth_azimuth_deg": 3.38106,
+      "earth_elevation_deg": 3.941804
+    },
+    {
+      "timestamp_utc": "2026-11-27T17:45:00Z",
+      "sun_azimuth_deg": 319.662264,
+      "sun_elevation_deg": 1.844767,
+      "earth_azimuth_deg": 3.397736,
+      "earth_elevation_deg": 3.927315
+    },
+    {
+      "timestamp_utc": "2026-11-27T18:00:00Z",
+      "sun_azimuth_deg": 319.535806,
+      "sun_elevation_deg": 1.844019,
+      "earth_azimuth_deg": 3.414378,
+      "earth_elevation_deg": 3.912802
+    },
+    {
+      "timestamp_utc": "2026-11-27T18:15:00Z",
+      "sun_azimuth_deg": 319.409348,
+      "sun_elevation_deg": 1.84327,
+      "earth_azimuth_deg": 3.430986,
+      "earth_elevation_deg": 3.898264
+    },
+    {
+      "timestamp_utc": "2026-11-27T18:30:00Z",
+      "sun_azimuth_deg": 319.282889,
+      "sun_elevation_deg": 1.84252,
+      "earth_azimuth_deg": 3.447559,
+      "earth_elevation_deg": 3.883701
+    },
+    {
+      "timestamp_utc": "2026-11-27T18:45:00Z",
+      "sun_azimuth_deg": 319.156429,
+      "sun_elevation_deg": 1.841767,
+      "earth_azimuth_deg": 3.464097,
+      "earth_elevation_deg": 3.869115
+    },
+    {
+      "timestamp_utc": "2026-11-27T19:00:00Z",
+      "sun_azimuth_deg": 319.029969,
+      "sun_elevation_deg": 1.841013,
+      "earth_azimuth_deg": 3.480601,
+      "earth_elevation_deg": 3.854504
+    },
+    {
+      "timestamp_utc": "2026-11-27T19:15:00Z",
+      "sun_azimuth_deg": 318.903508,
+      "sun_elevation_deg": 1.840258,
+      "earth_azimuth_deg": 3.49707,
+      "earth_elevation_deg": 3.839869
+    },
+    {
+      "timestamp_utc": "2026-11-27T19:30:00Z",
+      "sun_azimuth_deg": 318.777047,
+      "sun_elevation_deg": 1.839501,
+      "earth_azimuth_deg": 3.513504,
+      "earth_elevation_deg": 3.82521
+    },
+    {
+      "timestamp_utc": "2026-11-27T19:45:00Z",
+      "sun_azimuth_deg": 318.650586,
+      "sun_elevation_deg": 1.838742,
+      "earth_azimuth_deg": 3.529903,
+      "earth_elevation_deg": 3.810528
+    },
+    {
+      "timestamp_utc": "2026-11-27T20:00:00Z",
+      "sun_azimuth_deg": 318.524124,
+      "sun_elevation_deg": 1.837981,
+      "earth_azimuth_deg": 3.546267,
+      "earth_elevation_deg": 3.795822
+    },
+    {
+      "timestamp_utc": "2026-11-27T20:15:00Z",
+      "sun_azimuth_deg": 318.397661,
+      "sun_elevation_deg": 1.837219,
+      "earth_azimuth_deg": 3.562595,
+      "earth_elevation_deg": 3.781092
+    },
+    {
+      "timestamp_utc": "2026-11-27T20:30:00Z",
+      "sun_azimuth_deg": 318.271198,
+      "sun_elevation_deg": 1.836455,
+      "earth_azimuth_deg": 3.578888,
+      "earth_elevation_deg": 3.766339
+    },
+    {
+      "timestamp_utc": "2026-11-27T20:45:00Z",
+      "sun_azimuth_deg": 318.144735,
+      "sun_elevation_deg": 1.83569,
+      "earth_azimuth_deg": 3.595146,
+      "earth_elevation_deg": 3.751563
+    },
+    {
+      "timestamp_utc": "2026-11-27T21:00:00Z",
+      "sun_azimuth_deg": 318.018271,
+      "sun_elevation_deg": 1.834923,
+      "earth_azimuth_deg": 3.611368,
+      "earth_elevation_deg": 3.736764
+    },
+    {
+      "timestamp_utc": "2026-11-27T21:15:00Z",
+      "sun_azimuth_deg": 317.891806,
+      "sun_elevation_deg": 1.834154,
+      "earth_azimuth_deg": 3.627555,
+      "earth_elevation_deg": 3.721942
+    },
+    {
+      "timestamp_utc": "2026-11-27T21:30:00Z",
+      "sun_azimuth_deg": 317.765341,
+      "sun_elevation_deg": 1.833384,
+      "earth_azimuth_deg": 3.643706,
+      "earth_elevation_deg": 3.707097
+    },
+    {
+      "timestamp_utc": "2026-11-27T21:45:00Z",
+      "sun_azimuth_deg": 317.638876,
+      "sun_elevation_deg": 1.832612,
+      "earth_azimuth_deg": 3.659821,
+      "earth_elevation_deg": 3.69223
+    },
+    {
+      "timestamp_utc": "2026-11-27T22:00:00Z",
+      "sun_azimuth_deg": 317.51241,
+      "sun_elevation_deg": 1.831838,
+      "earth_azimuth_deg": 3.6759,
+      "earth_elevation_deg": 3.67734
+    },
+    {
+      "timestamp_utc": "2026-11-27T22:15:00Z",
+      "sun_azimuth_deg": 317.385943,
+      "sun_elevation_deg": 1.831063,
+      "earth_azimuth_deg": 3.691944,
+      "earth_elevation_deg": 3.662428
+    },
+    {
+      "timestamp_utc": "2026-11-27T22:30:00Z",
+      "sun_azimuth_deg": 317.259476,
+      "sun_elevation_deg": 1.830286,
+      "earth_azimuth_deg": 3.707951,
+      "earth_elevation_deg": 3.647493
+    },
+    {
+      "timestamp_utc": "2026-11-27T22:45:00Z",
+      "sun_azimuth_deg": 317.133009,
+      "sun_elevation_deg": 1.829508,
+      "earth_azimuth_deg": 3.723922,
+      "earth_elevation_deg": 3.632536
+    },
+    {
+      "timestamp_utc": "2026-11-27T23:00:00Z",
+      "sun_azimuth_deg": 317.006541,
+      "sun_elevation_deg": 1.828728,
+      "earth_azimuth_deg": 3.739857,
+      "earth_elevation_deg": 3.617557
+    },
+    {
+      "timestamp_utc": "2026-11-27T23:15:00Z",
+      "sun_azimuth_deg": 316.880072,
+      "sun_elevation_deg": 1.827946,
+      "earth_azimuth_deg": 3.755756,
+      "earth_elevation_deg": 3.602557
+    },
+    {
+      "timestamp_utc": "2026-11-27T23:30:00Z",
+      "sun_azimuth_deg": 316.753603,
+      "sun_elevation_deg": 1.827163,
+      "earth_azimuth_deg": 3.771618,
+      "earth_elevation_deg": 3.587534
+    },
+    {
+      "timestamp_utc": "2026-11-27T23:45:00Z",
+      "sun_azimuth_deg": 316.627133,
+      "sun_elevation_deg": 1.826378,
+      "earth_azimuth_deg": 3.787443,
+      "earth_elevation_deg": 3.57249
+    },
+    {
+      "timestamp_utc": "2026-11-28T00:00:00Z",
+      "sun_azimuth_deg": 316.500663,
+      "sun_elevation_deg": 1.825592,
+      "earth_azimuth_deg": 3.803233,
+      "earth_elevation_deg": 3.557425
+    },
+    {
+      "timestamp_utc": "2026-11-28T00:15:00Z",
+      "sun_azimuth_deg": 316.374192,
+      "sun_elevation_deg": 1.824804,
+      "earth_azimuth_deg": 3.818985,
+      "earth_elevation_deg": 3.542338
+    },
+    {
+      "timestamp_utc": "2026-11-28T00:30:00Z",
+      "sun_azimuth_deg": 316.247721,
+      "sun_elevation_deg": 1.824015,
+      "earth_azimuth_deg": 3.834701,
+      "earth_elevation_deg": 3.52723
+    },
+    {
+      "timestamp_utc": "2026-11-28T00:45:00Z",
+      "sun_azimuth_deg": 316.121249,
+      "sun_elevation_deg": 1.823224,
+      "earth_azimuth_deg": 3.85038,
+      "earth_elevation_deg": 3.512101
+    },
+    {
+      "timestamp_utc": "2026-11-28T01:00:00Z",
+      "sun_azimuth_deg": 315.994777,
+      "sun_elevation_deg": 1.822431,
+      "earth_azimuth_deg": 3.866022,
+      "earth_elevation_deg": 3.496951
+    },
+    {
+      "timestamp_utc": "2026-11-28T01:15:00Z",
+      "sun_azimuth_deg": 315.868304,
+      "sun_elevation_deg": 1.821637,
+      "earth_azimuth_deg": 3.881627,
+      "earth_elevation_deg": 3.48178
+    },
+    {
+      "timestamp_utc": "2026-11-28T01:30:00Z",
+      "sun_azimuth_deg": 315.741831,
+      "sun_elevation_deg": 1.820841,
+      "earth_azimuth_deg": 3.897195,
+      "earth_elevation_deg": 3.466589
+    },
+    {
+      "timestamp_utc": "2026-11-28T01:45:00Z",
+      "sun_azimuth_deg": 315.615357,
+      "sun_elevation_deg": 1.820044,
+      "earth_azimuth_deg": 3.912725,
+      "earth_elevation_deg": 3.451377
+    },
+    {
+      "timestamp_utc": "2026-11-28T02:00:00Z",
+      "sun_azimuth_deg": 315.488883,
+      "sun_elevation_deg": 1.819245,
+      "earth_azimuth_deg": 3.928219,
+      "earth_elevation_deg": 3.436145
+    },
+    {
+      "timestamp_utc": "2026-11-28T02:15:00Z",
+      "sun_azimuth_deg": 315.362408,
+      "sun_elevation_deg": 1.818445,
+      "earth_azimuth_deg": 3.943675,
+      "earth_elevation_deg": 3.420892
+    },
+    {
+      "timestamp_utc": "2026-11-28T02:30:00Z",
+      "sun_azimuth_deg": 315.235933,
+      "sun_elevation_deg": 1.817643,
+      "earth_azimuth_deg": 3.959094,
+      "earth_elevation_deg": 3.40562
+    },
+    {
+      "timestamp_utc": "2026-11-28T02:45:00Z",
+      "sun_azimuth_deg": 315.109457,
+      "sun_elevation_deg": 1.816839,
+      "earth_azimuth_deg": 3.974476,
+      "earth_elevation_deg": 3.390327
+    },
+    {
+      "timestamp_utc": "2026-11-28T03:00:00Z",
+      "sun_azimuth_deg": 314.98298,
+      "sun_elevation_deg": 1.816034,
+      "earth_azimuth_deg": 3.98982,
+      "earth_elevation_deg": 3.375015
+    },
+    {
+      "timestamp_utc": "2026-11-28T03:15:00Z",
+      "sun_azimuth_deg": 314.856503,
+      "sun_elevation_deg": 1.815228,
+      "earth_azimuth_deg": 4.005126,
+      "earth_elevation_deg": 3.359682
+    },
+    {
+      "timestamp_utc": "2026-11-28T03:30:00Z",
+      "sun_azimuth_deg": 314.730026,
+      "sun_elevation_deg": 1.81442,
+      "earth_azimuth_deg": 4.020394,
+      "earth_elevation_deg": 3.344331
+    },
+    {
+      "timestamp_utc": "2026-11-28T03:45:00Z",
+      "sun_azimuth_deg": 314.603547,
+      "sun_elevation_deg": 1.81361,
+      "earth_azimuth_deg": 4.035625,
+      "earth_elevation_deg": 3.32896
+    },
+    {
+      "timestamp_utc": "2026-11-28T04:00:00Z",
+      "sun_azimuth_deg": 314.477069,
+      "sun_elevation_deg": 1.812799,
+      "earth_azimuth_deg": 4.050818,
+      "earth_elevation_deg": 3.313569
+    },
+    {
+      "timestamp_utc": "2026-11-28T04:15:00Z",
+      "sun_azimuth_deg": 314.35059,
+      "sun_elevation_deg": 1.811986,
+      "earth_azimuth_deg": 4.065973,
+      "earth_elevation_deg": 3.298159
+    },
+    {
+      "timestamp_utc": "2026-11-28T04:30:00Z",
+      "sun_azimuth_deg": 314.22411,
+      "sun_elevation_deg": 1.811172,
+      "earth_azimuth_deg": 4.08109,
+      "earth_elevation_deg": 3.282731
+    },
+    {
+      "timestamp_utc": "2026-11-28T04:45:00Z",
+      "sun_azimuth_deg": 314.09763,
+      "sun_elevation_deg": 1.810356,
+      "earth_azimuth_deg": 4.09617,
+      "earth_elevation_deg": 3.267283
+    },
+    {
+      "timestamp_utc": "2026-11-28T05:00:00Z",
+      "sun_azimuth_deg": 313.971149,
+      "sun_elevation_deg": 1.809539,
+      "earth_azimuth_deg": 4.111211,
+      "earth_elevation_deg": 3.251817
+    },
+    {
+      "timestamp_utc": "2026-11-28T05:15:00Z",
+      "sun_azimuth_deg": 313.844667,
+      "sun_elevation_deg": 1.808721,
+      "earth_azimuth_deg": 4.126213,
+      "earth_elevation_deg": 3.236332
+    },
+    {
+      "timestamp_utc": "2026-11-28T05:30:00Z",
+      "sun_azimuth_deg": 313.718186,
+      "sun_elevation_deg": 1.807901,
+      "earth_azimuth_deg": 4.141178,
+      "earth_elevation_deg": 3.220829
+    },
+    {
+      "timestamp_utc": "2026-11-28T05:45:00Z",
+      "sun_azimuth_deg": 313.591703,
+      "sun_elevation_deg": 1.807079,
+      "earth_azimuth_deg": 4.156104,
+      "earth_elevation_deg": 3.205307
+    },
+    {
+      "timestamp_utc": "2026-11-28T06:00:00Z",
+      "sun_azimuth_deg": 313.46522,
+      "sun_elevation_deg": 1.806256,
+      "earth_azimuth_deg": 4.170992,
+      "earth_elevation_deg": 3.189767
+    },
+    {
+      "timestamp_utc": "2026-11-28T06:15:00Z",
+      "sun_azimuth_deg": 313.338737,
+      "sun_elevation_deg": 1.805431,
+      "earth_azimuth_deg": 4.185841,
+      "earth_elevation_deg": 3.174209
+    },
+    {
+      "timestamp_utc": "2026-11-28T06:30:00Z",
+      "sun_azimuth_deg": 313.212252,
+      "sun_elevation_deg": 1.804605,
+      "earth_azimuth_deg": 4.200652,
+      "earth_elevation_deg": 3.158632
+    },
+    {
+      "timestamp_utc": "2026-11-28T06:45:00Z",
+      "sun_azimuth_deg": 313.085768,
+      "sun_elevation_deg": 1.803778,
+      "earth_azimuth_deg": 4.215424,
+      "earth_elevation_deg": 3.143039
+    },
+    {
+      "timestamp_utc": "2026-11-28T07:00:00Z",
+      "sun_azimuth_deg": 312.959283,
+      "sun_elevation_deg": 1.802948,
+      "earth_azimuth_deg": 4.230157,
+      "earth_elevation_deg": 3.127427
+    },
+    {
+      "timestamp_utc": "2026-11-28T07:15:00Z",
+      "sun_azimuth_deg": 312.832797,
+      "sun_elevation_deg": 1.802118,
+      "earth_azimuth_deg": 4.244852,
+      "earth_elevation_deg": 3.111798
+    },
+    {
+      "timestamp_utc": "2026-11-28T07:30:00Z",
+      "sun_azimuth_deg": 312.706311,
+      "sun_elevation_deg": 1.801286,
+      "earth_azimuth_deg": 4.259508,
+      "earth_elevation_deg": 3.096151
+    },
+    {
+      "timestamp_utc": "2026-11-28T07:45:00Z",
+      "sun_azimuth_deg": 312.579824,
+      "sun_elevation_deg": 1.800453,
+      "earth_azimuth_deg": 4.274125,
+      "earth_elevation_deg": 3.080487
+    },
+    {
+      "timestamp_utc": "2026-11-28T08:00:00Z",
+      "sun_azimuth_deg": 312.453336,
+      "sun_elevation_deg": 1.799618,
+      "earth_azimuth_deg": 4.288703,
+      "earth_elevation_deg": 3.064806
+    },
+    {
+      "timestamp_utc": "2026-11-28T08:15:00Z",
+      "sun_azimuth_deg": 312.326848,
+      "sun_elevation_deg": 1.798781,
+      "earth_azimuth_deg": 4.303243,
+      "earth_elevation_deg": 3.049108
+    },
+    {
+      "timestamp_utc": "2026-11-28T08:30:00Z",
+      "sun_azimuth_deg": 312.20036,
+      "sun_elevation_deg": 1.797944,
+      "earth_azimuth_deg": 4.317743,
+      "earth_elevation_deg": 3.033394
+    },
+    {
+      "timestamp_utc": "2026-11-28T08:45:00Z",
+      "sun_azimuth_deg": 312.073871,
+      "sun_elevation_deg": 1.797104,
+      "earth_azimuth_deg": 4.332204,
+      "earth_elevation_deg": 3.017662
+    },
+    {
+      "timestamp_utc": "2026-11-28T09:00:00Z",
+      "sun_azimuth_deg": 311.947381,
+      "sun_elevation_deg": 1.796264,
+      "earth_azimuth_deg": 4.346626,
+      "earth_elevation_deg": 3.001914
+    },
+    {
+      "timestamp_utc": "2026-11-28T09:15:00Z",
+      "sun_azimuth_deg": 311.820891,
+      "sun_elevation_deg": 1.795422,
+      "earth_azimuth_deg": 4.361008,
+      "earth_elevation_deg": 2.986149
+    },
+    {
+      "timestamp_utc": "2026-11-28T09:30:00Z",
+      "sun_azimuth_deg": 311.6944,
+      "sun_elevation_deg": 1.794578,
+      "earth_azimuth_deg": 4.375352,
+      "earth_elevation_deg": 2.970368
+    },
+    {
+      "timestamp_utc": "2026-11-28T09:45:00Z",
+      "sun_azimuth_deg": 311.567908,
+      "sun_elevation_deg": 1.793733,
+      "earth_azimuth_deg": 4.389656,
+      "earth_elevation_deg": 2.954571
+    },
+    {
+      "timestamp_utc": "2026-11-28T10:00:00Z",
+      "sun_azimuth_deg": 311.441417,
+      "sun_elevation_deg": 1.792887,
+      "earth_azimuth_deg": 4.40392,
+      "earth_elevation_deg": 2.938757
+    },
+    {
+      "timestamp_utc": "2026-11-28T10:15:00Z",
+      "sun_azimuth_deg": 311.314924,
+      "sun_elevation_deg": 1.792039,
+      "earth_azimuth_deg": 4.418145,
+      "earth_elevation_deg": 2.922928
+    },
+    {
+      "timestamp_utc": "2026-11-28T10:30:00Z",
+      "sun_azimuth_deg": 311.188431,
+      "sun_elevation_deg": 1.79119,
+      "earth_azimuth_deg": 4.432331,
+      "earth_elevation_deg": 2.907083
+    },
+    {
+      "timestamp_utc": "2026-11-28T10:45:00Z",
+      "sun_azimuth_deg": 311.061937,
+      "sun_elevation_deg": 1.790339,
+      "earth_azimuth_deg": 4.446477,
+      "earth_elevation_deg": 2.891222
+    },
+    {
+      "timestamp_utc": "2026-11-28T11:00:00Z",
+      "sun_azimuth_deg": 310.935443,
+      "sun_elevation_deg": 1.789487,
+      "earth_azimuth_deg": 4.460583,
+      "earth_elevation_deg": 2.875346
+    },
+    {
+      "timestamp_utc": "2026-11-28T11:15:00Z",
+      "sun_azimuth_deg": 310.808948,
+      "sun_elevation_deg": 1.788634,
+      "earth_azimuth_deg": 4.47465,
+      "earth_elevation_deg": 2.859454
+    },
+    {
+      "timestamp_utc": "2026-11-28T11:30:00Z",
+      "sun_azimuth_deg": 310.682453,
+      "sun_elevation_deg": 1.787779,
+      "earth_azimuth_deg": 4.488677,
+      "earth_elevation_deg": 2.843547
+    },
+    {
+      "timestamp_utc": "2026-11-28T11:45:00Z",
+      "sun_azimuth_deg": 310.555957,
+      "sun_elevation_deg": 1.786923,
+      "earth_azimuth_deg": 4.502664,
+      "earth_elevation_deg": 2.827625
+    },
+    {
+      "timestamp_utc": "2026-11-28T12:00:00Z",
+      "sun_azimuth_deg": 310.42946,
+      "sun_elevation_deg": 1.786065,
+      "earth_azimuth_deg": 4.516612,
+      "earth_elevation_deg": 2.811688
+    },
+    {
+      "timestamp_utc": "2026-11-28T12:15:00Z",
+      "sun_azimuth_deg": 310.302963,
+      "sun_elevation_deg": 1.785206,
+      "earth_azimuth_deg": 4.530519,
+      "earth_elevation_deg": 2.795736
+    },
+    {
+      "timestamp_utc": "2026-11-28T12:30:00Z",
+      "sun_azimuth_deg": 310.176466,
+      "sun_elevation_deg": 1.784346,
+      "earth_azimuth_deg": 4.544387,
+      "earth_elevation_deg": 2.77977
+    },
+    {
+      "timestamp_utc": "2026-11-28T12:45:00Z",
+      "sun_azimuth_deg": 310.049967,
+      "sun_elevation_deg": 1.783484,
+      "earth_azimuth_deg": 4.558214,
+      "earth_elevation_deg": 2.763788
+    },
+    {
+      "timestamp_utc": "2026-11-28T13:00:00Z",
+      "sun_azimuth_deg": 309.923469,
+      "sun_elevation_deg": 1.782621,
+      "earth_azimuth_deg": 4.572002,
+      "earth_elevation_deg": 2.747793
+    },
+    {
+      "timestamp_utc": "2026-11-28T13:15:00Z",
+      "sun_azimuth_deg": 309.796969,
+      "sun_elevation_deg": 1.781756,
+      "earth_azimuth_deg": 4.585749,
+      "earth_elevation_deg": 2.731783
+    },
+    {
+      "timestamp_utc": "2026-11-28T13:30:00Z",
+      "sun_azimuth_deg": 309.670469,
+      "sun_elevation_deg": 1.780891,
+      "earth_azimuth_deg": 4.599456,
+      "earth_elevation_deg": 2.715758
+    },
+    {
+      "timestamp_utc": "2026-11-28T13:45:00Z",
+      "sun_azimuth_deg": 309.543969,
+      "sun_elevation_deg": 1.780023,
+      "earth_azimuth_deg": 4.613123,
+      "earth_elevation_deg": 2.69972
+    },
+    {
+      "timestamp_utc": "2026-11-28T14:00:00Z",
+      "sun_azimuth_deg": 309.417468,
+      "sun_elevation_deg": 1.779155,
+      "earth_azimuth_deg": 4.62675,
+      "earth_elevation_deg": 2.683668
+    },
+    {
+      "timestamp_utc": "2026-11-28T14:15:00Z",
+      "sun_azimuth_deg": 309.290966,
+      "sun_elevation_deg": 1.778285,
+      "earth_azimuth_deg": 4.640337,
+      "earth_elevation_deg": 2.667602
+    },
+    {
+      "timestamp_utc": "2026-11-28T14:30:00Z",
+      "sun_azimuth_deg": 309.164463,
+      "sun_elevation_deg": 1.777414,
+      "earth_azimuth_deg": 4.653883,
+      "earth_elevation_deg": 2.651522
+    },
+    {
+      "timestamp_utc": "2026-11-28T14:45:00Z",
+      "sun_azimuth_deg": 309.037961,
+      "sun_elevation_deg": 1.776541,
+      "earth_azimuth_deg": 4.667389,
+      "earth_elevation_deg": 2.635428
+    },
+    {
+      "timestamp_utc": "2026-11-28T15:00:00Z",
+      "sun_azimuth_deg": 308.911457,
+      "sun_elevation_deg": 1.775667,
+      "earth_azimuth_deg": 4.680854,
+      "earth_elevation_deg": 2.619322
+    },
+    {
+      "timestamp_utc": "2026-11-28T15:15:00Z",
+      "sun_azimuth_deg": 308.784953,
+      "sun_elevation_deg": 1.774792,
+      "earth_azimuth_deg": 4.694279,
+      "earth_elevation_deg": 2.603202
+    },
+    {
+      "timestamp_utc": "2026-11-28T15:30:00Z",
+      "sun_azimuth_deg": 308.658448,
+      "sun_elevation_deg": 1.773915,
+      "earth_azimuth_deg": 4.707663,
+      "earth_elevation_deg": 2.587069
+    },
+    {
+      "timestamp_utc": "2026-11-28T15:45:00Z",
+      "sun_azimuth_deg": 308.531943,
+      "sun_elevation_deg": 1.773037,
+      "earth_azimuth_deg": 4.721007,
+      "earth_elevation_deg": 2.570923
+    },
+    {
+      "timestamp_utc": "2026-11-28T16:00:00Z",
+      "sun_azimuth_deg": 308.405437,
+      "sun_elevation_deg": 1.772158,
+      "earth_azimuth_deg": 4.73431,
+      "earth_elevation_deg": 2.554764
+    },
+    {
+      "timestamp_utc": "2026-11-28T16:15:00Z",
+      "sun_azimuth_deg": 308.278931,
+      "sun_elevation_deg": 1.771278,
+      "earth_azimuth_deg": 4.747573,
+      "earth_elevation_deg": 2.538592
+    },
+    {
+      "timestamp_utc": "2026-11-28T16:30:00Z",
+      "sun_azimuth_deg": 308.152424,
+      "sun_elevation_deg": 1.770396,
+      "earth_azimuth_deg": 4.760795,
+      "earth_elevation_deg": 2.522408
+    },
+    {
+      "timestamp_utc": "2026-11-28T16:45:00Z",
+      "sun_azimuth_deg": 308.025916,
+      "sun_elevation_deg": 1.769513,
+      "earth_azimuth_deg": 4.773976,
+      "earth_elevation_deg": 2.506211
+    },
+    {
+      "timestamp_utc": "2026-11-28T17:00:00Z",
+      "sun_azimuth_deg": 307.899408,
+      "sun_elevation_deg": 1.768628,
+      "earth_azimuth_deg": 4.787116,
+      "earth_elevation_deg": 2.490002
+    },
+    {
+      "timestamp_utc": "2026-11-28T17:15:00Z",
+      "sun_azimuth_deg": 307.772899,
+      "sun_elevation_deg": 1.767742,
+      "earth_azimuth_deg": 4.800216,
+      "earth_elevation_deg": 2.473781
+    },
+    {
+      "timestamp_utc": "2026-11-28T17:30:00Z",
+      "sun_azimuth_deg": 307.646389,
+      "sun_elevation_deg": 1.766855,
+      "earth_azimuth_deg": 4.813275,
+      "earth_elevation_deg": 2.457547
+    },
+    {
+      "timestamp_utc": "2026-11-28T17:45:00Z",
+      "sun_azimuth_deg": 307.519879,
+      "sun_elevation_deg": 1.765967,
+      "earth_azimuth_deg": 4.826293,
+      "earth_elevation_deg": 2.441302
+    },
+    {
+      "timestamp_utc": "2026-11-28T18:00:00Z",
+      "sun_azimuth_deg": 307.393369,
+      "sun_elevation_deg": 1.765077,
+      "earth_azimuth_deg": 4.83927,
+      "earth_elevation_deg": 2.425045
+    },
+    {
+      "timestamp_utc": "2026-11-28T18:15:00Z",
+      "sun_azimuth_deg": 307.266858,
+      "sun_elevation_deg": 1.764186,
+      "earth_azimuth_deg": 4.852206,
+      "earth_elevation_deg": 2.408776
+    },
+    {
+      "timestamp_utc": "2026-11-28T18:30:00Z",
+      "sun_azimuth_deg": 307.140346,
+      "sun_elevation_deg": 1.763294,
+      "earth_azimuth_deg": 4.865101,
+      "earth_elevation_deg": 2.392495
+    },
+    {
+      "timestamp_utc": "2026-11-28T18:45:00Z",
+      "sun_azimuth_deg": 307.013833,
+      "sun_elevation_deg": 1.762401,
+      "earth_azimuth_deg": 4.877955,
+      "earth_elevation_deg": 2.376204
+    },
+    {
+      "timestamp_utc": "2026-11-28T19:00:00Z",
+      "sun_azimuth_deg": 306.88732,
+      "sun_elevation_deg": 1.761506,
+      "earth_azimuth_deg": 4.890768,
+      "earth_elevation_deg": 2.3599
+    },
+    {
+      "timestamp_utc": "2026-11-28T19:15:00Z",
+      "sun_azimuth_deg": 306.760807,
+      "sun_elevation_deg": 1.76061,
+      "earth_azimuth_deg": 4.90354,
+      "earth_elevation_deg": 2.343586
+    },
+    {
+      "timestamp_utc": "2026-11-28T19:30:00Z",
+      "sun_azimuth_deg": 306.634292,
+      "sun_elevation_deg": 1.759712,
+      "earth_azimuth_deg": 4.91627,
+      "earth_elevation_deg": 2.327261
+    },
+    {
+      "timestamp_utc": "2026-11-28T19:45:00Z",
+      "sun_azimuth_deg": 306.507777,
+      "sun_elevation_deg": 1.758814,
+      "earth_azimuth_deg": 4.92896,
+      "earth_elevation_deg": 2.310925
+    },
+    {
+      "timestamp_utc": "2026-11-28T20:00:00Z",
+      "sun_azimuth_deg": 306.381262,
+      "sun_elevation_deg": 1.757914,
+      "earth_azimuth_deg": 4.941608,
+      "earth_elevation_deg": 2.294578
+    },
+    {
+      "timestamp_utc": "2026-11-28T20:15:00Z",
+      "sun_azimuth_deg": 306.254746,
+      "sun_elevation_deg": 1.757013,
+      "earth_azimuth_deg": 4.954215,
+      "earth_elevation_deg": 2.27822
+    },
+    {
+      "timestamp_utc": "2026-11-28T20:30:00Z",
+      "sun_azimuth_deg": 306.128229,
+      "sun_elevation_deg": 1.756111,
+      "earth_azimuth_deg": 4.966781,
+      "earth_elevation_deg": 2.261852
+    },
+    {
+      "timestamp_utc": "2026-11-28T20:45:00Z",
+      "sun_azimuth_deg": 306.001712,
+      "sun_elevation_deg": 1.755207,
+      "earth_azimuth_deg": 4.979306,
+      "earth_elevation_deg": 2.245474
+    },
+    {
+      "timestamp_utc": "2026-11-28T21:00:00Z",
+      "sun_azimuth_deg": 305.875194,
+      "sun_elevation_deg": 1.754302,
+      "earth_azimuth_deg": 4.991789,
+      "earth_elevation_deg": 2.229085
+    },
+    {
+      "timestamp_utc": "2026-11-28T21:15:00Z",
+      "sun_azimuth_deg": 305.748675,
+      "sun_elevation_deg": 1.753397,
+      "earth_azimuth_deg": 5.004231,
+      "earth_elevation_deg": 2.212686
+    },
+    {
+      "timestamp_utc": "2026-11-28T21:30:00Z",
+      "sun_azimuth_deg": 305.622156,
+      "sun_elevation_deg": 1.752489,
+      "earth_azimuth_deg": 5.016631,
+      "earth_elevation_deg": 2.196278
+    },
+    {
+      "timestamp_utc": "2026-11-28T21:45:00Z",
+      "sun_azimuth_deg": 305.495637,
+      "sun_elevation_deg": 1.751581,
+      "earth_azimuth_deg": 5.02899,
+      "earth_elevation_deg": 2.179859
+    },
+    {
+      "timestamp_utc": "2026-11-28T22:00:00Z",
+      "sun_azimuth_deg": 305.369116,
+      "sun_elevation_deg": 1.750671,
+      "earth_azimuth_deg": 5.041308,
+      "earth_elevation_deg": 2.163431
+    },
+    {
+      "timestamp_utc": "2026-11-28T22:15:00Z",
+      "sun_azimuth_deg": 305.242595,
+      "sun_elevation_deg": 1.74976,
+      "earth_azimuth_deg": 5.053584,
+      "earth_elevation_deg": 2.146993
+    },
+    {
+      "timestamp_utc": "2026-11-28T22:30:00Z",
+      "sun_azimuth_deg": 305.116074,
+      "sun_elevation_deg": 1.748848,
+      "earth_azimuth_deg": 5.065819,
+      "earth_elevation_deg": 2.130546
+    },
+    {
+      "timestamp_utc": "2026-11-28T22:45:00Z",
+      "sun_azimuth_deg": 304.989551,
+      "sun_elevation_deg": 1.747935,
+      "earth_azimuth_deg": 5.078012,
+      "earth_elevation_deg": 2.114089
+    },
+    {
+      "timestamp_utc": "2026-11-28T23:00:00Z",
+      "sun_azimuth_deg": 304.863029,
+      "sun_elevation_deg": 1.747021,
+      "earth_azimuth_deg": 5.090164,
+      "earth_elevation_deg": 2.097623
+    },
+    {
+      "timestamp_utc": "2026-11-28T23:15:00Z",
+      "sun_azimuth_deg": 304.736505,
+      "sun_elevation_deg": 1.746105,
+      "earth_azimuth_deg": 5.102274,
+      "earth_elevation_deg": 2.081148
+    },
+    {
+      "timestamp_utc": "2026-11-28T23:30:00Z",
+      "sun_azimuth_deg": 304.609981,
+      "sun_elevation_deg": 1.745188,
+      "earth_azimuth_deg": 5.114342,
+      "earth_elevation_deg": 2.064664
+    },
+    {
+      "timestamp_utc": "2026-11-28T23:45:00Z",
+      "sun_azimuth_deg": 304.483456,
+      "sun_elevation_deg": 1.74427,
+      "earth_azimuth_deg": 5.126369,
+      "earth_elevation_deg": 2.048171
+    },
+    {
+      "timestamp_utc": "2026-11-29T00:00:00Z",
+      "sun_azimuth_deg": 304.356931,
+      "sun_elevation_deg": 1.743351,
+      "earth_azimuth_deg": 5.138354,
+      "earth_elevation_deg": 2.03167
+    },
+    {
+      "timestamp_utc": "2026-11-29T00:15:00Z",
+      "sun_azimuth_deg": 304.230405,
+      "sun_elevation_deg": 1.74243,
+      "earth_azimuth_deg": 5.150298,
+      "earth_elevation_deg": 2.01516
+    },
+    {
+      "timestamp_utc": "2026-11-29T00:30:00Z",
+      "sun_azimuth_deg": 304.103879,
+      "sun_elevation_deg": 1.741509,
+      "earth_azimuth_deg": 5.1622,
+      "earth_elevation_deg": 1.998642
+    },
+    {
+      "timestamp_utc": "2026-11-29T00:45:00Z",
+      "sun_azimuth_deg": 303.977351,
+      "sun_elevation_deg": 1.740586,
+      "earth_azimuth_deg": 5.17406,
+      "earth_elevation_deg": 1.982115
+    },
+    {
+      "timestamp_utc": "2026-11-29T01:00:00Z",
+      "sun_azimuth_deg": 303.850824,
+      "sun_elevation_deg": 1.739662,
+      "earth_azimuth_deg": 5.185878,
+      "earth_elevation_deg": 1.96558
+    },
+    {
+      "timestamp_utc": "2026-11-29T01:15:00Z",
+      "sun_azimuth_deg": 303.724295,
+      "sun_elevation_deg": 1.738737,
+      "earth_azimuth_deg": 5.197655,
+      "earth_elevation_deg": 1.949037
+    },
+    {
+      "timestamp_utc": "2026-11-29T01:30:00Z",
+      "sun_azimuth_deg": 303.597766,
+      "sun_elevation_deg": 1.737811,
+      "earth_azimuth_deg": 5.20939,
+      "earth_elevation_deg": 1.932486
+    },
+    {
+      "timestamp_utc": "2026-11-29T01:45:00Z",
+      "sun_azimuth_deg": 303.471237,
+      "sun_elevation_deg": 1.736883,
+      "earth_azimuth_deg": 5.221083,
+      "earth_elevation_deg": 1.915928
+    },
+    {
+      "timestamp_utc": "2026-11-29T02:00:00Z",
+      "sun_azimuth_deg": 303.344706,
+      "sun_elevation_deg": 1.735955,
+      "earth_azimuth_deg": 5.232734,
+      "earth_elevation_deg": 1.899362
+    },
+    {
+      "timestamp_utc": "2026-11-29T02:15:00Z",
+      "sun_azimuth_deg": 303.218175,
+      "sun_elevation_deg": 1.735025,
+      "earth_azimuth_deg": 5.244343,
+      "earth_elevation_deg": 1.882788
+    },
+    {
+      "timestamp_utc": "2026-11-29T02:30:00Z",
+      "sun_azimuth_deg": 303.091644,
+      "sun_elevation_deg": 1.734094,
+      "earth_azimuth_deg": 5.255911,
+      "earth_elevation_deg": 1.866207
+    },
+    {
+      "timestamp_utc": "2026-11-29T02:45:00Z",
+      "sun_azimuth_deg": 302.965112,
+      "sun_elevation_deg": 1.733162,
+      "earth_azimuth_deg": 5.267437,
+      "earth_elevation_deg": 1.849618
+    },
+    {
+      "timestamp_utc": "2026-11-29T03:00:00Z",
+      "sun_azimuth_deg": 302.838579,
+      "sun_elevation_deg": 1.732229,
+      "earth_azimuth_deg": 5.278921,
+      "earth_elevation_deg": 1.833023
+    },
+    {
+      "timestamp_utc": "2026-11-29T03:15:00Z",
+      "sun_azimuth_deg": 302.712045,
+      "sun_elevation_deg": 1.731295,
+      "earth_azimuth_deg": 5.290363,
+      "earth_elevation_deg": 1.81642
+    },
+    {
+      "timestamp_utc": "2026-11-29T03:30:00Z",
+      "sun_azimuth_deg": 302.585511,
+      "sun_elevation_deg": 1.73036,
+      "earth_azimuth_deg": 5.301763,
+      "earth_elevation_deg": 1.79981
+    },
+    {
+      "timestamp_utc": "2026-11-29T03:45:00Z",
+      "sun_azimuth_deg": 302.458976,
+      "sun_elevation_deg": 1.729423,
+      "earth_azimuth_deg": 5.313121,
+      "earth_elevation_deg": 1.783194
+    },
+    {
+      "timestamp_utc": "2026-11-29T04:00:00Z",
+      "sun_azimuth_deg": 302.332441,
+      "sun_elevation_deg": 1.728486,
+      "earth_azimuth_deg": 5.324437,
+      "earth_elevation_deg": 1.766571
+    },
+    {
+      "timestamp_utc": "2026-11-29T04:15:00Z",
+      "sun_azimuth_deg": 302.205905,
+      "sun_elevation_deg": 1.727547,
+      "earth_azimuth_deg": 5.335711,
+      "earth_elevation_deg": 1.749942
+    },
+    {
+      "timestamp_utc": "2026-11-29T04:30:00Z",
+      "sun_azimuth_deg": 302.079369,
+      "sun_elevation_deg": 1.726608,
+      "earth_azimuth_deg": 5.346943,
+      "earth_elevation_deg": 1.733306
+    },
+    {
+      "timestamp_utc": "2026-11-29T04:45:00Z",
+      "sun_azimuth_deg": 301.952831,
+      "sun_elevation_deg": 1.725667,
+      "earth_azimuth_deg": 5.358133,
+      "earth_elevation_deg": 1.716664
+    },
+    {
+      "timestamp_utc": "2026-11-29T05:00:00Z",
+      "sun_azimuth_deg": 301.826293,
+      "sun_elevation_deg": 1.724725,
+      "earth_azimuth_deg": 5.369282,
+      "earth_elevation_deg": 1.700016
+    },
+    {
+      "timestamp_utc": "2026-11-29T05:15:00Z",
+      "sun_azimuth_deg": 301.699755,
+      "sun_elevation_deg": 1.723782,
+      "earth_azimuth_deg": 5.380388,
+      "earth_elevation_deg": 1.683361
+    },
+    {
+      "timestamp_utc": "2026-11-29T05:30:00Z",
+      "sun_azimuth_deg": 301.573216,
+      "sun_elevation_deg": 1.722838,
+      "earth_azimuth_deg": 5.391452,
+      "earth_elevation_deg": 1.666701
+    },
+    {
+      "timestamp_utc": "2026-11-29T05:45:00Z",
+      "sun_azimuth_deg": 301.446676,
+      "sun_elevation_deg": 1.721893,
+      "earth_azimuth_deg": 5.402474,
+      "earth_elevation_deg": 1.650035
+    },
+    {
+      "timestamp_utc": "2026-11-29T06:00:00Z",
+      "sun_azimuth_deg": 301.320135,
+      "sun_elevation_deg": 1.720946,
+      "earth_azimuth_deg": 5.413454,
+      "earth_elevation_deg": 1.633364
+    },
+    {
+      "timestamp_utc": "2026-11-29T06:15:00Z",
+      "sun_azimuth_deg": 301.193594,
+      "sun_elevation_deg": 1.719999,
+      "earth_azimuth_deg": 5.424393,
+      "earth_elevation_deg": 1.616687
+    },
+    {
+      "timestamp_utc": "2026-11-29T06:30:00Z",
+      "sun_azimuth_deg": 301.067053,
+      "sun_elevation_deg": 1.719051,
+      "earth_azimuth_deg": 5.435289,
+      "earth_elevation_deg": 1.600004
+    },
+    {
+      "timestamp_utc": "2026-11-29T06:45:00Z",
+      "sun_azimuth_deg": 300.94051,
+      "sun_elevation_deg": 1.718101,
+      "earth_azimuth_deg": 5.446143,
+      "earth_elevation_deg": 1.583317
+    },
+    {
+      "timestamp_utc": "2026-11-29T07:00:00Z",
+      "sun_azimuth_deg": 300.813967,
+      "sun_elevation_deg": 1.717151,
+      "earth_azimuth_deg": 5.456954,
+      "earth_elevation_deg": 1.566624
+    },
+    {
+      "timestamp_utc": "2026-11-29T07:15:00Z",
+      "sun_azimuth_deg": 300.687424,
+      "sun_elevation_deg": 1.716199,
+      "earth_azimuth_deg": 5.467724,
+      "earth_elevation_deg": 1.549926
+    },
+    {
+      "timestamp_utc": "2026-11-29T07:30:00Z",
+      "sun_azimuth_deg": 300.560879,
+      "sun_elevation_deg": 1.715246,
+      "earth_azimuth_deg": 5.478452,
+      "earth_elevation_deg": 1.533223
+    },
+    {
+      "timestamp_utc": "2026-11-29T07:45:00Z",
+      "sun_azimuth_deg": 300.434334,
+      "sun_elevation_deg": 1.714293,
+      "earth_azimuth_deg": 5.489137,
+      "earth_elevation_deg": 1.516516
+    },
+    {
+      "timestamp_utc": "2026-11-29T08:00:00Z",
+      "sun_azimuth_deg": 300.307789,
+      "sun_elevation_deg": 1.713338,
+      "earth_azimuth_deg": 5.499781,
+      "earth_elevation_deg": 1.499804
+    },
+    {
+      "timestamp_utc": "2026-11-29T08:15:00Z",
+      "sun_azimuth_deg": 300.181243,
+      "sun_elevation_deg": 1.712382,
+      "earth_azimuth_deg": 5.510382,
+      "earth_elevation_deg": 1.483087
+    },
+    {
+      "timestamp_utc": "2026-11-29T08:30:00Z",
+      "sun_azimuth_deg": 300.054696,
+      "sun_elevation_deg": 1.711426,
+      "earth_azimuth_deg": 5.520942,
+      "earth_elevation_deg": 1.466366
+    },
+    {
+      "timestamp_utc": "2026-11-29T08:45:00Z",
+      "sun_azimuth_deg": 299.928148,
+      "sun_elevation_deg": 1.710468,
+      "earth_azimuth_deg": 5.531459,
+      "earth_elevation_deg": 1.449641
+    },
+    {
+      "timestamp_utc": "2026-11-29T09:00:00Z",
+      "sun_azimuth_deg": 299.8016,
+      "sun_elevation_deg": 1.709509,
+      "earth_azimuth_deg": 5.541934,
+      "earth_elevation_deg": 1.432912
+    },
+    {
+      "timestamp_utc": "2026-11-29T09:15:00Z",
+      "sun_azimuth_deg": 299.675051,
+      "sun_elevation_deg": 1.708549,
+      "earth_azimuth_deg": 5.552367,
+      "earth_elevation_deg": 1.416178
+    },
+    {
+      "timestamp_utc": "2026-11-29T09:30:00Z",
+      "sun_azimuth_deg": 299.548502,
+      "sun_elevation_deg": 1.707589,
+      "earth_azimuth_deg": 5.562757,
+      "earth_elevation_deg": 1.399441
+    },
+    {
+      "timestamp_utc": "2026-11-29T09:45:00Z",
+      "sun_azimuth_deg": 299.421952,
+      "sun_elevation_deg": 1.706627,
+      "earth_azimuth_deg": 5.573106,
+      "earth_elevation_deg": 1.3827
+    },
+    {
+      "timestamp_utc": "2026-11-29T10:00:00Z",
+      "sun_azimuth_deg": 299.295401,
+      "sun_elevation_deg": 1.705664,
+      "earth_azimuth_deg": 5.583412,
+      "earth_elevation_deg": 1.365955
+    },
+    {
+      "timestamp_utc": "2026-11-29T10:15:00Z",
+      "sun_azimuth_deg": 299.168849,
+      "sun_elevation_deg": 1.7047,
+      "earth_azimuth_deg": 5.593677,
+      "earth_elevation_deg": 1.349207
+    },
+    {
+      "timestamp_utc": "2026-11-29T10:30:00Z",
+      "sun_azimuth_deg": 299.042297,
+      "sun_elevation_deg": 1.703735,
+      "earth_azimuth_deg": 5.603899,
+      "earth_elevation_deg": 1.332455
+    },
+    {
+      "timestamp_utc": "2026-11-29T10:45:00Z",
+      "sun_azimuth_deg": 298.915745,
+      "sun_elevation_deg": 1.702769,
+      "earth_azimuth_deg": 5.614079,
+      "earth_elevation_deg": 1.3157
+    },
+    {
+      "timestamp_utc": "2026-11-29T11:00:00Z",
+      "sun_azimuth_deg": 298.789191,
+      "sun_elevation_deg": 1.701803,
+      "earth_azimuth_deg": 5.624217,
+      "earth_elevation_deg": 1.298942
+    },
+    {
+      "timestamp_utc": "2026-11-29T11:15:00Z",
+      "sun_azimuth_deg": 298.662637,
+      "sun_elevation_deg": 1.700835,
+      "earth_azimuth_deg": 5.634313,
+      "earth_elevation_deg": 1.282181
+    },
+    {
+      "timestamp_utc": "2026-11-29T11:30:00Z",
+      "sun_azimuth_deg": 298.536082,
+      "sun_elevation_deg": 1.699866,
+      "earth_azimuth_deg": 5.644366,
+      "earth_elevation_deg": 1.265417
+    },
+    {
+      "timestamp_utc": "2026-11-29T11:45:00Z",
+      "sun_azimuth_deg": 298.409527,
+      "sun_elevation_deg": 1.698897,
+      "earth_azimuth_deg": 5.654378,
+      "earth_elevation_deg": 1.24865
+    },
+    {
+      "timestamp_utc": "2026-11-29T12:00:00Z",
+      "sun_azimuth_deg": 298.282971,
+      "sun_elevation_deg": 1.697926,
+      "earth_azimuth_deg": 5.664347,
+      "earth_elevation_deg": 1.23188
+    },
+    {
+      "timestamp_utc": "2026-11-29T12:15:00Z",
+      "sun_azimuth_deg": 298.156415,
+      "sun_elevation_deg": 1.696954,
+      "earth_azimuth_deg": 5.674274,
+      "earth_elevation_deg": 1.215108
+    },
+    {
+      "timestamp_utc": "2026-11-29T12:30:00Z",
+      "sun_azimuth_deg": 298.029857,
+      "sun_elevation_deg": 1.695982,
+      "earth_azimuth_deg": 5.684159,
+      "earth_elevation_deg": 1.198333
+    },
+    {
+      "timestamp_utc": "2026-11-29T12:45:00Z",
+      "sun_azimuth_deg": 297.903299,
+      "sun_elevation_deg": 1.695008,
+      "earth_azimuth_deg": 5.694002,
+      "earth_elevation_deg": 1.181556
+    },
+    {
+      "timestamp_utc": "2026-11-29T13:00:00Z",
+      "sun_azimuth_deg": 297.776741,
+      "sun_elevation_deg": 1.694034,
+      "earth_azimuth_deg": 5.703803,
+      "earth_elevation_deg": 1.164777
+    },
+    {
+      "timestamp_utc": "2026-11-29T13:15:00Z",
+      "sun_azimuth_deg": 297.650181,
+      "sun_elevation_deg": 1.693058,
+      "earth_azimuth_deg": 5.713561,
+      "earth_elevation_deg": 1.147996
+    },
+    {
+      "timestamp_utc": "2026-11-29T13:30:00Z",
+      "sun_azimuth_deg": 297.523621,
+      "sun_elevation_deg": 1.692082,
+      "earth_azimuth_deg": 5.723278,
+      "earth_elevation_deg": 1.131213
+    },
+    {
+      "timestamp_utc": "2026-11-29T13:45:00Z",
+      "sun_azimuth_deg": 297.397061,
+      "sun_elevation_deg": 1.691105,
+      "earth_azimuth_deg": 5.732952,
+      "earth_elevation_deg": 1.114428
+    },
+    {
+      "timestamp_utc": "2026-11-29T14:00:00Z",
+      "sun_azimuth_deg": 297.2705,
+      "sun_elevation_deg": 1.690126,
+      "earth_azimuth_deg": 5.742585,
+      "earth_elevation_deg": 1.097641
+    },
+    {
+      "timestamp_utc": "2026-11-29T14:15:00Z",
+      "sun_azimuth_deg": 297.143938,
+      "sun_elevation_deg": 1.689147,
+      "earth_azimuth_deg": 5.752175,
+      "earth_elevation_deg": 1.080853
+    },
+    {
+      "timestamp_utc": "2026-11-29T14:30:00Z",
+      "sun_azimuth_deg": 297.017375,
+      "sun_elevation_deg": 1.688167,
+      "earth_azimuth_deg": 5.761723,
+      "earth_elevation_deg": 1.064063
+    },
+    {
+      "timestamp_utc": "2026-11-29T14:45:00Z",
+      "sun_azimuth_deg": 296.890812,
+      "sun_elevation_deg": 1.687186,
+      "earth_azimuth_deg": 5.771229,
+      "earth_elevation_deg": 1.047272
+    },
+    {
+      "timestamp_utc": "2026-11-29T15:00:00Z",
+      "sun_azimuth_deg": 296.764248,
+      "sun_elevation_deg": 1.686204,
+      "earth_azimuth_deg": 5.780693,
+      "earth_elevation_deg": 1.030479
+    },
+    {
+      "timestamp_utc": "2026-11-29T15:15:00Z",
+      "sun_azimuth_deg": 296.637683,
+      "sun_elevation_deg": 1.685222,
+      "earth_azimuth_deg": 5.790115,
+      "earth_elevation_deg": 1.013686
+    },
+    {
+      "timestamp_utc": "2026-11-29T15:30:00Z",
+      "sun_azimuth_deg": 296.511118,
+      "sun_elevation_deg": 1.684238,
+      "earth_azimuth_deg": 5.799495,
+      "earth_elevation_deg": 0.996891
+    },
+    {
+      "timestamp_utc": "2026-11-29T15:45:00Z",
+      "sun_azimuth_deg": 296.384552,
+      "sun_elevation_deg": 1.683253,
+      "earth_azimuth_deg": 5.808832,
+      "earth_elevation_deg": 0.980096
+    },
+    {
+      "timestamp_utc": "2026-11-29T16:00:00Z",
+      "sun_azimuth_deg": 296.257986,
+      "sun_elevation_deg": 1.682268,
+      "earth_azimuth_deg": 5.818128,
+      "earth_elevation_deg": 0.9633
+    },
+    {
+      "timestamp_utc": "2026-11-29T16:15:00Z",
+      "sun_azimuth_deg": 296.131419,
+      "sun_elevation_deg": 1.681282,
+      "earth_azimuth_deg": 5.827382,
+      "earth_elevation_deg": 0.946503
+    },
+    {
+      "timestamp_utc": "2026-11-29T16:30:00Z",
+      "sun_azimuth_deg": 296.004851,
+      "sun_elevation_deg": 1.680294,
+      "earth_azimuth_deg": 5.836593,
+      "earth_elevation_deg": 0.929706
+    },
+    {
+      "timestamp_utc": "2026-11-29T16:45:00Z",
+      "sun_azimuth_deg": 295.878282,
+      "sun_elevation_deg": 1.679306,
+      "earth_azimuth_deg": 5.845763,
+      "earth_elevation_deg": 0.912908
+    },
+    {
+      "timestamp_utc": "2026-11-29T17:00:00Z",
+      "sun_azimuth_deg": 295.751713,
+      "sun_elevation_deg": 1.678317,
+      "earth_azimuth_deg": 5.85489,
+      "earth_elevation_deg": 0.89611
+    },
+    {
+      "timestamp_utc": "2026-11-29T17:15:00Z",
+      "sun_azimuth_deg": 295.625143,
+      "sun_elevation_deg": 1.677327,
+      "earth_azimuth_deg": 5.863976,
+      "earth_elevation_deg": 0.879311
+    },
+    {
+      "timestamp_utc": "2026-11-29T17:30:00Z",
+      "sun_azimuth_deg": 295.498572,
+      "sun_elevation_deg": 1.676337,
+      "earth_azimuth_deg": 5.873019,
+      "earth_elevation_deg": 0.862513
+    },
+    {
+      "timestamp_utc": "2026-11-29T17:45:00Z",
+      "sun_azimuth_deg": 295.372001,
+      "sun_elevation_deg": 1.675345,
+      "earth_azimuth_deg": 5.882021,
+      "earth_elevation_deg": 0.845715
+    },
+    {
+      "timestamp_utc": "2026-11-29T18:00:00Z",
+      "sun_azimuth_deg": 295.245429,
+      "sun_elevation_deg": 1.674353,
+      "earth_azimuth_deg": 5.89098,
+      "earth_elevation_deg": 0.828916
+    },
+    {
+      "timestamp_utc": "2026-11-29T18:15:00Z",
+      "sun_azimuth_deg": 295.118857,
+      "sun_elevation_deg": 1.673359,
+      "earth_azimuth_deg": 5.899898,
+      "earth_elevation_deg": 0.812119
+    },
+    {
+      "timestamp_utc": "2026-11-29T18:30:00Z",
+      "sun_azimuth_deg": 294.992284,
+      "sun_elevation_deg": 1.672365,
+      "earth_azimuth_deg": 5.908774,
+      "earth_elevation_deg": 0.795321
+    },
+    {
+      "timestamp_utc": "2026-11-29T18:45:00Z",
+      "sun_azimuth_deg": 294.86571,
+      "sun_elevation_deg": 1.67137,
+      "earth_azimuth_deg": 5.917608,
+      "earth_elevation_deg": 0.778524
+    },
+    {
+      "timestamp_utc": "2026-11-29T19:00:00Z",
+      "sun_azimuth_deg": 294.739135,
+      "sun_elevation_deg": 1.670375,
+      "earth_azimuth_deg": 5.926399,
+      "earth_elevation_deg": 0.761728
+    },
+    {
+      "timestamp_utc": "2026-11-29T19:15:00Z",
+      "sun_azimuth_deg": 294.61256,
+      "sun_elevation_deg": 1.669378,
+      "earth_azimuth_deg": 5.935149,
+      "earth_elevation_deg": 0.744932
+    },
+    {
+      "timestamp_utc": "2026-11-29T19:30:00Z",
+      "sun_azimuth_deg": 294.485984,
+      "sun_elevation_deg": 1.66838,
+      "earth_azimuth_deg": 5.943857,
+      "earth_elevation_deg": 0.728137
+    },
+    {
+      "timestamp_utc": "2026-11-29T19:45:00Z",
+      "sun_azimuth_deg": 294.359407,
+      "sun_elevation_deg": 1.667382,
+      "earth_azimuth_deg": 5.952524,
+      "earth_elevation_deg": 0.711344
+    },
+    {
+      "timestamp_utc": "2026-11-29T20:00:00Z",
+      "sun_azimuth_deg": 294.23283,
+      "sun_elevation_deg": 1.666383,
+      "earth_azimuth_deg": 5.961148,
+      "earth_elevation_deg": 0.694551
+    },
+    {
+      "timestamp_utc": "2026-11-29T20:15:00Z",
+      "sun_azimuth_deg": 294.106252,
+      "sun_elevation_deg": 1.665383,
+      "earth_azimuth_deg": 5.969731,
+      "earth_elevation_deg": 0.677759
+    },
+    {
+      "timestamp_utc": "2026-11-29T20:30:00Z",
+      "sun_azimuth_deg": 293.979674,
+      "sun_elevation_deg": 1.664383,
+      "earth_azimuth_deg": 5.978271,
+      "earth_elevation_deg": 0.660969
+    },
+    {
+      "timestamp_utc": "2026-11-29T20:45:00Z",
+      "sun_azimuth_deg": 293.853094,
+      "sun_elevation_deg": 1.663381,
+      "earth_azimuth_deg": 5.98677,
+      "earth_elevation_deg": 0.644181
+    },
+    {
+      "timestamp_utc": "2026-11-29T21:00:00Z",
+      "sun_azimuth_deg": 293.726515,
+      "sun_elevation_deg": 1.662379,
+      "earth_azimuth_deg": 5.995227,
+      "earth_elevation_deg": 0.627393
+    },
+    {
+      "timestamp_utc": "2026-11-29T21:15:00Z",
+      "sun_azimuth_deg": 293.599934,
+      "sun_elevation_deg": 1.661376,
+      "earth_azimuth_deg": 6.003643,
+      "earth_elevation_deg": 0.610608
+    },
+    {
+      "timestamp_utc": "2026-11-29T21:30:00Z",
+      "sun_azimuth_deg": 293.473353,
+      "sun_elevation_deg": 1.660372,
+      "earth_azimuth_deg": 6.012016,
+      "earth_elevation_deg": 0.593824
+    },
+    {
+      "timestamp_utc": "2026-11-29T21:45:00Z",
+      "sun_azimuth_deg": 293.346771,
+      "sun_elevation_deg": 1.659367,
+      "earth_azimuth_deg": 6.020348,
+      "earth_elevation_deg": 0.577042
+    },
+    {
+      "timestamp_utc": "2026-11-29T22:00:00Z",
+      "sun_azimuth_deg": 293.220188,
+      "sun_elevation_deg": 1.658362,
+      "earth_azimuth_deg": 6.028638,
+      "earth_elevation_deg": 0.560262
+    },
+    {
+      "timestamp_utc": "2026-11-29T22:15:00Z",
+      "sun_azimuth_deg": 293.093605,
+      "sun_elevation_deg": 1.657356,
+      "earth_azimuth_deg": 6.036887,
+      "earth_elevation_deg": 0.543484
+    },
+    {
+      "timestamp_utc": "2026-11-29T22:30:00Z",
+      "sun_azimuth_deg": 292.967021,
+      "sun_elevation_deg": 1.656349,
+      "earth_azimuth_deg": 6.045093,
+      "earth_elevation_deg": 0.526709
+    },
+    {
+      "timestamp_utc": "2026-11-29T22:45:00Z",
+      "sun_azimuth_deg": 292.840436,
+      "sun_elevation_deg": 1.655341,
+      "earth_azimuth_deg": 6.053259,
+      "earth_elevation_deg": 0.509936
+    },
+    {
+      "timestamp_utc": "2026-11-29T23:00:00Z",
+      "sun_azimuth_deg": 292.713851,
+      "sun_elevation_deg": 1.654332,
+      "earth_azimuth_deg": 6.061382,
+      "earth_elevation_deg": 0.493165
+    },
+    {
+      "timestamp_utc": "2026-11-29T23:15:00Z",
+      "sun_azimuth_deg": 292.587265,
+      "sun_elevation_deg": 1.653323,
+      "earth_azimuth_deg": 6.069464,
+      "earth_elevation_deg": 0.476397
+    },
+    {
+      "timestamp_utc": "2026-11-29T23:30:00Z",
+      "sun_azimuth_deg": 292.460678,
+      "sun_elevation_deg": 1.652313,
+      "earth_azimuth_deg": 6.077504,
+      "earth_elevation_deg": 0.459631
+    },
+    {
+      "timestamp_utc": "2026-11-29T23:45:00Z",
+      "sun_azimuth_deg": 292.334091,
+      "sun_elevation_deg": 1.651302,
+      "earth_azimuth_deg": 6.085503,
+      "earth_elevation_deg": 0.442868
+    },
+    {
+      "timestamp_utc": "2026-11-30T00:00:00Z",
+      "sun_azimuth_deg": 292.207503,
+      "sun_elevation_deg": 1.650291,
+      "earth_azimuth_deg": 6.09346,
+      "earth_elevation_deg": 0.426108
+    },
+    {
+      "timestamp_utc": "2026-11-30T00:15:00Z",
+      "sun_azimuth_deg": 292.080914,
+      "sun_elevation_deg": 1.649279,
+      "earth_azimuth_deg": 6.101376,
+      "earth_elevation_deg": 0.409351
+    },
+    {
+      "timestamp_utc": "2026-11-30T00:30:00Z",
+      "sun_azimuth_deg": 291.954325,
+      "sun_elevation_deg": 1.648266,
+      "earth_azimuth_deg": 6.10925,
+      "earth_elevation_deg": 0.392597
+    },
+    {
+      "timestamp_utc": "2026-11-30T00:45:00Z",
+      "sun_azimuth_deg": 291.827735,
+      "sun_elevation_deg": 1.647252,
+      "earth_azimuth_deg": 6.117083,
+      "earth_elevation_deg": 0.375847
+    },
+    {
+      "timestamp_utc": "2026-11-30T01:00:00Z",
+      "sun_azimuth_deg": 291.701144,
+      "sun_elevation_deg": 1.646238,
+      "earth_azimuth_deg": 6.124874,
+      "earth_elevation_deg": 0.3591
+    },
+    {
+      "timestamp_utc": "2026-11-30T01:15:00Z",
+      "sun_azimuth_deg": 291.574552,
+      "sun_elevation_deg": 1.645223,
+      "earth_azimuth_deg": 6.132624,
+      "earth_elevation_deg": 0.342356
+    },
+    {
+      "timestamp_utc": "2026-11-30T01:30:00Z",
+      "sun_azimuth_deg": 291.44796,
+      "sun_elevation_deg": 1.644207,
+      "earth_azimuth_deg": 6.140332,
+      "earth_elevation_deg": 0.325616
+    },
+    {
+      "timestamp_utc": "2026-11-30T01:45:00Z",
+      "sun_azimuth_deg": 291.321367,
+      "sun_elevation_deg": 1.64319,
+      "earth_azimuth_deg": 6.147999,
+      "earth_elevation_deg": 0.308879
+    },
+    {
+      "timestamp_utc": "2026-11-30T02:00:00Z",
+      "sun_azimuth_deg": 291.194774,
+      "sun_elevation_deg": 1.642173,
+      "earth_azimuth_deg": 6.155624,
+      "earth_elevation_deg": 0.292146
+    },
+    {
+      "timestamp_utc": "2026-11-30T02:15:00Z",
+      "sun_azimuth_deg": 291.06818,
+      "sun_elevation_deg": 1.641155,
+      "earth_azimuth_deg": 6.163209,
+      "earth_elevation_deg": 0.275417
+    },
+    {
+      "timestamp_utc": "2026-11-30T02:30:00Z",
+      "sun_azimuth_deg": 290.941585,
+      "sun_elevation_deg": 1.640136,
+      "earth_azimuth_deg": 6.170752,
+      "earth_elevation_deg": 0.258692
+    },
+    {
+      "timestamp_utc": "2026-11-30T02:45:00Z",
+      "sun_azimuth_deg": 290.814989,
+      "sun_elevation_deg": 1.639117,
+      "earth_azimuth_deg": 6.178253,
+      "earth_elevation_deg": 0.241971
+    },
+    {
+      "timestamp_utc": "2026-11-30T03:00:00Z",
+      "sun_azimuth_deg": 290.688393,
+      "sun_elevation_deg": 1.638097,
+      "earth_azimuth_deg": 6.185714,
+      "earth_elevation_deg": 0.225255
+    },
+    {
+      "timestamp_utc": "2026-11-30T03:15:00Z",
+      "sun_azimuth_deg": 290.561796,
+      "sun_elevation_deg": 1.637077,
+      "earth_azimuth_deg": 6.193133,
+      "earth_elevation_deg": 0.208542
+    },
+    {
+      "timestamp_utc": "2026-11-30T03:30:00Z",
+      "sun_azimuth_deg": 290.435199,
+      "sun_elevation_deg": 1.636055,
+      "earth_azimuth_deg": 6.200511,
+      "earth_elevation_deg": 0.191834
+    },
+    {
+      "timestamp_utc": "2026-11-30T03:45:00Z",
+      "sun_azimuth_deg": 290.3086,
+      "sun_elevation_deg": 1.635033,
+      "earth_azimuth_deg": 6.207848,
+      "earth_elevation_deg": 0.175131
+    },
+    {
+      "timestamp_utc": "2026-11-30T04:00:00Z",
+      "sun_azimuth_deg": 290.182002,
+      "sun_elevation_deg": 1.634011,
+      "earth_azimuth_deg": 6.215144,
+      "earth_elevation_deg": 0.158432
+    },
+    {
+      "timestamp_utc": "2026-11-30T04:15:00Z",
+      "sun_azimuth_deg": 290.055402,
+      "sun_elevation_deg": 1.632987,
+      "earth_azimuth_deg": 6.222398,
+      "earth_elevation_deg": 0.141738
+    },
+    {
+      "timestamp_utc": "2026-11-30T04:30:00Z",
+      "sun_azimuth_deg": 289.928802,
+      "sun_elevation_deg": 1.631963,
+      "earth_azimuth_deg": 6.229612,
+      "earth_elevation_deg": 0.125049
+    },
+    {
+      "timestamp_utc": "2026-11-30T04:45:00Z",
+      "sun_azimuth_deg": 289.802201,
+      "sun_elevation_deg": 1.630939,
+      "earth_azimuth_deg": 6.236784,
+      "earth_elevation_deg": 0.108365
+    },
+    {
+      "timestamp_utc": "2026-11-30T05:00:00Z",
+      "sun_azimuth_deg": 289.675599,
+      "sun_elevation_deg": 1.629913,
+      "earth_azimuth_deg": 6.243915,
+      "earth_elevation_deg": 0.091685
+    },
+    {
+      "timestamp_utc": "2026-11-30T05:15:00Z",
+      "sun_azimuth_deg": 289.548997,
+      "sun_elevation_deg": 1.628887,
+      "earth_azimuth_deg": 6.251006,
+      "earth_elevation_deg": 0.075011
+    },
+    {
+      "timestamp_utc": "2026-11-30T05:30:00Z",
+      "sun_azimuth_deg": 289.422394,
+      "sun_elevation_deg": 1.627861,
+      "earth_azimuth_deg": 6.258055,
+      "earth_elevation_deg": 0.058343
+    },
+    {
+      "timestamp_utc": "2026-11-30T05:45:00Z",
+      "sun_azimuth_deg": 289.29579,
+      "sun_elevation_deg": 1.626834,
+      "earth_azimuth_deg": 6.265063,
+      "earth_elevation_deg": 0.041679
+    },
+    {
+      "timestamp_utc": "2026-11-30T06:00:00Z",
+      "sun_azimuth_deg": 289.169185,
+      "sun_elevation_deg": 1.625806,
+      "earth_azimuth_deg": 6.272031,
+      "earth_elevation_deg": 0.025021
+    },
+    {
+      "timestamp_utc": "2026-11-30T06:15:00Z",
+      "sun_azimuth_deg": 289.04258,
+      "sun_elevation_deg": 1.624777,
+      "earth_azimuth_deg": 6.278958,
+      "earth_elevation_deg": 0.008369
+    },
+    {
+      "timestamp_utc": "2026-11-30T06:30:00Z",
+      "sun_azimuth_deg": 288.915974,
+      "sun_elevation_deg": 1.623748,
+      "earth_azimuth_deg": 6.285843,
+      "earth_elevation_deg": -0.008277
+    },
+    {
+      "timestamp_utc": "2026-11-30T06:45:00Z",
+      "sun_azimuth_deg": 288.789368,
+      "sun_elevation_deg": 1.622719,
+      "earth_azimuth_deg": 6.292688,
+      "earth_elevation_deg": -0.024918
+    },
+    {
+      "timestamp_utc": "2026-11-30T07:00:00Z",
+      "sun_azimuth_deg": 288.662761,
+      "sun_elevation_deg": 1.621688,
+      "earth_azimuth_deg": 6.299493,
+      "earth_elevation_deg": -0.041553
+    },
+    {
+      "timestamp_utc": "2026-11-30T07:15:00Z",
+      "sun_azimuth_deg": 288.536153,
+      "sun_elevation_deg": 1.620658,
+      "earth_azimuth_deg": 6.306256,
+      "earth_elevation_deg": -0.058182
+    },
+    {
+      "timestamp_utc": "2026-11-30T07:30:00Z",
+      "sun_azimuth_deg": 288.409544,
+      "sun_elevation_deg": 1.619626,
+      "earth_azimuth_deg": 6.312979,
+      "earth_elevation_deg": -0.074805
+    },
+    {
+      "timestamp_utc": "2026-11-30T07:45:00Z",
+      "sun_azimuth_deg": 288.282935,
+      "sun_elevation_deg": 1.618594,
+      "earth_azimuth_deg": 6.319661,
+      "earth_elevation_deg": -0.091421
+    },
+    {
+      "timestamp_utc": "2026-11-30T08:00:00Z",
+      "sun_azimuth_deg": 288.156325,
+      "sun_elevation_deg": 1.617561,
+      "earth_azimuth_deg": 6.326302,
+      "earth_elevation_deg": -0.108031
+    },
+    {
+      "timestamp_utc": "2026-11-30T08:15:00Z",
+      "sun_azimuth_deg": 288.029715,
+      "sun_elevation_deg": 1.616528,
+      "earth_azimuth_deg": 6.332903,
+      "earth_elevation_deg": -0.124635
+    },
+    {
+      "timestamp_utc": "2026-11-30T08:30:00Z",
+      "sun_azimuth_deg": 287.903103,
+      "sun_elevation_deg": 1.615494,
+      "earth_azimuth_deg": 6.339463,
+      "earth_elevation_deg": -0.141232
+    },
+    {
+      "timestamp_utc": "2026-11-30T08:45:00Z",
+      "sun_azimuth_deg": 287.776491,
+      "sun_elevation_deg": 1.61446,
+      "earth_azimuth_deg": 6.345982,
+      "earth_elevation_deg": -0.157823
+    },
+    {
+      "timestamp_utc": "2026-11-30T09:00:00Z",
+      "sun_azimuth_deg": 287.649879,
+      "sun_elevation_deg": 1.613425,
+      "earth_azimuth_deg": 6.352461,
+      "earth_elevation_deg": -0.174407
+    },
+    {
+      "timestamp_utc": "2026-11-30T09:15:00Z",
+      "sun_azimuth_deg": 287.523265,
+      "sun_elevation_deg": 1.61239,
+      "earth_azimuth_deg": 6.3589,
+      "earth_elevation_deg": -0.190984
+    },
+    {
+      "timestamp_utc": "2026-11-30T09:30:00Z",
+      "sun_azimuth_deg": 287.396651,
+      "sun_elevation_deg": 1.611353,
+      "earth_azimuth_deg": 6.365298,
+      "earth_elevation_deg": -0.207554
+    },
+    {
+      "timestamp_utc": "2026-11-30T09:45:00Z",
+      "sun_azimuth_deg": 287.270037,
+      "sun_elevation_deg": 1.610317,
+      "earth_azimuth_deg": 6.371655,
+      "earth_elevation_deg": -0.224117
+    },
+    {
+      "timestamp_utc": "2026-11-30T10:00:00Z",
+      "sun_azimuth_deg": 287.143421,
+      "sun_elevation_deg": 1.60928,
+      "earth_azimuth_deg": 6.377973,
+      "earth_elevation_deg": -0.240673
+    },
+    {
+      "timestamp_utc": "2026-11-30T10:15:00Z",
+      "sun_azimuth_deg": 287.016805,
+      "sun_elevation_deg": 1.608242,
+      "earth_azimuth_deg": 6.38425,
+      "earth_elevation_deg": -0.257221
+    },
+    {
+      "timestamp_utc": "2026-11-30T10:30:00Z",
+      "sun_azimuth_deg": 286.890188,
+      "sun_elevation_deg": 1.607204,
+      "earth_azimuth_deg": 6.390486,
+      "earth_elevation_deg": -0.273763
+    },
+    {
+      "timestamp_utc": "2026-11-30T10:45:00Z",
+      "sun_azimuth_deg": 286.763571,
+      "sun_elevation_deg": 1.606165,
+      "earth_azimuth_deg": 6.396682,
+      "earth_elevation_deg": -0.290296
+    },
+    {
+      "timestamp_utc": "2026-11-30T11:00:00Z",
+      "sun_azimuth_deg": 286.636953,
+      "sun_elevation_deg": 1.605126,
+      "earth_azimuth_deg": 6.402839,
+      "earth_elevation_deg": -0.306823
+    },
+    {
+      "timestamp_utc": "2026-11-30T11:15:00Z",
+      "sun_azimuth_deg": 286.510334,
+      "sun_elevation_deg": 1.604086,
+      "earth_azimuth_deg": 6.408954,
+      "earth_elevation_deg": -0.323341
+    },
+    {
+      "timestamp_utc": "2026-11-30T11:30:00Z",
+      "sun_azimuth_deg": 286.383714,
+      "sun_elevation_deg": 1.603045,
+      "earth_azimuth_deg": 6.41503,
+      "earth_elevation_deg": -0.339852
+    },
+    {
+      "timestamp_utc": "2026-11-30T11:45:00Z",
+      "sun_azimuth_deg": 286.257094,
+      "sun_elevation_deg": 1.602004,
+      "earth_azimuth_deg": 6.421066,
+      "earth_elevation_deg": -0.356355
+    },
+    {
+      "timestamp_utc": "2026-11-30T12:00:00Z",
+      "sun_azimuth_deg": 286.130473,
+      "sun_elevation_deg": 1.600963,
+      "earth_azimuth_deg": 6.427061,
+      "earth_elevation_deg": -0.37285
+    },
+    {
+      "timestamp_utc": "2026-11-30T12:15:00Z",
+      "sun_azimuth_deg": 286.003851,
+      "sun_elevation_deg": 1.599921,
+      "earth_azimuth_deg": 6.433016,
+      "earth_elevation_deg": -0.389337
+    },
+    {
+      "timestamp_utc": "2026-11-30T12:30:00Z",
+      "sun_azimuth_deg": 285.877229,
+      "sun_elevation_deg": 1.598879,
+      "earth_azimuth_deg": 6.438932,
+      "earth_elevation_deg": -0.405816
+    },
+    {
+      "timestamp_utc": "2026-11-30T12:45:00Z",
+      "sun_azimuth_deg": 285.750606,
+      "sun_elevation_deg": 1.597836,
+      "earth_azimuth_deg": 6.444807,
+      "earth_elevation_deg": -0.422287
+    },
+    {
+      "timestamp_utc": "2026-11-30T13:00:00Z",
+      "sun_azimuth_deg": 285.623982,
+      "sun_elevation_deg": 1.596793,
+      "earth_azimuth_deg": 6.450642,
+      "earth_elevation_deg": -0.438749
+    },
+    {
+      "timestamp_utc": "2026-11-30T13:15:00Z",
+      "sun_azimuth_deg": 285.497358,
+      "sun_elevation_deg": 1.595749,
+      "earth_azimuth_deg": 6.456438,
+      "earth_elevation_deg": -0.455203
+    },
+    {
+      "timestamp_utc": "2026-11-30T13:30:00Z",
+      "sun_azimuth_deg": 285.370733,
+      "sun_elevation_deg": 1.594704,
+      "earth_azimuth_deg": 6.462194,
+      "earth_elevation_deg": -0.471648
+    },
+    {
+      "timestamp_utc": "2026-11-30T13:45:00Z",
+      "sun_azimuth_deg": 285.244107,
+      "sun_elevation_deg": 1.593659,
+      "earth_azimuth_deg": 6.467909,
+      "earth_elevation_deg": -0.488085
+    },
+    {
+      "timestamp_utc": "2026-11-30T14:00:00Z",
+      "sun_azimuth_deg": 285.117481,
+      "sun_elevation_deg": 1.592614,
+      "earth_azimuth_deg": 6.473586,
+      "earth_elevation_deg": -0.504512
+    },
+    {
+      "timestamp_utc": "2026-11-30T14:15:00Z",
+      "sun_azimuth_deg": 284.990853,
+      "sun_elevation_deg": 1.591568,
+      "earth_azimuth_deg": 6.479222,
+      "earth_elevation_deg": -0.520931
+    },
+    {
+      "timestamp_utc": "2026-11-30T14:30:00Z",
+      "sun_azimuth_deg": 284.864226,
+      "sun_elevation_deg": 1.590522,
+      "earth_azimuth_deg": 6.484818,
+      "earth_elevation_deg": -0.537342
+    },
+    {
+      "timestamp_utc": "2026-11-30T14:45:00Z",
+      "sun_azimuth_deg": 284.737597,
+      "sun_elevation_deg": 1.589475,
+      "earth_azimuth_deg": 6.490375,
+      "earth_elevation_deg": -0.553743
+    },
+    {
+      "timestamp_utc": "2026-11-30T15:00:00Z",
+      "sun_azimuth_deg": 284.610968,
+      "sun_elevation_deg": 1.588428,
+      "earth_azimuth_deg": 6.495893,
+      "earth_elevation_deg": -0.570134
+    },
+    {
+      "timestamp_utc": "2026-11-30T15:15:00Z",
+      "sun_azimuth_deg": 284.484338,
+      "sun_elevation_deg": 1.587381,
+      "earth_azimuth_deg": 6.50137,
+      "earth_elevation_deg": -0.586517
+    },
+    {
+      "timestamp_utc": "2026-11-30T15:30:00Z",
+      "sun_azimuth_deg": 284.357707,
+      "sun_elevation_deg": 1.586333,
+      "earth_azimuth_deg": 6.506808,
+      "earth_elevation_deg": -0.60289
+    },
+    {
+      "timestamp_utc": "2026-11-30T15:45:00Z",
+      "sun_azimuth_deg": 284.231076,
+      "sun_elevation_deg": 1.585284,
+      "earth_azimuth_deg": 6.512207,
+      "earth_elevation_deg": -0.619254
+    },
+    {
+      "timestamp_utc": "2026-11-30T16:00:00Z",
+      "sun_azimuth_deg": 284.104444,
+      "sun_elevation_deg": 1.584235,
+      "earth_azimuth_deg": 6.517566,
+      "earth_elevation_deg": -0.635609
+    },
+    {
+      "timestamp_utc": "2026-11-30T16:15:00Z",
+      "sun_azimuth_deg": 283.977811,
+      "sun_elevation_deg": 1.583186,
+      "earth_azimuth_deg": 6.522886,
+      "earth_elevation_deg": -0.651953
+    },
+    {
+      "timestamp_utc": "2026-11-30T16:30:00Z",
+      "sun_azimuth_deg": 283.851178,
+      "sun_elevation_deg": 1.582136,
+      "earth_azimuth_deg": 6.528166,
+      "earth_elevation_deg": -0.668288
+    },
+    {
+      "timestamp_utc": "2026-11-30T16:45:00Z",
+      "sun_azimuth_deg": 283.724544,
+      "sun_elevation_deg": 1.581086,
+      "earth_azimuth_deg": 6.533407,
+      "earth_elevation_deg": -0.684614
+    },
+    {
+      "timestamp_utc": "2026-11-30T17:00:00Z",
+      "sun_azimuth_deg": 283.597909,
+      "sun_elevation_deg": 1.580035,
+      "earth_azimuth_deg": 6.538609,
+      "earth_elevation_deg": -0.700929
+    },
+    {
+      "timestamp_utc": "2026-11-30T17:15:00Z",
+      "sun_azimuth_deg": 283.471273,
+      "sun_elevation_deg": 1.578984,
+      "earth_azimuth_deg": 6.543772,
+      "earth_elevation_deg": -0.717234
+    },
+    {
+      "timestamp_utc": "2026-11-30T17:30:00Z",
+      "sun_azimuth_deg": 283.344637,
+      "sun_elevation_deg": 1.577933,
+      "earth_azimuth_deg": 6.548895,
+      "earth_elevation_deg": -0.733529
+    },
+    {
+      "timestamp_utc": "2026-11-30T17:45:00Z",
+      "sun_azimuth_deg": 283.218,
+      "sun_elevation_deg": 1.576881,
+      "earth_azimuth_deg": 6.553979,
+      "earth_elevation_deg": -0.749814
+    },
+    {
+      "timestamp_utc": "2026-11-30T18:00:00Z",
+      "sun_azimuth_deg": 283.091363,
+      "sun_elevation_deg": 1.575829,
+      "earth_azimuth_deg": 6.559024,
+      "earth_elevation_deg": -0.766089
+    },
+    {
+      "timestamp_utc": "2026-11-30T18:15:00Z",
+      "sun_azimuth_deg": 282.964725,
+      "sun_elevation_deg": 1.574776,
+      "earth_azimuth_deg": 6.56403,
+      "earth_elevation_deg": -0.782353
+    },
+    {
+      "timestamp_utc": "2026-11-30T18:30:00Z",
+      "sun_azimuth_deg": 282.838086,
+      "sun_elevation_deg": 1.573723,
+      "earth_azimuth_deg": 6.568997,
+      "earth_elevation_deg": -0.798607
+    },
+    {
+      "timestamp_utc": "2026-11-30T18:45:00Z",
+      "sun_azimuth_deg": 282.711446,
+      "sun_elevation_deg": 1.57267,
+      "earth_azimuth_deg": 6.573925,
+      "earth_elevation_deg": -0.81485
+    },
+    {
+      "timestamp_utc": "2026-11-30T19:00:00Z",
+      "sun_azimuth_deg": 282.584806,
+      "sun_elevation_deg": 1.571616,
+      "earth_azimuth_deg": 6.578814,
+      "earth_elevation_deg": -0.831083
+    },
+    {
+      "timestamp_utc": "2026-11-30T19:15:00Z",
+      "sun_azimuth_deg": 282.458165,
+      "sun_elevation_deg": 1.570562,
+      "earth_azimuth_deg": 6.583664,
+      "earth_elevation_deg": -0.847305
+    },
+    {
+      "timestamp_utc": "2026-11-30T19:30:00Z",
+      "sun_azimuth_deg": 282.331523,
+      "sun_elevation_deg": 1.569508,
+      "earth_azimuth_deg": 6.588475,
+      "earth_elevation_deg": -0.863516
+    },
+    {
+      "timestamp_utc": "2026-11-30T19:45:00Z",
+      "sun_azimuth_deg": 282.204881,
+      "sun_elevation_deg": 1.568453,
+      "earth_azimuth_deg": 6.593247,
+      "earth_elevation_deg": -0.879716
+    },
+    {
+      "timestamp_utc": "2026-11-30T20:00:00Z",
+      "sun_azimuth_deg": 282.078237,
+      "sun_elevation_deg": 1.567398,
+      "earth_azimuth_deg": 6.597981,
+      "earth_elevation_deg": -0.895905
+    },
+    {
+      "timestamp_utc": "2026-11-30T20:15:00Z",
+      "sun_azimuth_deg": 281.951594,
+      "sun_elevation_deg": 1.566342,
+      "earth_azimuth_deg": 6.602676,
+      "earth_elevation_deg": -0.912083
+    },
+    {
+      "timestamp_utc": "2026-11-30T20:30:00Z",
+      "sun_azimuth_deg": 281.824949,
+      "sun_elevation_deg": 1.565286,
+      "earth_azimuth_deg": 6.607332,
+      "earth_elevation_deg": -0.928249
+    },
+    {
+      "timestamp_utc": "2026-11-30T20:45:00Z",
+      "sun_azimuth_deg": 281.698304,
+      "sun_elevation_deg": 1.56423,
+      "earth_azimuth_deg": 6.61195,
+      "earth_elevation_deg": -0.944405
+    },
+    {
+      "timestamp_utc": "2026-11-30T21:00:00Z",
+      "sun_azimuth_deg": 281.571658,
+      "sun_elevation_deg": 1.563174,
+      "earth_azimuth_deg": 6.616529,
+      "earth_elevation_deg": -0.960549
+    },
+    {
+      "timestamp_utc": "2026-11-30T21:15:00Z",
+      "sun_azimuth_deg": 281.445011,
+      "sun_elevation_deg": 1.562117,
+      "earth_azimuth_deg": 6.621069,
+      "earth_elevation_deg": -0.976681
+    },
+    {
+      "timestamp_utc": "2026-11-30T21:30:00Z",
+      "sun_azimuth_deg": 281.318364,
+      "sun_elevation_deg": 1.561059,
+      "earth_azimuth_deg": 6.625571,
+      "earth_elevation_deg": -0.992802
+    },
+    {
+      "timestamp_utc": "2026-11-30T21:45:00Z",
+      "sun_azimuth_deg": 281.191716,
+      "sun_elevation_deg": 1.560002,
+      "earth_azimuth_deg": 6.630035,
+      "earth_elevation_deg": -1.008911
+    },
+    {
+      "timestamp_utc": "2026-11-30T22:00:00Z",
+      "sun_azimuth_deg": 281.065068,
+      "sun_elevation_deg": 1.558944,
+      "earth_azimuth_deg": 6.63446,
+      "earth_elevation_deg": -1.025009
+    },
+    {
+      "timestamp_utc": "2026-11-30T22:15:00Z",
+      "sun_azimuth_deg": 280.938418,
+      "sun_elevation_deg": 1.557886,
+      "earth_azimuth_deg": 6.638847,
+      "earth_elevation_deg": -1.041094
+    },
+    {
+      "timestamp_utc": "2026-11-30T22:30:00Z",
+      "sun_azimuth_deg": 280.811768,
+      "sun_elevation_deg": 1.556827,
+      "earth_azimuth_deg": 6.643195,
+      "earth_elevation_deg": -1.057168
+    },
+    {
+      "timestamp_utc": "2026-11-30T22:45:00Z",
+      "sun_azimuth_deg": 280.685117,
+      "sun_elevation_deg": 1.555769,
+      "earth_azimuth_deg": 6.647505,
+      "earth_elevation_deg": -1.073229
+    },
+    {
+      "timestamp_utc": "2026-11-30T23:00:00Z",
+      "sun_azimuth_deg": 280.558466,
+      "sun_elevation_deg": 1.554709,
+      "earth_azimuth_deg": 6.651777,
+      "earth_elevation_deg": -1.089279
+    },
+    {
+      "timestamp_utc": "2026-11-30T23:15:00Z",
+      "sun_azimuth_deg": 280.431814,
+      "sun_elevation_deg": 1.55365,
+      "earth_azimuth_deg": 6.656011,
+      "earth_elevation_deg": -1.105316
+    },
+    {
+      "timestamp_utc": "2026-11-30T23:30:00Z",
+      "sun_azimuth_deg": 280.305161,
+      "sun_elevation_deg": 1.55259,
+      "earth_azimuth_deg": 6.660207,
+      "earth_elevation_deg": -1.121341
+    },
+    {
+      "timestamp_utc": "2026-11-30T23:45:00Z",
+      "sun_azimuth_deg": 280.178508,
+      "sun_elevation_deg": 1.55153,
+      "earth_azimuth_deg": 6.664365,
+      "earth_elevation_deg": -1.137353
+    },
+    {
+      "timestamp_utc": "2026-12-01T00:00:00Z",
+      "sun_azimuth_deg": 280.051853,
+      "sun_elevation_deg": 1.55047,
+      "earth_azimuth_deg": 6.668484,
+      "earth_elevation_deg": -1.153353
+    },
+    {
+      "timestamp_utc": "2026-12-01T00:15:00Z",
+      "sun_azimuth_deg": 279.925198,
+      "sun_elevation_deg": 1.54941,
+      "earth_azimuth_deg": 6.672566,
+      "earth_elevation_deg": -1.169341
+    },
+    {
+      "timestamp_utc": "2026-12-01T00:30:00Z",
+      "sun_azimuth_deg": 279.798543,
+      "sun_elevation_deg": 1.548349,
+      "earth_azimuth_deg": 6.67661,
+      "earth_elevation_deg": -1.185315
+    },
+    {
+      "timestamp_utc": "2026-12-01T00:45:00Z",
+      "sun_azimuth_deg": 279.671887,
+      "sun_elevation_deg": 1.547288,
+      "earth_azimuth_deg": 6.680616,
+      "earth_elevation_deg": -1.201277
+    },
+    {
+      "timestamp_utc": "2026-12-01T01:00:00Z",
+      "sun_azimuth_deg": 279.54523,
+      "sun_elevation_deg": 1.546227,
+      "earth_azimuth_deg": 6.684584,
+      "earth_elevation_deg": -1.217226
+    },
+    {
+      "timestamp_utc": "2026-12-01T01:15:00Z",
+      "sun_azimuth_deg": 279.418572,
+      "sun_elevation_deg": 1.545165,
+      "earth_azimuth_deg": 6.688514,
+      "earth_elevation_deg": -1.233163
+    },
+    {
+      "timestamp_utc": "2026-12-01T01:30:00Z",
+      "sun_azimuth_deg": 279.291914,
+      "sun_elevation_deg": 1.544103,
+      "earth_azimuth_deg": 6.692406,
+      "earth_elevation_deg": -1.249086
+    },
+    {
+      "timestamp_utc": "2026-12-01T01:45:00Z",
+      "sun_azimuth_deg": 279.165254,
+      "sun_elevation_deg": 1.543041,
+      "earth_azimuth_deg": 6.696261,
+      "earth_elevation_deg": -1.264996
+    },
+    {
+      "timestamp_utc": "2026-12-01T02:00:00Z",
+      "sun_azimuth_deg": 279.038595,
+      "sun_elevation_deg": 1.541979,
+      "earth_azimuth_deg": 6.700079,
+      "earth_elevation_deg": -1.280893
+    },
+    {
+      "timestamp_utc": "2026-12-01T02:15:00Z",
+      "sun_azimuth_deg": 278.911934,
+      "sun_elevation_deg": 1.540916,
+      "earth_azimuth_deg": 6.703858,
+      "earth_elevation_deg": -1.296776
+    },
+    {
+      "timestamp_utc": "2026-12-01T02:30:00Z",
+      "sun_azimuth_deg": 278.785273,
+      "sun_elevation_deg": 1.539854,
+      "earth_azimuth_deg": 6.707601,
+      "earth_elevation_deg": -1.312647
+    },
+    {
+      "timestamp_utc": "2026-12-01T02:45:00Z",
+      "sun_azimuth_deg": 278.658611,
+      "sun_elevation_deg": 1.538791,
+      "earth_azimuth_deg": 6.711305,
+      "earth_elevation_deg": -1.328503
+    },
+    {
+      "timestamp_utc": "2026-12-01T03:00:00Z",
+      "sun_azimuth_deg": 278.531949,
+      "sun_elevation_deg": 1.537727,
+      "earth_azimuth_deg": 6.714972,
+      "earth_elevation_deg": -1.344347
+    },
+    {
+      "timestamp_utc": "2026-12-01T03:15:00Z",
+      "sun_azimuth_deg": 278.405286,
+      "sun_elevation_deg": 1.536664,
+      "earth_azimuth_deg": 6.718602,
+      "earth_elevation_deg": -1.360176
+    },
+    {
+      "timestamp_utc": "2026-12-01T03:30:00Z",
+      "sun_azimuth_deg": 278.278622,
+      "sun_elevation_deg": 1.5356,
+      "earth_azimuth_deg": 6.722195,
+      "earth_elevation_deg": -1.375992
+    },
+    {
+      "timestamp_utc": "2026-12-01T03:45:00Z",
+      "sun_azimuth_deg": 278.151957,
+      "sun_elevation_deg": 1.534537,
+      "earth_azimuth_deg": 6.72575,
+      "earth_elevation_deg": -1.391794
+    },
+    {
+      "timestamp_utc": "2026-12-01T04:00:00Z",
+      "sun_azimuth_deg": 278.025292,
+      "sun_elevation_deg": 1.533473,
+      "earth_azimuth_deg": 6.729268,
+      "earth_elevation_deg": -1.407583
+    },
+    {
+      "timestamp_utc": "2026-12-01T04:15:00Z",
+      "sun_azimuth_deg": 277.898626,
+      "sun_elevation_deg": 1.532408,
+      "earth_azimuth_deg": 6.732749,
+      "earth_elevation_deg": -1.423357
+    },
+    {
+      "timestamp_utc": "2026-12-01T04:30:00Z",
+      "sun_azimuth_deg": 277.771959,
+      "sun_elevation_deg": 1.531344,
+      "earth_azimuth_deg": 6.736193,
+      "earth_elevation_deg": -1.439117
+    },
+    {
+      "timestamp_utc": "2026-12-01T04:45:00Z",
+      "sun_azimuth_deg": 277.645292,
+      "sun_elevation_deg": 1.530279,
+      "earth_azimuth_deg": 6.7396,
+      "earth_elevation_deg": -1.454863
+    },
+    {
+      "timestamp_utc": "2026-12-01T05:00:00Z",
+      "sun_azimuth_deg": 277.518624,
+      "sun_elevation_deg": 1.529214,
+      "earth_azimuth_deg": 6.742969,
+      "earth_elevation_deg": -1.470595
+    },
+    {
+      "timestamp_utc": "2026-12-01T05:15:00Z",
+      "sun_azimuth_deg": 277.391955,
+      "sun_elevation_deg": 1.528149,
+      "earth_azimuth_deg": 6.746302,
+      "earth_elevation_deg": -1.486313
+    },
+    {
+      "timestamp_utc": "2026-12-01T05:30:00Z",
+      "sun_azimuth_deg": 277.265285,
+      "sun_elevation_deg": 1.527084,
+      "earth_azimuth_deg": 6.749598,
+      "earth_elevation_deg": -1.502016
+    },
+    {
+      "timestamp_utc": "2026-12-01T05:45:00Z",
+      "sun_azimuth_deg": 277.138615,
+      "sun_elevation_deg": 1.526019,
+      "earth_azimuth_deg": 6.752857,
+      "earth_elevation_deg": -1.517704
+    },
+    {
+      "timestamp_utc": "2026-12-01T06:00:00Z",
+      "sun_azimuth_deg": 277.011944,
+      "sun_elevation_deg": 1.524953,
+      "earth_azimuth_deg": 6.756079,
+      "earth_elevation_deg": -1.533378
+    },
+    {
+      "timestamp_utc": "2026-12-01T06:15:00Z",
+      "sun_azimuth_deg": 276.885273,
+      "sun_elevation_deg": 1.523888,
+      "earth_azimuth_deg": 6.759264,
+      "earth_elevation_deg": -1.549038
+    },
+    {
+      "timestamp_utc": "2026-12-01T06:30:00Z",
+      "sun_azimuth_deg": 276.758601,
+      "sun_elevation_deg": 1.522822,
+      "earth_azimuth_deg": 6.762413,
+      "earth_elevation_deg": -1.564683
+    },
+    {
+      "timestamp_utc": "2026-12-01T06:45:00Z",
+      "sun_azimuth_deg": 276.631928,
+      "sun_elevation_deg": 1.521756,
+      "earth_azimuth_deg": 6.765525,
+      "earth_elevation_deg": -1.580313
+    },
+    {
+      "timestamp_utc": "2026-12-01T07:00:00Z",
+      "sun_azimuth_deg": 276.505254,
+      "sun_elevation_deg": 1.52069,
+      "earth_azimuth_deg": 6.7686,
+      "earth_elevation_deg": -1.595928
+    },
+    {
+      "timestamp_utc": "2026-12-01T07:15:00Z",
+      "sun_azimuth_deg": 276.37858,
+      "sun_elevation_deg": 1.519624,
+      "earth_azimuth_deg": 6.771639,
+      "earth_elevation_deg": -1.611528
+    },
+    {
+      "timestamp_utc": "2026-12-01T07:30:00Z",
+      "sun_azimuth_deg": 276.251905,
+      "sun_elevation_deg": 1.518557,
+      "earth_azimuth_deg": 6.774642,
+      "earth_elevation_deg": -1.627113
+    },
+    {
+      "timestamp_utc": "2026-12-01T07:45:00Z",
+      "sun_azimuth_deg": 276.125229,
+      "sun_elevation_deg": 1.517491,
+      "earth_azimuth_deg": 6.777608,
+      "earth_elevation_deg": -1.642683
+    },
+    {
+      "timestamp_utc": "2026-12-01T08:00:00Z",
+      "sun_azimuth_deg": 275.998553,
+      "sun_elevation_deg": 1.516424,
+      "earth_azimuth_deg": 6.780537,
+      "earth_elevation_deg": -1.658237
+    },
+    {
+      "timestamp_utc": "2026-12-01T08:15:00Z",
+      "sun_azimuth_deg": 275.871876,
+      "sun_elevation_deg": 1.515358,
+      "earth_azimuth_deg": 6.78343,
+      "earth_elevation_deg": -1.673777
+    },
+    {
+      "timestamp_utc": "2026-12-01T08:30:00Z",
+      "sun_azimuth_deg": 275.745198,
+      "sun_elevation_deg": 1.514291,
+      "earth_azimuth_deg": 6.786287,
+      "earth_elevation_deg": -1.689301
+    },
+    {
+      "timestamp_utc": "2026-12-01T08:45:00Z",
+      "sun_azimuth_deg": 275.618519,
+      "sun_elevation_deg": 1.513224,
+      "earth_azimuth_deg": 6.789108,
+      "earth_elevation_deg": -1.704809
+    },
+    {
+      "timestamp_utc": "2026-12-01T09:00:00Z",
+      "sun_azimuth_deg": 275.49184,
+      "sun_elevation_deg": 1.512157,
+      "earth_azimuth_deg": 6.791892,
+      "earth_elevation_deg": -1.720302
+    },
+    {
+      "timestamp_utc": "2026-12-01T09:15:00Z",
+      "sun_azimuth_deg": 275.365161,
+      "sun_elevation_deg": 1.51109,
+      "earth_azimuth_deg": 6.794641,
+      "earth_elevation_deg": -1.73578
+    },
+    {
+      "timestamp_utc": "2026-12-01T09:30:00Z",
+      "sun_azimuth_deg": 275.23848,
+      "sun_elevation_deg": 1.510022,
+      "earth_azimuth_deg": 6.797353,
+      "earth_elevation_deg": -1.751241
+    },
+    {
+      "timestamp_utc": "2026-12-01T09:45:00Z",
+      "sun_azimuth_deg": 275.111799,
+      "sun_elevation_deg": 1.508955,
+      "earth_azimuth_deg": 6.80003,
+      "earth_elevation_deg": -1.766687
+    },
+    {
+      "timestamp_utc": "2026-12-01T10:00:00Z",
+      "sun_azimuth_deg": 274.985117,
+      "sun_elevation_deg": 1.507887,
+      "earth_azimuth_deg": 6.80267,
+      "earth_elevation_deg": -1.782117
+    },
+    {
+      "timestamp_utc": "2026-12-01T10:15:00Z",
+      "sun_azimuth_deg": 274.858434,
+      "sun_elevation_deg": 1.50682,
+      "earth_azimuth_deg": 6.805274,
+      "earth_elevation_deg": -1.797531
+    },
+    {
+      "timestamp_utc": "2026-12-01T10:30:00Z",
+      "sun_azimuth_deg": 274.731751,
+      "sun_elevation_deg": 1.505752,
+      "earth_azimuth_deg": 6.807843,
+      "earth_elevation_deg": -1.812929
+    },
+    {
+      "timestamp_utc": "2026-12-01T10:45:00Z",
+      "sun_azimuth_deg": 274.605067,
+      "sun_elevation_deg": 1.504685,
+      "earth_azimuth_deg": 6.810376,
+      "earth_elevation_deg": -1.828311
+    },
+    {
+      "timestamp_utc": "2026-12-01T11:00:00Z",
+      "sun_azimuth_deg": 274.478382,
+      "sun_elevation_deg": 1.503617,
+      "earth_azimuth_deg": 6.812873,
+      "earth_elevation_deg": -1.843677
+    },
+    {
+      "timestamp_utc": "2026-12-01T11:15:00Z",
+      "sun_azimuth_deg": 274.351697,
+      "sun_elevation_deg": 1.502549,
+      "earth_azimuth_deg": 6.815334,
+      "earth_elevation_deg": -1.859027
+    },
+    {
+      "timestamp_utc": "2026-12-01T11:30:00Z",
+      "sun_azimuth_deg": 274.225011,
+      "sun_elevation_deg": 1.501481,
+      "earth_azimuth_deg": 6.81776,
+      "earth_elevation_deg": -1.87436
+    },
+    {
+      "timestamp_utc": "2026-12-01T11:45:00Z",
+      "sun_azimuth_deg": 274.098324,
+      "sun_elevation_deg": 1.500413,
+      "earth_azimuth_deg": 6.82015,
+      "earth_elevation_deg": -1.889676
+    },
+    {
+      "timestamp_utc": "2026-12-01T12:00:00Z",
+      "sun_azimuth_deg": 273.971637,
+      "sun_elevation_deg": 1.499345,
+      "earth_azimuth_deg": 6.822505,
+      "earth_elevation_deg": -1.904977
+    },
+    {
+      "timestamp_utc": "2026-12-01T12:15:00Z",
+      "sun_azimuth_deg": 273.844949,
+      "sun_elevation_deg": 1.498277,
+      "earth_azimuth_deg": 6.824824,
+      "earth_elevation_deg": -1.92026
+    },
+    {
+      "timestamp_utc": "2026-12-01T12:30:00Z",
+      "sun_azimuth_deg": 273.71826,
+      "sun_elevation_deg": 1.497209,
+      "earth_azimuth_deg": 6.827108,
+      "earth_elevation_deg": -1.935527
+    },
+    {
+      "timestamp_utc": "2026-12-01T12:45:00Z",
+      "sun_azimuth_deg": 273.591571,
+      "sun_elevation_deg": 1.496141,
+      "earth_azimuth_deg": 6.829356,
+      "earth_elevation_deg": -1.950778
+    },
+    {
+      "timestamp_utc": "2026-12-01T13:00:00Z",
+      "sun_azimuth_deg": 273.464881,
+      "sun_elevation_deg": 1.495073,
+      "earth_azimuth_deg": 6.831569,
+      "earth_elevation_deg": -1.966011
+    },
+    {
+      "timestamp_utc": "2026-12-01T13:15:00Z",
+      "sun_azimuth_deg": 273.33819,
+      "sun_elevation_deg": 1.494005,
+      "earth_azimuth_deg": 6.833747,
+      "earth_elevation_deg": -1.981228
+    },
+    {
+      "timestamp_utc": "2026-12-01T13:30:00Z",
+      "sun_azimuth_deg": 273.211498,
+      "sun_elevation_deg": 1.492937,
+      "earth_azimuth_deg": 6.835889,
+      "earth_elevation_deg": -1.996427
+    },
+    {
+      "timestamp_utc": "2026-12-01T13:45:00Z",
+      "sun_azimuth_deg": 273.084806,
+      "sun_elevation_deg": 1.491869,
+      "earth_azimuth_deg": 6.837997,
+      "earth_elevation_deg": -2.01161
+    },
+    {
+      "timestamp_utc": "2026-12-01T14:00:00Z",
+      "sun_azimuth_deg": 272.958113,
+      "sun_elevation_deg": 1.490801,
+      "earth_azimuth_deg": 6.840069,
+      "earth_elevation_deg": -2.026775
+    },
+    {
+      "timestamp_utc": "2026-12-01T14:15:00Z",
+      "sun_azimuth_deg": 272.83142,
+      "sun_elevation_deg": 1.489732,
+      "earth_azimuth_deg": 6.842107,
+      "earth_elevation_deg": -2.041924
+    },
+    {
+      "timestamp_utc": "2026-12-01T14:30:00Z",
+      "sun_azimuth_deg": 272.704725,
+      "sun_elevation_deg": 1.488664,
+      "earth_azimuth_deg": 6.844109,
+      "earth_elevation_deg": -2.057055
+    },
+    {
+      "timestamp_utc": "2026-12-01T14:45:00Z",
+      "sun_azimuth_deg": 272.57803,
+      "sun_elevation_deg": 1.487596,
+      "earth_azimuth_deg": 6.846077,
+      "earth_elevation_deg": -2.072169
+    },
+    {
+      "timestamp_utc": "2026-12-01T15:00:00Z",
+      "sun_azimuth_deg": 272.451335,
+      "sun_elevation_deg": 1.486528,
+      "earth_azimuth_deg": 6.848009,
+      "earth_elevation_deg": -2.087265
+    },
+    {
+      "timestamp_utc": "2026-12-01T15:15:00Z",
+      "sun_azimuth_deg": 272.324638,
+      "sun_elevation_deg": 1.48546,
+      "earth_azimuth_deg": 6.849907,
+      "earth_elevation_deg": -2.102344
+    },
+    {
+      "timestamp_utc": "2026-12-01T15:30:00Z",
+      "sun_azimuth_deg": 272.197941,
+      "sun_elevation_deg": 1.484392,
+      "earth_azimuth_deg": 6.85177,
+      "earth_elevation_deg": -2.117405
+    },
+    {
+      "timestamp_utc": "2026-12-01T15:45:00Z",
+      "sun_azimuth_deg": 272.071244,
+      "sun_elevation_deg": 1.483324,
+      "earth_azimuth_deg": 6.853599,
+      "earth_elevation_deg": -2.132448
+    },
+    {
+      "timestamp_utc": "2026-12-01T16:00:00Z",
+      "sun_azimuth_deg": 271.944545,
+      "sun_elevation_deg": 1.482255,
+      "earth_azimuth_deg": 6.855392,
+      "earth_elevation_deg": -2.147474
+    },
+    {
+      "timestamp_utc": "2026-12-01T16:15:00Z",
+      "sun_azimuth_deg": 271.817846,
+      "sun_elevation_deg": 1.481187,
+      "earth_azimuth_deg": 6.857151,
+      "earth_elevation_deg": -2.162482
+    },
+    {
+      "timestamp_utc": "2026-12-01T16:30:00Z",
+      "sun_azimuth_deg": 271.691147,
+      "sun_elevation_deg": 1.480119,
+      "earth_azimuth_deg": 6.858876,
+      "earth_elevation_deg": -2.177473
+    },
+    {
+      "timestamp_utc": "2026-12-01T16:45:00Z",
+      "sun_azimuth_deg": 271.564446,
+      "sun_elevation_deg": 1.479051,
+      "earth_azimuth_deg": 6.860566,
+      "earth_elevation_deg": -2.192445
+    },
+    {
+      "timestamp_utc": "2026-12-01T17:00:00Z",
+      "sun_azimuth_deg": 271.437745,
+      "sun_elevation_deg": 1.477984,
+      "earth_azimuth_deg": 6.862222,
+      "earth_elevation_deg": -2.207399
+    },
+    {
+      "timestamp_utc": "2026-12-01T17:15:00Z",
+      "sun_azimuth_deg": 271.311043,
+      "sun_elevation_deg": 1.476916,
+      "earth_azimuth_deg": 6.863843,
+      "earth_elevation_deg": -2.222335
+    },
+    {
+      "timestamp_utc": "2026-12-01T17:30:00Z",
+      "sun_azimuth_deg": 271.184341,
+      "sun_elevation_deg": 1.475848,
+      "earth_azimuth_deg": 6.865431,
+      "earth_elevation_deg": -2.237253
+    },
+    {
+      "timestamp_utc": "2026-12-01T17:45:00Z",
+      "sun_azimuth_deg": 271.057638,
+      "sun_elevation_deg": 1.47478,
+      "earth_azimuth_deg": 6.866983,
+      "earth_elevation_deg": -2.252153
+    },
+    {
+      "timestamp_utc": "2026-12-01T18:00:00Z",
+      "sun_azimuth_deg": 270.930934,
+      "sun_elevation_deg": 1.473713,
+      "earth_azimuth_deg": 6.868502,
+      "earth_elevation_deg": -2.267035
+    },
+    {
+      "timestamp_utc": "2026-12-01T18:15:00Z",
+      "sun_azimuth_deg": 270.804229,
+      "sun_elevation_deg": 1.472645,
+      "earth_azimuth_deg": 6.869987,
+      "earth_elevation_deg": -2.281898
+    },
+    {
+      "timestamp_utc": "2026-12-01T18:30:00Z",
+      "sun_azimuth_deg": 270.677524,
+      "sun_elevation_deg": 1.471577,
+      "earth_azimuth_deg": 6.871437,
+      "earth_elevation_deg": -2.296742
+    },
+    {
+      "timestamp_utc": "2026-12-01T18:45:00Z",
+      "sun_azimuth_deg": 270.550818,
+      "sun_elevation_deg": 1.47051,
+      "earth_azimuth_deg": 6.872854,
+      "earth_elevation_deg": -2.311568
+    },
+    {
+      "timestamp_utc": "2026-12-01T19:00:00Z",
+      "sun_azimuth_deg": 270.424112,
+      "sun_elevation_deg": 1.469443,
+      "earth_azimuth_deg": 6.874236,
+      "earth_elevation_deg": -2.326376
+    },
+    {
+      "timestamp_utc": "2026-12-01T19:15:00Z",
+      "sun_azimuth_deg": 270.297404,
+      "sun_elevation_deg": 1.468375,
+      "earth_azimuth_deg": 6.875585,
+      "earth_elevation_deg": -2.341165
+    },
+    {
+      "timestamp_utc": "2026-12-01T19:30:00Z",
+      "sun_azimuth_deg": 270.170696,
+      "sun_elevation_deg": 1.467308,
+      "earth_azimuth_deg": 6.8769,
+      "earth_elevation_deg": -2.355935
+    },
+    {
+      "timestamp_utc": "2026-12-01T19:45:00Z",
+      "sun_azimuth_deg": 270.043988,
+      "sun_elevation_deg": 1.466241,
+      "earth_azimuth_deg": 6.878181,
+      "earth_elevation_deg": -2.370686
+    },
+    {
+      "timestamp_utc": "2026-12-01T20:00:00Z",
+      "sun_azimuth_deg": 269.917279,
+      "sun_elevation_deg": 1.465174,
+      "earth_azimuth_deg": 6.879428,
+      "earth_elevation_deg": -2.385419
+    },
+    {
+      "timestamp_utc": "2026-12-01T20:15:00Z",
+      "sun_azimuth_deg": 269.790569,
+      "sun_elevation_deg": 1.464107,
+      "earth_azimuth_deg": 6.880641,
+      "earth_elevation_deg": -2.400132
+    },
+    {
+      "timestamp_utc": "2026-12-01T20:30:00Z",
+      "sun_azimuth_deg": 269.663858,
+      "sun_elevation_deg": 1.463041,
+      "earth_azimuth_deg": 6.881821,
+      "earth_elevation_deg": -2.414826
+    },
+    {
+      "timestamp_utc": "2026-12-01T20:45:00Z",
+      "sun_azimuth_deg": 269.537147,
+      "sun_elevation_deg": 1.461974,
+      "earth_azimuth_deg": 6.882968,
+      "earth_elevation_deg": -2.429502
+    },
+    {
+      "timestamp_utc": "2026-12-01T21:00:00Z",
+      "sun_azimuth_deg": 269.410435,
+      "sun_elevation_deg": 1.460907,
+      "earth_azimuth_deg": 6.884081,
+      "earth_elevation_deg": -2.444158
+    },
+    {
+      "timestamp_utc": "2026-12-01T21:15:00Z",
+      "sun_azimuth_deg": 269.283722,
+      "sun_elevation_deg": 1.459841,
+      "earth_azimuth_deg": 6.88516,
+      "earth_elevation_deg": -2.458795
+    },
+    {
+      "timestamp_utc": "2026-12-01T21:30:00Z",
+      "sun_azimuth_deg": 269.157009,
+      "sun_elevation_deg": 1.458775,
+      "earth_azimuth_deg": 6.886206,
+      "earth_elevation_deg": -2.473413
+    },
+    {
+      "timestamp_utc": "2026-12-01T21:45:00Z",
+      "sun_azimuth_deg": 269.030295,
+      "sun_elevation_deg": 1.457709,
+      "earth_azimuth_deg": 6.887219,
+      "earth_elevation_deg": -2.488011
+    },
+    {
+      "timestamp_utc": "2026-12-01T22:00:00Z",
+      "sun_azimuth_deg": 268.90358,
+      "sun_elevation_deg": 1.456643,
+      "earth_azimuth_deg": 6.888199,
+      "earth_elevation_deg": -2.50259
+    },
+    {
+      "timestamp_utc": "2026-12-01T22:15:00Z",
+      "sun_azimuth_deg": 268.776865,
+      "sun_elevation_deg": 1.455577,
+      "earth_azimuth_deg": 6.889145,
+      "earth_elevation_deg": -2.517149
+    },
+    {
+      "timestamp_utc": "2026-12-01T22:30:00Z",
+      "sun_azimuth_deg": 268.650149,
+      "sun_elevation_deg": 1.454511,
+      "earth_azimuth_deg": 6.890058,
+      "earth_elevation_deg": -2.531689
+    },
+    {
+      "timestamp_utc": "2026-12-01T22:45:00Z",
+      "sun_azimuth_deg": 268.523432,
+      "sun_elevation_deg": 1.453446,
+      "earth_azimuth_deg": 6.890938,
+      "earth_elevation_deg": -2.546209
+    },
+    {
+      "timestamp_utc": "2026-12-01T23:00:00Z",
+      "sun_azimuth_deg": 268.396714,
+      "sun_elevation_deg": 1.452381,
+      "earth_azimuth_deg": 6.891785,
+      "earth_elevation_deg": -2.560709
+    },
+    {
+      "timestamp_utc": "2026-12-01T23:15:00Z",
+      "sun_azimuth_deg": 268.269996,
+      "sun_elevation_deg": 1.451315,
+      "earth_azimuth_deg": 6.892599,
+      "earth_elevation_deg": -2.57519
+    },
+    {
+      "timestamp_utc": "2026-12-01T23:30:00Z",
+      "sun_azimuth_deg": 268.143278,
+      "sun_elevation_deg": 1.45025,
+      "earth_azimuth_deg": 6.89338,
+      "earth_elevation_deg": -2.58965
+    },
+    {
+      "timestamp_utc": "2026-12-01T23:45:00Z",
+      "sun_azimuth_deg": 268.016558,
+      "sun_elevation_deg": 1.449186,
+      "earth_azimuth_deg": 6.894128,
+      "earth_elevation_deg": -2.604091
+    },
+    {
+      "timestamp_utc": "2026-12-02T00:00:00Z",
+      "sun_azimuth_deg": 267.889838,
+      "sun_elevation_deg": 1.448121,
+      "earth_azimuth_deg": 6.894844,
+      "earth_elevation_deg": -2.618512
+    },
+    {
+      "timestamp_utc": "2026-12-02T00:15:00Z",
+      "sun_azimuth_deg": 267.763117,
+      "sun_elevation_deg": 1.447057,
+      "earth_azimuth_deg": 6.895526,
+      "earth_elevation_deg": -2.632913
+    },
+    {
+      "timestamp_utc": "2026-12-02T00:30:00Z",
+      "sun_azimuth_deg": 267.636396,
+      "sun_elevation_deg": 1.445992,
+      "earth_azimuth_deg": 6.896176,
+      "earth_elevation_deg": -2.647293
+    },
+    {
+      "timestamp_utc": "2026-12-02T00:45:00Z",
+      "sun_azimuth_deg": 267.509674,
+      "sun_elevation_deg": 1.444928,
+      "earth_azimuth_deg": 6.896794,
+      "earth_elevation_deg": -2.661654
+    },
+    {
+      "timestamp_utc": "2026-12-02T01:00:00Z",
+      "sun_azimuth_deg": 267.382951,
+      "sun_elevation_deg": 1.443864,
+      "earth_azimuth_deg": 6.897378,
+      "earth_elevation_deg": -2.675994
+    },
+    {
+      "timestamp_utc": "2026-12-02T01:15:00Z",
+      "sun_azimuth_deg": 267.256228,
+      "sun_elevation_deg": 1.442801,
+      "earth_azimuth_deg": 6.897931,
+      "earth_elevation_deg": -2.690314
+    },
+    {
+      "timestamp_utc": "2026-12-02T01:30:00Z",
+      "sun_azimuth_deg": 267.129503,
+      "sun_elevation_deg": 1.441737,
+      "earth_azimuth_deg": 6.89845,
+      "earth_elevation_deg": -2.704613
+    },
+    {
+      "timestamp_utc": "2026-12-02T01:45:00Z",
+      "sun_azimuth_deg": 267.002779,
+      "sun_elevation_deg": 1.440674,
+      "earth_azimuth_deg": 6.898938,
+      "earth_elevation_deg": -2.718892
+    },
+    {
+      "timestamp_utc": "2026-12-02T02:00:00Z",
+      "sun_azimuth_deg": 266.876053,
+      "sun_elevation_deg": 1.439611,
+      "earth_azimuth_deg": 6.899393,
+      "earth_elevation_deg": -2.733151
+    },
+    {
+      "timestamp_utc": "2026-12-02T02:15:00Z",
+      "sun_azimuth_deg": 266.749327,
+      "sun_elevation_deg": 1.438548,
+      "earth_azimuth_deg": 6.899815,
+      "earth_elevation_deg": -2.747388
+    },
+    {
+      "timestamp_utc": "2026-12-02T02:30:00Z",
+      "sun_azimuth_deg": 266.6226,
+      "sun_elevation_deg": 1.437486,
+      "earth_azimuth_deg": 6.900206,
+      "earth_elevation_deg": -2.761606
+    },
+    {
+      "timestamp_utc": "2026-12-02T02:45:00Z",
+      "sun_azimuth_deg": 266.495873,
+      "sun_elevation_deg": 1.436423,
+      "earth_azimuth_deg": 6.900564,
+      "earth_elevation_deg": -2.775802
+    },
+    {
+      "timestamp_utc": "2026-12-02T03:00:00Z",
+      "sun_azimuth_deg": 266.369145,
+      "sun_elevation_deg": 1.435361,
+      "earth_azimuth_deg": 6.90089,
+      "earth_elevation_deg": -2.789978
+    },
+    {
+      "timestamp_utc": "2026-12-02T03:15:00Z",
+      "sun_azimuth_deg": 266.242416,
+      "sun_elevation_deg": 1.434299,
+      "earth_azimuth_deg": 6.901184,
+      "earth_elevation_deg": -2.804133
+    },
+    {
+      "timestamp_utc": "2026-12-02T03:30:00Z",
+      "sun_azimuth_deg": 266.115686,
+      "sun_elevation_deg": 1.433238,
+      "earth_azimuth_deg": 6.901447,
+      "earth_elevation_deg": -2.818266
+    },
+    {
+      "timestamp_utc": "2026-12-02T03:45:00Z",
+      "sun_azimuth_deg": 265.988956,
+      "sun_elevation_deg": 1.432176,
+      "earth_azimuth_deg": 6.901677,
+      "earth_elevation_deg": -2.832379
+    },
+    {
+      "timestamp_utc": "2026-12-02T04:00:00Z",
+      "sun_azimuth_deg": 265.862225,
+      "sun_elevation_deg": 1.431115,
+      "earth_azimuth_deg": 6.901875,
+      "earth_elevation_deg": -2.846471
+    },
+    {
+      "timestamp_utc": "2026-12-02T04:15:00Z",
+      "sun_azimuth_deg": 265.735494,
+      "sun_elevation_deg": 1.430054,
+      "earth_azimuth_deg": 6.902042,
+      "earth_elevation_deg": -2.860542
+    },
+    {
+      "timestamp_utc": "2026-12-02T04:30:00Z",
+      "sun_azimuth_deg": 265.608762,
+      "sun_elevation_deg": 1.428994,
+      "earth_azimuth_deg": 6.902176,
+      "earth_elevation_deg": -2.874591
+    },
+    {
+      "timestamp_utc": "2026-12-02T04:45:00Z",
+      "sun_azimuth_deg": 265.482029,
+      "sun_elevation_deg": 1.427934,
+      "earth_azimuth_deg": 6.902279,
+      "earth_elevation_deg": -2.88862
+    },
+    {
+      "timestamp_utc": "2026-12-02T05:00:00Z",
+      "sun_azimuth_deg": 265.355295,
+      "sun_elevation_deg": 1.426874,
+      "earth_azimuth_deg": 6.902351,
+      "earth_elevation_deg": -2.902627
+    },
+    {
+      "timestamp_utc": "2026-12-02T05:15:00Z",
+      "sun_azimuth_deg": 265.228561,
+      "sun_elevation_deg": 1.425814,
+      "earth_azimuth_deg": 6.90239,
+      "earth_elevation_deg": -2.916612
+    },
+    {
+      "timestamp_utc": "2026-12-02T05:30:00Z",
+      "sun_azimuth_deg": 265.101826,
+      "sun_elevation_deg": 1.424754,
+      "earth_azimuth_deg": 6.902399,
+      "earth_elevation_deg": -2.930577
+    },
+    {
+      "timestamp_utc": "2026-12-02T05:45:00Z",
+      "sun_azimuth_deg": 264.975091,
+      "sun_elevation_deg": 1.423695,
+      "earth_azimuth_deg": 6.902375,
+      "earth_elevation_deg": -2.944519
+    },
+    {
+      "timestamp_utc": "2026-12-02T06:00:00Z",
+      "sun_azimuth_deg": 264.848355,
+      "sun_elevation_deg": 1.422636,
+      "earth_azimuth_deg": 6.902321,
+      "earth_elevation_deg": -2.95844
+    },
+    {
+      "timestamp_utc": "2026-12-02T06:15:00Z",
+      "sun_azimuth_deg": 264.721618,
+      "sun_elevation_deg": 1.421578,
+      "earth_azimuth_deg": 6.902234,
+      "earth_elevation_deg": -2.97234
+    },
+    {
+      "timestamp_utc": "2026-12-02T06:30:00Z",
+      "sun_azimuth_deg": 264.59488,
+      "sun_elevation_deg": 1.420519,
+      "earth_azimuth_deg": 6.902117,
+      "earth_elevation_deg": -2.986218
+    },
+    {
+      "timestamp_utc": "2026-12-02T06:45:00Z",
+      "sun_azimuth_deg": 264.468142,
+      "sun_elevation_deg": 1.419461,
+      "earth_azimuth_deg": 6.901969,
+      "earth_elevation_deg": -3.000074
+    },
+    {
+      "timestamp_utc": "2026-12-02T07:00:00Z",
+      "sun_azimuth_deg": 264.341404,
+      "sun_elevation_deg": 1.418404,
+      "earth_azimuth_deg": 6.901789,
+      "earth_elevation_deg": -3.013908
+    },
+    {
+      "timestamp_utc": "2026-12-02T07:15:00Z",
+      "sun_azimuth_deg": 264.214664,
+      "sun_elevation_deg": 1.417346,
+      "earth_azimuth_deg": 6.901578,
+      "earth_elevation_deg": -3.027721
+    },
+    {
+      "timestamp_utc": "2026-12-02T07:30:00Z",
+      "sun_azimuth_deg": 264.087924,
+      "sun_elevation_deg": 1.416289,
+      "earth_azimuth_deg": 6.901336,
+      "earth_elevation_deg": -3.041511
+    },
+    {
+      "timestamp_utc": "2026-12-02T07:45:00Z",
+      "sun_azimuth_deg": 263.961183,
+      "sun_elevation_deg": 1.415233,
+      "earth_azimuth_deg": 6.901063,
+      "earth_elevation_deg": -3.055279
+    },
+    {
+      "timestamp_utc": "2026-12-02T08:00:00Z",
+      "sun_azimuth_deg": 263.834442,
+      "sun_elevation_deg": 1.414176,
+      "earth_azimuth_deg": 6.900759,
+      "earth_elevation_deg": -3.069026
+    },
+    {
+      "timestamp_utc": "2026-12-02T08:15:00Z",
+      "sun_azimuth_deg": 263.7077,
+      "sun_elevation_deg": 1.41312,
+      "earth_azimuth_deg": 6.900424,
+      "earth_elevation_deg": -3.08275
+    },
+    {
+      "timestamp_utc": "2026-12-02T08:30:00Z",
+      "sun_azimuth_deg": 263.580957,
+      "sun_elevation_deg": 1.412065,
+      "earth_azimuth_deg": 6.900058,
+      "earth_elevation_deg": -3.096452
+    },
+    {
+      "timestamp_utc": "2026-12-02T08:45:00Z",
+      "sun_azimuth_deg": 263.454213,
+      "sun_elevation_deg": 1.411009,
+      "earth_azimuth_deg": 6.899662,
+      "earth_elevation_deg": -3.110132
+    },
+    {
+      "timestamp_utc": "2026-12-02T09:00:00Z",
+      "sun_azimuth_deg": 263.327469,
+      "sun_elevation_deg": 1.409954,
+      "earth_azimuth_deg": 6.899234,
+      "earth_elevation_deg": -3.12379
+    },
+    {
+      "timestamp_utc": "2026-12-02T09:15:00Z",
+      "sun_azimuth_deg": 263.200725,
+      "sun_elevation_deg": 1.4089,
+      "earth_azimuth_deg": 6.898777,
+      "earth_elevation_deg": -3.137425
+    },
+    {
+      "timestamp_utc": "2026-12-02T09:30:00Z",
+      "sun_azimuth_deg": 263.073979,
+      "sun_elevation_deg": 1.407845,
+      "earth_azimuth_deg": 6.898288,
+      "earth_elevation_deg": -3.151038
+    },
+    {
+      "timestamp_utc": "2026-12-02T09:45:00Z",
+      "sun_azimuth_deg": 262.947233,
+      "sun_elevation_deg": 1.406792,
+      "earth_azimuth_deg": 6.897769,
+      "earth_elevation_deg": -3.164628
+    },
+    {
+      "timestamp_utc": "2026-12-02T10:00:00Z",
+      "sun_azimuth_deg": 262.820487,
+      "sun_elevation_deg": 1.405738,
+      "earth_azimuth_deg": 6.897219,
+      "earth_elevation_deg": -3.178196
+    },
+    {
+      "timestamp_utc": "2026-12-02T10:15:00Z",
+      "sun_azimuth_deg": 262.693739,
+      "sun_elevation_deg": 1.404685,
+      "earth_azimuth_deg": 6.896639,
+      "earth_elevation_deg": -3.191741
+    },
+    {
+      "timestamp_utc": "2026-12-02T10:30:00Z",
+      "sun_azimuth_deg": 262.566991,
+      "sun_elevation_deg": 1.403632,
+      "earth_azimuth_deg": 6.896029,
+      "earth_elevation_deg": -3.205264
+    },
+    {
+      "timestamp_utc": "2026-12-02T10:45:00Z",
+      "sun_azimuth_deg": 262.440242,
+      "sun_elevation_deg": 1.40258,
+      "earth_azimuth_deg": 6.895388,
+      "earth_elevation_deg": -3.218763
+    },
+    {
+      "timestamp_utc": "2026-12-02T11:00:00Z",
+      "sun_azimuth_deg": 262.313493,
+      "sun_elevation_deg": 1.401528,
+      "earth_azimuth_deg": 6.894717,
+      "earth_elevation_deg": -3.23224
+    },
+    {
+      "timestamp_utc": "2026-12-02T11:15:00Z",
+      "sun_azimuth_deg": 262.186743,
+      "sun_elevation_deg": 1.400476,
+      "earth_azimuth_deg": 6.894016,
+      "earth_elevation_deg": -3.245695
+    },
+    {
+      "timestamp_utc": "2026-12-02T11:30:00Z",
+      "sun_azimuth_deg": 262.059993,
+      "sun_elevation_deg": 1.399425,
+      "earth_azimuth_deg": 6.893285,
+      "earth_elevation_deg": -3.259126
+    },
+    {
+      "timestamp_utc": "2026-12-02T11:45:00Z",
+      "sun_azimuth_deg": 261.933241,
+      "sun_elevation_deg": 1.398374,
+      "earth_azimuth_deg": 6.892523,
+      "earth_elevation_deg": -3.272534
+    },
+    {
+      "timestamp_utc": "2026-12-02T12:00:00Z",
+      "sun_azimuth_deg": 261.806489,
+      "sun_elevation_deg": 1.397323,
+      "earth_azimuth_deg": 6.891732,
+      "earth_elevation_deg": -3.28592
+    },
+    {
+      "timestamp_utc": "2026-12-02T12:15:00Z",
+      "sun_azimuth_deg": 261.679737,
+      "sun_elevation_deg": 1.396273,
+      "earth_azimuth_deg": 6.890911,
+      "earth_elevation_deg": -3.299282
+    },
+    {
+      "timestamp_utc": "2026-12-02T12:30:00Z",
+      "sun_azimuth_deg": 261.552984,
+      "sun_elevation_deg": 1.395224,
+      "earth_azimuth_deg": 6.890059,
+      "earth_elevation_deg": -3.312621
+    },
+    {
+      "timestamp_utc": "2026-12-02T12:45:00Z",
+      "sun_azimuth_deg": 261.42623,
+      "sun_elevation_deg": 1.394175,
+      "earth_azimuth_deg": 6.889178,
+      "earth_elevation_deg": -3.325937
+    },
+    {
+      "timestamp_utc": "2026-12-02T13:00:00Z",
+      "sun_azimuth_deg": 261.299475,
+      "sun_elevation_deg": 1.393126,
+      "earth_azimuth_deg": 6.888267,
+      "earth_elevation_deg": -3.33923
+    },
+    {
+      "timestamp_utc": "2026-12-02T13:15:00Z",
+      "sun_azimuth_deg": 261.17272,
+      "sun_elevation_deg": 1.392078,
+      "earth_azimuth_deg": 6.887326,
+      "earth_elevation_deg": -3.352499
+    },
+    {
+      "timestamp_utc": "2026-12-02T13:30:00Z",
+      "sun_azimuth_deg": 261.045964,
+      "sun_elevation_deg": 1.39103,
+      "earth_azimuth_deg": 6.886356,
+      "earth_elevation_deg": -3.365745
+    },
+    {
+      "timestamp_utc": "2026-12-02T13:45:00Z",
+      "sun_azimuth_deg": 260.919208,
+      "sun_elevation_deg": 1.389982,
+      "earth_azimuth_deg": 6.885356,
+      "earth_elevation_deg": -3.378968
+    },
+    {
+      "timestamp_utc": "2026-12-02T14:00:00Z",
+      "sun_azimuth_deg": 260.79245,
+      "sun_elevation_deg": 1.388935,
+      "earth_azimuth_deg": 6.884326,
+      "earth_elevation_deg": -3.392167
+    },
+    {
+      "timestamp_utc": "2026-12-02T14:15:00Z",
+      "sun_azimuth_deg": 260.665693,
+      "sun_elevation_deg": 1.387889,
+      "earth_azimuth_deg": 6.883267,
+      "earth_elevation_deg": -3.405342
+    },
+    {
+      "timestamp_utc": "2026-12-02T14:30:00Z",
+      "sun_azimuth_deg": 260.538934,
+      "sun_elevation_deg": 1.386842,
+      "earth_azimuth_deg": 6.882178,
+      "earth_elevation_deg": -3.418494
+    },
+    {
+      "timestamp_utc": "2026-12-02T14:45:00Z",
+      "sun_azimuth_deg": 260.412175,
+      "sun_elevation_deg": 1.385797,
+      "earth_azimuth_deg": 6.88106,
+      "earth_elevation_deg": -3.431623
+    },
+    {
+      "timestamp_utc": "2026-12-02T15:00:00Z",
+      "sun_azimuth_deg": 260.285415,
+      "sun_elevation_deg": 1.384752,
+      "earth_azimuth_deg": 6.879913,
+      "earth_elevation_deg": -3.444728
+    },
+    {
+      "timestamp_utc": "2026-12-02T15:15:00Z",
+      "sun_azimuth_deg": 260.158655,
+      "sun_elevation_deg": 1.383707,
+      "earth_azimuth_deg": 6.878736,
+      "earth_elevation_deg": -3.457808
+    },
+    {
+      "timestamp_utc": "2026-12-02T15:30:00Z",
+      "sun_azimuth_deg": 260.031894,
+      "sun_elevation_deg": 1.382663,
+      "earth_azimuth_deg": 6.87753,
+      "earth_elevation_deg": -3.470866
+    },
+    {
+      "timestamp_utc": "2026-12-02T15:45:00Z",
+      "sun_azimuth_deg": 259.905132,
+      "sun_elevation_deg": 1.381619,
+      "earth_azimuth_deg": 6.876295,
+      "earth_elevation_deg": -3.483899
+    },
+    {
+      "timestamp_utc": "2026-12-02T16:00:00Z",
+      "sun_azimuth_deg": 259.77837,
+      "sun_elevation_deg": 1.380575,
+      "earth_azimuth_deg": 6.875031,
+      "earth_elevation_deg": -3.496908
+    },
+    {
+      "timestamp_utc": "2026-12-02T16:15:00Z",
+      "sun_azimuth_deg": 259.651607,
+      "sun_elevation_deg": 1.379533,
+      "earth_azimuth_deg": 6.873737,
+      "earth_elevation_deg": -3.509894
+    },
+    {
+      "timestamp_utc": "2026-12-02T16:30:00Z",
+      "sun_azimuth_deg": 259.524844,
+      "sun_elevation_deg": 1.37849,
+      "earth_azimuth_deg": 6.872415,
+      "earth_elevation_deg": -3.522855
+    },
+    {
+      "timestamp_utc": "2026-12-02T16:45:00Z",
+      "sun_azimuth_deg": 259.398079,
+      "sun_elevation_deg": 1.377448,
+      "earth_azimuth_deg": 6.871064,
+      "earth_elevation_deg": -3.535792
+    },
+    {
+      "timestamp_utc": "2026-12-02T17:00:00Z",
+      "sun_azimuth_deg": 259.271314,
+      "sun_elevation_deg": 1.376407,
+      "earth_azimuth_deg": 6.869684,
+      "earth_elevation_deg": -3.548705
+    },
+    {
+      "timestamp_utc": "2026-12-02T17:15:00Z",
+      "sun_azimuth_deg": 259.144549,
+      "sun_elevation_deg": 1.375366,
+      "earth_azimuth_deg": 6.868275,
+      "earth_elevation_deg": -3.561594
+    },
+    {
+      "timestamp_utc": "2026-12-02T17:30:00Z",
+      "sun_azimuth_deg": 259.017783,
+      "sun_elevation_deg": 1.374326,
+      "earth_azimuth_deg": 6.866837,
+      "earth_elevation_deg": -3.574459
+    },
+    {
+      "timestamp_utc": "2026-12-02T17:45:00Z",
+      "sun_azimuth_deg": 258.891016,
+      "sun_elevation_deg": 1.373286,
+      "earth_azimuth_deg": 6.86537,
+      "earth_elevation_deg": -3.5873
+    },
+    {
+      "timestamp_utc": "2026-12-02T18:00:00Z",
+      "sun_azimuth_deg": 258.764249,
+      "sun_elevation_deg": 1.372247,
+      "earth_azimuth_deg": 6.863875,
+      "earth_elevation_deg": -3.600116
+    },
+    {
+      "timestamp_utc": "2026-12-02T18:15:00Z",
+      "sun_azimuth_deg": 258.637481,
+      "sun_elevation_deg": 1.371208,
+      "earth_azimuth_deg": 6.862351,
+      "earth_elevation_deg": -3.612907
+    },
+    {
+      "timestamp_utc": "2026-12-02T18:30:00Z",
+      "sun_azimuth_deg": 258.510712,
+      "sun_elevation_deg": 1.37017,
+      "earth_azimuth_deg": 6.860799,
+      "earth_elevation_deg": -3.625674
+    },
+    {
+      "timestamp_utc": "2026-12-02T18:45:00Z",
+      "sun_azimuth_deg": 258.383943,
+      "sun_elevation_deg": 1.369132,
+      "earth_azimuth_deg": 6.859218,
+      "earth_elevation_deg": -3.638417
+    },
+    {
+      "timestamp_utc": "2026-12-02T19:00:00Z",
+      "sun_azimuth_deg": 258.257173,
+      "sun_elevation_deg": 1.368095,
+      "earth_azimuth_deg": 6.857609,
+      "earth_elevation_deg": -3.651135
+    },
+    {
+      "timestamp_utc": "2026-12-02T19:15:00Z",
+      "sun_azimuth_deg": 258.130402,
+      "sun_elevation_deg": 1.367058,
+      "earth_azimuth_deg": 6.855971,
+      "earth_elevation_deg": -3.663829
+    },
+    {
+      "timestamp_utc": "2026-12-02T19:30:00Z",
+      "sun_azimuth_deg": 258.003631,
+      "sun_elevation_deg": 1.366022,
+      "earth_azimuth_deg": 6.854305,
+      "earth_elevation_deg": -3.676498
+    },
+    {
+      "timestamp_utc": "2026-12-02T19:45:00Z",
+      "sun_azimuth_deg": 257.876859,
+      "sun_elevation_deg": 1.364986,
+      "earth_azimuth_deg": 6.852611,
+      "earth_elevation_deg": -3.689142
+    },
+    {
+      "timestamp_utc": "2026-12-02T20:00:00Z",
+      "sun_azimuth_deg": 257.750086,
+      "sun_elevation_deg": 1.363951,
+      "earth_azimuth_deg": 6.850889,
+      "earth_elevation_deg": -3.701761
+    },
+    {
+      "timestamp_utc": "2026-12-02T20:15:00Z",
+      "sun_azimuth_deg": 257.623313,
+      "sun_elevation_deg": 1.362917,
+      "earth_azimuth_deg": 6.849138,
+      "earth_elevation_deg": -3.714355
+    },
+    {
+      "timestamp_utc": "2026-12-02T20:30:00Z",
+      "sun_azimuth_deg": 257.496539,
+      "sun_elevation_deg": 1.361883,
+      "earth_azimuth_deg": 6.847359,
+      "earth_elevation_deg": -3.726925
+    },
+    {
+      "timestamp_utc": "2026-12-02T20:45:00Z",
+      "sun_azimuth_deg": 257.369765,
+      "sun_elevation_deg": 1.360849,
+      "earth_azimuth_deg": 6.845553,
+      "earth_elevation_deg": -3.73947
+    },
+    {
+      "timestamp_utc": "2026-12-02T21:00:00Z",
+      "sun_azimuth_deg": 257.24299,
+      "sun_elevation_deg": 1.359817,
+      "earth_azimuth_deg": 6.843718,
+      "earth_elevation_deg": -3.751989
+    },
+    {
+      "timestamp_utc": "2026-12-02T21:15:00Z",
+      "sun_azimuth_deg": 257.116214,
+      "sun_elevation_deg": 1.358784,
+      "earth_azimuth_deg": 6.841855,
+      "earth_elevation_deg": -3.764484
+    },
+    {
+      "timestamp_utc": "2026-12-02T21:30:00Z",
+      "sun_azimuth_deg": 256.989438,
+      "sun_elevation_deg": 1.357753,
+      "earth_azimuth_deg": 6.839964,
+      "earth_elevation_deg": -3.776954
+    },
+    {
+      "timestamp_utc": "2026-12-02T21:45:00Z",
+      "sun_azimuth_deg": 256.862661,
+      "sun_elevation_deg": 1.356722,
+      "earth_azimuth_deg": 6.838046,
+      "earth_elevation_deg": -3.789398
+    },
+    {
+      "timestamp_utc": "2026-12-02T22:00:00Z",
+      "sun_azimuth_deg": 256.735883,
+      "sun_elevation_deg": 1.355691,
+      "earth_azimuth_deg": 6.8361,
+      "earth_elevation_deg": -3.801817
+    },
+    {
+      "timestamp_utc": "2026-12-02T22:15:00Z",
+      "sun_azimuth_deg": 256.609105,
+      "sun_elevation_deg": 1.354661,
+      "earth_azimuth_deg": 6.834126,
+      "earth_elevation_deg": -3.814211
+    },
+    {
+      "timestamp_utc": "2026-12-02T22:30:00Z",
+      "sun_azimuth_deg": 256.482326,
+      "sun_elevation_deg": 1.353632,
+      "earth_azimuth_deg": 6.832124,
+      "earth_elevation_deg": -3.82658
+    },
+    {
+      "timestamp_utc": "2026-12-02T22:45:00Z",
+      "sun_azimuth_deg": 256.355547,
+      "sun_elevation_deg": 1.352603,
+      "earth_azimuth_deg": 6.830095,
+      "earth_elevation_deg": -3.838924
+    },
+    {
+      "timestamp_utc": "2026-12-02T23:00:00Z",
+      "sun_azimuth_deg": 256.228767,
+      "sun_elevation_deg": 1.351575,
+      "earth_azimuth_deg": 6.828038,
+      "earth_elevation_deg": -3.851242
+    },
+    {
+      "timestamp_utc": "2026-12-02T23:15:00Z",
+      "sun_azimuth_deg": 256.101986,
+      "sun_elevation_deg": 1.350548,
+      "earth_azimuth_deg": 6.825954,
+      "earth_elevation_deg": -3.863534
+    },
+    {
+      "timestamp_utc": "2026-12-02T23:30:00Z",
+      "sun_azimuth_deg": 255.975205,
+      "sun_elevation_deg": 1.349521,
+      "earth_azimuth_deg": 6.823842,
+      "earth_elevation_deg": -3.875801
+    },
+    {
+      "timestamp_utc": "2026-12-02T23:45:00Z",
+      "sun_azimuth_deg": 255.848423,
+      "sun_elevation_deg": 1.348495,
+      "earth_azimuth_deg": 6.821703,
+      "earth_elevation_deg": -3.888043
+    },
+    {
+      "timestamp_utc": "2026-12-03T00:00:00Z",
+      "sun_azimuth_deg": 255.72164,
+      "sun_elevation_deg": 1.347469,
+      "earth_azimuth_deg": 6.819537,
+      "earth_elevation_deg": -3.900259
+    }
+  ]
+}

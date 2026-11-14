@@ -23,6 +23,7 @@ frontend/dist/
 build/
 
 # Logs & OS files
+data/processed/delay_runs/
 *.log
 .DS_Store
 Thumbs.db

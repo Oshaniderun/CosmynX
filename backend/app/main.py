@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from app.api import comparison, conditions, ephemeris, helios, sites, terrain
+from app.api import comparison, conditions, ephemeris, helios, sites, stress_tests, terrain
 
 load_dotenv()
 
@@ -41,4 +41,5 @@ app.include_router(terrain.router, prefix="/api", tags=["Terrain"])
 app.include_router(ephemeris.router, prefix="/api", tags=["Ephemeris"])
 app.include_router(conditions.router, prefix="/api", tags=["Conditions"])
 app.include_router(comparison.router, prefix="/api", tags=["Comparison"])
+app.include_router(stress_tests.router, prefix="/api", tags=["Delay Lab"])
 app.include_router(helios.router, prefix="/api/helios", tags=["HELIOS AI"])

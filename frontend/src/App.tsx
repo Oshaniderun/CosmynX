@@ -3,7 +3,7 @@ import { Navbar } from "./components/layout/Navbar";
 import { LunarMapPanel } from "./features/lunar-map/components/LunarMapPanel";
 import { SunEarthPanel } from "./features/sun-earth/components/SunEarthPanel";
 import { PowerCommunicationPanel } from "./features/power-communication/components/PowerCommunicationPanel";
-import { ComparisonPanel } from "./features/comparison/components/ComparisonPanel";
+import { DelayLabPanel } from "./features/comparison/delay-lab/DelayLabPanel";
 import { HeliosAdvisorPanel } from "./features/helios-ai/components/HeliosAdvisorPanel";
 
 export default function App() {
@@ -17,7 +17,7 @@ export default function App() {
           </div>
           <SunEarthPanel />
           <PowerCommunicationPanel />
-          <ComparisonPanel />
+          <DelayLabPanel />
           <HeliosAdvisorPanel />
         </main>
       </div>

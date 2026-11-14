@@ -1,5 +1,7 @@
 # Member 5 — Scenario Comparison & Timelines
 
+The main Member 5 interface is now the **[HELIOS Delay Lab](member-5-delay-lab.md)** with a site/departure stress matrix, animated inspection and reproducible decision brief. The original panel described below is retained under **Advanced side-by-side comparison**.
+
 Owner: Ravindu. Branch: `feature/scenario-comparison` (renamed from `Ravindu`). Integrated `Dev` commit `51c22f6`, including NASA retrieval, Member 3 visualizations, and Member 4 analysis, on 14 November 2026. No other members’ feature branches were merged separately.
 
 ## Run and try it
