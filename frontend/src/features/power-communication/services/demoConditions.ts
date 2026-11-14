@@ -43,6 +43,9 @@ export const demoConditions: ConditionsResponse = {
       earth_elevation_deg: 3.63,
       is_sunlit: true,
       is_earth_visible: true,
+      power_watts_vertical: 318.1,
+      power_watts_horizontal: 31.8,
+      power_watts_tracking: 1000.0,
     },
     {
       timestamp_utc: "2026-11-20T01:00:00Z",
@@ -50,6 +53,9 @@ export const demoConditions: ConditionsResponse = {
       earth_elevation_deg: 3.68,
       is_sunlit: true,
       is_earth_visible: true,
+      power_watts_vertical: 318.1,
+      power_watts_horizontal: 31.8,
+      power_watts_tracking: 1000.0,
     },
     {
       timestamp_utc: "2026-11-20T02:00:00Z",
@@ -57,6 +63,9 @@ export const demoConditions: ConditionsResponse = {
       earth_elevation_deg: 3.73,
       is_sunlit: true,
       is_earth_visible: true,
+      power_watts_vertical: 318.1,
+      power_watts_horizontal: 31.8,
+      power_watts_tracking: 1000.0,
     },
     {
       timestamp_utc: "2026-11-20T03:00:00Z",
@@ -64,6 +73,9 @@ export const demoConditions: ConditionsResponse = {
       earth_elevation_deg: 3.79,
       is_sunlit: true,
       is_earth_visible: true,
+      power_watts_vertical: 318.1,
+      power_watts_horizontal: 31.9,
+      power_watts_tracking: 1000.0,
     },
     {
       timestamp_utc: "2026-11-20T04:00:00Z",
@@ -71,6 +83,9 @@ export const demoConditions: ConditionsResponse = {
       earth_elevation_deg: 3.84,
       is_sunlit: true,
       is_earth_visible: true,
+      power_watts_vertical: 318.1,
+      power_watts_horizontal: 31.9,
+      power_watts_tracking: 1000.0,
     },
     {
       timestamp_utc: "2026-11-20T05:00:00Z",
@@ -78,6 +93,9 @@ export const demoConditions: ConditionsResponse = {
       earth_elevation_deg: 3.89,
       is_sunlit: false,
       is_earth_visible: true,
+      power_watts_vertical: 0.0,
+      power_watts_horizontal: 0.0,
+      power_watts_tracking: 0.0,
     },
     {
       timestamp_utc: "2026-11-20T06:00:00Z",
@@ -85,6 +103,26 @@ export const demoConditions: ConditionsResponse = {
       earth_elevation_deg: 3.94,
       is_sunlit: false,
       is_earth_visible: true,
+      power_watts_vertical: 0.0,
+      power_watts_horizontal: 0.0,
+      power_watts_tracking: 0.0,
     },
   ],
+  power_modeling: {
+    rated_array_kw: 1.0,
+    cumulative_energy_kwh: {
+      vertical_polar: 1.59,
+      tracking: 5.0,
+      horizontal: 0.16,
+    },
+    battery_sizing: {
+      longest_darkness_hours: 2.0,
+      baseline_hotel_load_watts: 100.0,
+      usable_storage_kwh: 0.2,
+      nominal_capacity_kwh: 0.286,
+      max_dod_percent: 70,
+      estimated_battery_mass_kg: 1.91,
+      battery_chemistry: "Space-Grade Li-ion (150 Wh/kg)",
+    },
+  },
 };
