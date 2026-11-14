@@ -9,8 +9,21 @@ class LandingSite(BaseModel):
     name: str
     region: str = "Lunar South Pole"
     latitude_deg: float = Field(..., ge=-90.0, le=90.0)
-    longitude_deg: float = Field(..., ge=-180.0, le=180.0)
+    longitude_deg: float = Field(..., ge=-180.0, le=360.0)
     description: Optional[str] = None
+    elevation_m: Optional[float] = None
+    source: str = "NASA Artemis III / LRO"
+    coordinate_type: str = "region_center"
+
+
+class CustomSiteRequest(BaseModel):
+    """User-specified custom lunar coordinates."""
+
+    name: Optional[str] = "Custom Lunar Site"
+    latitude_deg: float = Field(..., ge=-90.0, le=90.0)
+    longitude_deg: float = Field(..., ge=-180.0, le=360.0)
+    description: Optional[str] = None
+
 
 
 class EphemerisPoint(BaseModel):

@@ -5,6 +5,9 @@ export interface LandingSite {
   latitude_deg: number;
   longitude_deg: number;
   description?: string | null;
+  elevation_m?: number | null;
+  source?: string;
+  coordinate_type?: string;
 }
 
 export interface VisibilityMetrics {
