@@ -10,7 +10,7 @@ export function getTerrainProfile(site?: Coordinates) {
   }
 }
 
-type TerrainProfile = NonNullable<ReturnType<typeof getTerrainProfile>>;
+export type TerrainProfile = NonNullable<ReturnType<typeof getTerrainProfile>>;
 
 export function skylineAt(profile: TerrainProfile, azimuth: number) {
   const bearing = ((azimuth % 360) + 360) % 360;

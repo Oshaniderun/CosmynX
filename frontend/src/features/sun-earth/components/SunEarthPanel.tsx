@@ -10,8 +10,14 @@ import { getTerrainProfile, summarizeSolarObstruction, terrainClearance } from "
 import obstructionReplayData from "../assets/connecting-ridge-obstruction.json";
 
 const obstructionReplay: EphemerisResponse = { ...obstructionReplayData.ephemeris, status: "ok" };
+const replayProfile = getTerrainProfile(obstructionReplay);
+const replayObstruction = replayProfile &&
+  summarizeSolarObstruction(replayProfile, obstructionReplay.points, obstructionReplay.step_minutes);
+const beforeCrossing = Math.max(0, (replayObstruction?.first ?? 0) - 1);
+const behindRidge = obstructionReplay.points.length - 1;
 
 const SpaceViewport = lazy(() => import("./SpaceViewport"));
+const TerrainSurfaceView = lazy(() => import("./TerrainSurfaceView"));
 const playDurationMs = 22_000;
 const sampleDelayMs = 750;
 const timeFormat = new Intl.DateTimeFormat("en-GB", {
@@ -51,6 +57,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   const [sampleIndex, setSampleIndex] = useState(0);
   const [playingSamples, setPlayingSamples] = useState(false);
   const [showObstructionReplay, setShowObstructionReplay] = useState(false);
+  const [terrainView, setTerrainView] = useState<"surface" | "orbit">("surface");
   const [sites, setSites] = useState<LandingSite[]>([]);
   const [siteId, setSiteId] = useState(selectedSite?.site_id ?? "");
   const [startTime, setStartTime] = useState(initialMissionWindow.start_utc.slice(0, 16));
@@ -203,11 +210,14 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
     : undefined, [terrain, positions, points]);
 
   function openObstructionReplay() {
-    const profile = getTerrainProfile(obstructionReplay);
-    const event = profile && summarizeSolarObstruction(profile, obstructionReplay.points, obstructionReplay.step_minutes);
-    setPlayingSamples(false);
-    setSampleIndex(event?.first ?? 0);
+    setTerrainView("surface");
+    seekSample(beforeCrossing);
     setShowObstructionReplay(true);
+  }
+
+  function seekSample(index: number) {
+    setPlayingSamples(false);
+    setSampleIndex(index);
   }
 
   useEffect(() => {
@@ -263,9 +273,9 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-950/45 px-4 py-3 sm:px-6">
           <div>
             <p className="text-sm font-medium text-slate-100">Connecting Ridge terrain case</p>
-            <p className="mt-1 text-xs text-slate-400">See when the Sun drops behind a ridge while still above the level horizon.</p>
+            <p className="mt-1 text-xs text-slate-400">Explore a real terrain obstruction using NASA elevation and ephemeris data.</p>
           </div>
-          <button type="button" className={controlClass} onClick={showObstructionReplay ? () => {
+          <button type="button" className={controlClass + (showObstructionReplay ? "" : " border-amber-300/50 bg-amber-400/10 text-amber-100 hover:border-amber-300 hover:bg-amber-400/15")} onClick={showObstructionReplay ? () => {
             setPlayingSamples(false);
             setSampleIndex(0);
             if (!ephemeris) {
@@ -276,6 +286,27 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
           } : openObstructionReplay}>
             {showObstructionReplay ? "Return to mission window" : "Open terrain case"}
           </button>
+        </div>
+      )}
+
+      {mode === "site" && showObstructionReplay && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 px-4 py-3 sm:px-6">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Terrain case shortcuts">
+            {[
+              { index: beforeCrossing, label: "Before crossing" },
+              { index: behindRidge, label: "Behind the ridge" },
+            ].map(({ index, label }) => (
+              <button type="button" key={label} className={modeClass}
+                aria-pressed={currentSample === index} onClick={() => seekSample(index)}>
+                {label}
+                <span className="font-normal text-slate-400">{timeFormat.format(new Date(obstructionReplay.points[index].timestamp_utc))} UTC</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2" role="group" aria-label="Terrain case view">
+            <button type="button" className={modeClass} aria-pressed={terrainView === "surface"} onClick={() => setTerrainView("surface")}>Surface view</button>
+            <button type="button" className={modeClass} aria-pressed={terrainView === "orbit"} onClick={() => setTerrainView("orbit")}>3D orbit</button>
+          </div>
         </div>
       )}
 
@@ -333,9 +364,11 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       )}
 
       {(mode === "eclipse" || (positions?.status === "ok" && points.length > 0)) && (
-        <Suspense fallback={<div className="grid h-[280px] place-items-center bg-slate-950 text-sm text-slate-400 sm:h-[380px]" role="status">Loading 3D view…</div>}>
+        <Suspense fallback={<div className="grid h-[360px] place-items-center bg-slate-950 text-sm text-slate-400 sm:h-[460px]" role="status">Loading view…</div>}>
           {mode === "eclipse" ? (
             <SpaceViewport key="eclipse" frame={{ mode, time }} />
+          ) : showObstructionReplay && terrainView === "surface" && terrain && point ? (
+            <TerrainSurfaceView profile={terrain} point={point} />
           ) : positions && (
             <SpaceViewport key={positions.site_id} frame={{
               mode, point, latitude: positions.latitude_deg, longitude: positions.longitude_deg,
@@ -416,10 +449,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                   </p>
                 )}
               </div>
-              <button type="button" className={controlClass} onClick={() => {
-                setPlayingSamples(false);
-                setSampleIndex(solarObstruction.first);
-              }}>Jump to first obstruction</button>
+              <button type="button" className={controlClass} onClick={() => seekSample(solarObstruction.first)}>Jump to first obstruction</button>
             </div>
           )}
           {point && points.length > 1 && (
@@ -508,17 +538,27 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
               )}
             </div>
           )}
-          {point && terrain && (
+          {point && terrain && showObstructionReplay && (
+            <details className="rounded-lg border border-slate-800 bg-slate-950/50 p-3 text-xs leading-relaxed text-slate-300">
+              <summary className="cursor-pointer font-medium text-slate-200">How we calculated this</summary>
+              <p className="mt-2">
+                The angles come from hourly <a className="underline underline-offset-2" href="https://naif.jpl.nasa.gov/pub/naif/generic_kernels/" target="_blank" rel="noreferrer">NASA/JPL SPICE samples (DE440)</a>.
+                The skyline uses the <a className="underline underline-offset-2" href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noreferrer">NASA LOLA Site01 elevation grid</a> at {terrain.pixel_size_m} m per pixel.
+              </p>
+              <p className="mt-2">
+                We subtract the highest terrain angle within {terrain.max_distance_m / 1_000} km in the Sun’s direction from the Sun’s elevation, for an observer {terrain.observer_height_m} m above the surface.
+                The results describe the center of the Sun. Part of its disk may still be visible near the crossing.
+              </p>
+            </details>
+          )}
+          {point && terrain && !showObstructionReplay && (
             <p className="text-xs leading-relaxed text-slate-300">
               <a className="underline decoration-slate-500 underline-offset-2 hover:text-white" href={terrain.source_url} target="_blank" rel="noreferrer">NASA LRO LOLA Site01</a>
               {" · "}{terrain.pixel_size_m} m grid · Terrain within {terrain.max_distance_m / 1_000} km · Observer {terrain.observer_height_m} m above the surface.
               Clearance compares each body’s center with the terrain in its direction.
-              {showObstructionReplay && (
-                <> <a className="underline decoration-slate-500 underline-offset-2 hover:text-white" href="https://naif.jpl.nasa.gov/pub/naif/generic_kernels/" target="_blank" rel="noreferrer">NASA/JPL SPICE kernels</a> provide the positions for this case.</>
-              )}
             </p>
           )}
-          {point && <p className="text-xs leading-relaxed text-slate-400">
+          {point && (!showObstructionReplay || terrainView === "orbit") && <p className="text-xs leading-relaxed text-slate-400">
             The cyan ring marks the geometric horizon. {terrain ? "Terrain farther away can still affect the view." : "Select Connecting Ridge for a terrain comparison using NASA LOLA data."} Body sizes and distances are illustrative.
           </p>}
         </div>
