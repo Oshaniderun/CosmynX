@@ -13,8 +13,10 @@ import {
   AlertCircle,
   Calendar,
   CheckCircle2,
+  Clock,
   Compass,
   Eclipse,
+  FileText,
   Globe,
   Layers,
   MapPin,
@@ -25,7 +27,10 @@ import {
   PlusCircle,
   Radio,
   RefreshCw,
+  Rocket,
   RotateCcw,
+  Scale,
+  Users,
 } from "lucide-react";
 import { useMission } from "../../../context/MissionContext";
 import type { EphemerisResponse, LandingSite } from "../../../types/helios";
@@ -44,6 +49,11 @@ import {
   terrainClearance,
 } from "../../sun-earth/services/terrainSkyline";
 import obstructionReplayData from "../../sun-earth/assets/connecting-ridge-obstruction.json";
+import {
+  APOLLO_DOSSIERS,
+  apolloDossierToLandingSite,
+  getApolloDossier,
+} from "../../sun-earth/services/apolloDossiers";
 
 const SpaceViewport = lazy(() => import("../../sun-earth/components/SpaceViewport"));
 const TerrainSurfaceView = lazy(() => import("../../sun-earth/components/TerrainSurfaceView"));
@@ -131,7 +141,7 @@ export function UnifiedLunarExplorer({
   const [sites, setSites] = useState<LandingSite[]>([]);
   const [sitesLoading, setSitesLoading] = useState<boolean>(true);
   const [sitesError, setSitesError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"candidates" | "custom">("candidates");
+  const [activeTab, setActiveTab] = useState<"candidates" | "apollo" | "custom">("candidates");
   const [isPinDropMode, setIsPinDropMode] = useState<boolean>(false);
   const [customLat, setCustomLat] = useState<string>("-89.45");
   const [customLon, setCustomLon] = useState<string>("42.10");
@@ -510,7 +520,9 @@ export function UnifiedLunarExplorer({
           </span>
           {selectedSite && (
             <span className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-[11px] text-slate-300">
-              {selectedSite.latitude_deg.toFixed(2)}°S,{" "}
+              {selectedSite.latitude_deg >= 0
+                ? `${selectedSite.latitude_deg.toFixed(2)}°N`
+                : `${Math.abs(selectedSite.latitude_deg).toFixed(2)}°S`},{" "}
               {selectedSite.longitude_deg >= 0
                 ? `${selectedSite.longitude_deg.toFixed(2)}°E`
                 : `${Math.abs(selectedSite.longitude_deg).toFixed(2)}°W`}
@@ -771,6 +783,9 @@ export function UnifiedLunarExplorer({
                       onSelectSite={(site) => {
                         startTransition(() => {
                           setSelectedSite(site);
+                          if (site.site_id.startsWith("apollo_")) {
+                            setActiveTab("apollo");
+                          }
                         });
                       }}
                       onZoomChange={(zoom) => {
@@ -861,6 +876,27 @@ export function UnifiedLunarExplorer({
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  setActiveTab("apollo");
+                  if (!selectedSite?.site_id.startsWith("apollo_")) {
+                    const defaultApollo = APOLLO_DOSSIERS["apollo_11"];
+                    if (defaultApollo) {
+                      startTransition(() => {
+                        setSelectedSite(apolloDossierToLandingSite(defaultApollo));
+                      });
+                    }
+                  }
+                }}
+                className={`flex-1 rounded-md py-1.5 text-xs font-medium transition ${
+                  activeTab === "apollo"
+                    ? "bg-slate-800 text-sky-300 shadow"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                Apollo Sites ({Object.keys(APOLLO_DOSSIERS).length})
+              </button>
+              <button
+                type="button"
                 onClick={() => setActiveTab("custom")}
                 className={`flex-1 rounded-md py-1.5 text-xs font-medium transition ${
                   activeTab === "custom"
@@ -945,6 +981,159 @@ export function UnifiedLunarExplorer({
               </div>
             )}
 
+            {activeTab === "apollo" && (
+              <div className="flex flex-col gap-2.5">
+                <label className="text-xs font-medium text-slate-400">
+                  Select Apollo Historical Landing Site:
+                </label>
+                <div className="max-h-[175px] space-y-1.5 overflow-y-auto pr-1">
+                  {Object.values(APOLLO_DOSSIERS).map((dossier) => {
+                    const isSelected = selectedSite?.site_id === dossier.id;
+                    return (
+                      <button
+                        type="button"
+                        key={dossier.id}
+                        onClick={() => {
+                          startTransition(() => {
+                            setSelectedSite(apolloDossierToLandingSite(dossier));
+                          });
+                        }}
+                        className={`flex w-full items-center justify-between rounded-lg border p-2 text-left text-xs transition ${
+                          isSelected
+                            ? "border-sky-500/60 bg-sky-950/40 text-sky-100 shadow-sm"
+                            : "border-slate-800/80 bg-slate-950/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          {isSelected ? (
+                            <CheckCircle2 className="h-4 w-4 shrink-0 text-sky-400" />
+                          ) : (
+                            <Rocket className="h-4 w-4 shrink-0 text-sky-400/80" />
+                          )}
+                          <div>
+                            <p className="font-semibold text-slate-100">{dossier.mission}</p>
+                            <p className="text-[11px] text-slate-400">
+                              {dossier.region} · {dossier.date.slice(-4)}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-sky-300">
+                          {dossier.latitudeDeg >= 0
+                            ? `${dossier.latitudeDeg.toFixed(2)}°N`
+                            : `${Math.abs(dossier.latitudeDeg).toFixed(2)}°S`},{" "}
+                          {dossier.longitudeDeg >= 0
+                            ? `${dossier.longitudeDeg.toFixed(2)}°E`
+                            : `${Math.abs(dossier.longitudeDeg).toFixed(2)}°W`}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Apollo Mission Dossier Card */}
+                {selectedSite && selectedSite.site_id.startsWith("apollo_") && (() => {
+                  const dossier = getApolloDossier(selectedSite.site_id);
+                  if (!dossier) return null;
+                  return (
+                    <div className="flex flex-col gap-2.5 rounded-lg border border-sky-800/60 bg-gradient-to-b from-sky-950/30 to-slate-950/70 p-3 shadow-inner">
+                      <div className="flex items-start justify-between gap-2 border-b border-sky-900/40 pb-2">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-sky-300 border border-sky-400/30">
+                              NASA Apollo
+                            </span>
+                            <span className="text-[10px] text-slate-400">{dossier.date}</span>
+                          </div>
+                          <h3 className="mt-1 font-bold text-slate-100">{dossier.siteName}</h3>
+                        </div>
+                        <span className="rounded-full border border-sky-700/60 bg-sky-950/80 px-2 py-0.5 font-mono text-[10px] text-sky-300">
+                          {dossier.id}
+                        </span>
+                      </div>
+
+                      {/* Quick Stats Grid */}
+                      <div className="grid grid-cols-2 gap-2 text-[11px]">
+                        <div className="rounded bg-slate-900/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                            <Users className="h-3 w-3 text-sky-400" /> Crew
+                          </span>
+                          <p className="mt-0.5 text-slate-200 font-medium leading-tight">
+                            {dossier.crew.commander}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            {dossier.crew.lunarModulePilot.split(" ")[0]} · {dossier.crew.commandModulePilot.split(" ")[0]}
+                          </p>
+                        </div>
+
+                        <div className="rounded bg-slate-900/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                            <Rocket className="h-3 w-3 text-cyan-400" /> Spacecraft
+                          </span>
+                          <p className="mt-0.5 text-slate-200 font-medium leading-tight truncate" title={dossier.spacecraft.lunarModule}>
+                            {dossier.spacecraft.lunarModule}
+                          </p>
+                          <p className="text-[10px] text-slate-400 truncate" title={dossier.spacecraft.commandServiceModule}>
+                            {dossier.spacecraft.commandServiceModule}
+                          </p>
+                        </div>
+
+                        <div className="rounded bg-slate-900/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                            <Clock className="h-3 w-3 text-amber-400" /> Surface EVA
+                          </span>
+                          <p className="mt-0.5 text-slate-200 font-medium">
+                            {dossier.stats.totalEvaDuration}
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            {dossier.stats.evaCount} moonwalk{dossier.stats.evaCount > 1 ? "s" : ""}
+                          </p>
+                        </div>
+
+                        <div className="rounded bg-slate-900/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                            <Scale className="h-3 w-3 text-emerald-400" /> Sample Return
+                          </span>
+                          <p className="mt-0.5 text-emerald-300 font-medium font-mono">
+                            {dossier.stats.sampleMassKg} kg
+                          </p>
+                          <p className="text-[10px] text-slate-400">
+                            {dossier.stats.roverDistanceKm
+                              ? `${dossier.stats.roverDistanceKm} km rover`
+                              : dossier.stats.maxDistanceTraveledMeters
+                              ? `<${dossier.stats.maxDistanceTraveledMeters}m radius`
+                              : "surface return"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Official NASA / LRO Narrative */}
+                      <div className="rounded border border-sky-500/25 bg-slate-900/90 p-2.5 text-xs">
+                        <div className="flex items-center gap-1.5 mb-1 text-[10px] uppercase tracking-wider font-semibold text-sky-400">
+                          <FileText className="h-3 w-3" />
+                          <span>NASA LRO Surface Reconnaissance Dossier</span>
+                        </div>
+                        <p className="text-[11px] leading-relaxed text-slate-200 max-h-[170px] overflow-y-auto pr-1 whitespace-pre-line">
+                          {dossier.description}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5">
+                        <span>Source: NASA LRO / Apollo Surface Journal</span>
+                        <span className="font-mono text-sky-300">
+                          {dossier.latitudeDeg >= 0
+                            ? `${dossier.latitudeDeg.toFixed(3)}°N`
+                            : `${Math.abs(dossier.latitudeDeg).toFixed(3)}°S`},{" "}
+                          {dossier.longitudeDeg >= 0
+                            ? `${dossier.longitudeDeg.toFixed(3)}°E`
+                            : `${Math.abs(dossier.longitudeDeg).toFixed(3)}°W`}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
             {activeTab === "custom" && (
               <div className="flex flex-col gap-2.5 rounded-lg border border-purple-900/40 bg-purple-950/20 p-3">
                 <div className="flex items-center justify-between">
@@ -1020,7 +1209,7 @@ export function UnifiedLunarExplorer({
             )}
 
             {/* Selected Location Details & LOLA Terrain Safety Card */}
-            {selectedSite && (
+            {selectedSite && activeTab !== "apollo" && (
               <div className="flex flex-col gap-2.5 rounded-lg border border-slate-800 bg-slate-950/60 p-3 shadow-inner">
                 <div className="flex items-start justify-between gap-2 border-b border-slate-800 pb-2">
                   <div>
@@ -1036,7 +1225,9 @@ export function UnifiedLunarExplorer({
                   <div className="rounded bg-slate-900/90 p-2">
                     <span className="text-[10px] uppercase text-slate-500">Latitude</span>
                     <p className="font-mono font-medium text-slate-200">
-                      {selectedSite.latitude_deg.toFixed(3)}°S
+                      {selectedSite.latitude_deg >= 0
+                        ? `${selectedSite.latitude_deg.toFixed(3)}°N`
+                        : `${Math.abs(selectedSite.latitude_deg).toFixed(3)}°S`}
                     </p>
                   </div>
                   <div className="rounded bg-slate-900/90 p-2">
