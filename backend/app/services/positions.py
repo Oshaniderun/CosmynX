@@ -5,7 +5,7 @@ for the local-horizon visualization.
 """
 
 from app.models.schemas import EphemerisPoint, EphemerisResponse
-from app.services.nasa_data import fetch_jpl_horizons_ephemeris
+from app.services.nasa_data import fetch_jpl_horizons_ephemeris, get_cached_ephemeris_metadata
 
 
 def get_ephemeris_for_site(
@@ -36,4 +36,5 @@ def get_ephemeris_for_site(
         source="JPL Horizons",
         status="ok" if points else "unavailable",
         points=points,
+        **get_cached_ephemeris_metadata(latitude_deg, longitude_deg, start_utc, end_utc, step_minutes),
     )

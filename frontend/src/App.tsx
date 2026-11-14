@@ -5,6 +5,7 @@ import { LunarMapPanel } from "./features/lunar-map/components/LunarMapPanel";
 import { SunEarthPanel } from "./features/sun-earth/components/SunEarthPanel";
 import { PowerCommunicationPanel } from "./features/power-communication/components/PowerCommunicationPanel";
 import { HeliosAdvisorPanel } from "./features/helios-ai/components/HeliosAdvisorPanel";
+import { MissionProvider } from "./context/MissionContext";
 import lunarHorizon from "./assets/lunar-horizon.webp";
 
 const ComparisonPanel = lazy(() => import("./features/comparison/components/ComparisonPanel").then((module) => ({ default: module.ComparisonPanel })));
@@ -41,6 +42,7 @@ function SectionHeading({
 
 export default function App() {
   return (
+    <MissionProvider>
     <div className="app-shell min-h-screen text-slate-100">
       <Navbar />
       <main>
@@ -150,5 +152,6 @@ export default function App() {
         </div>
       </main>
     </div>
+    </MissionProvider>
   );
 }

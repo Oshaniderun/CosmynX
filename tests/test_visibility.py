@@ -1,4 +1,4 @@
-"""Unit tests for sampled geometric visibility calculations."""
+"""Regression tests for elapsed-time sampled visibility and solar estimates."""
 
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
@@ -39,110 +39,134 @@ def analyze_with_mock(points, end_utc):
         )
 
 
-def test_analyze_site_conditions_uses_mocked_ephemeris_without_live_requests():
-    """The normal response metadata is preserved without calling NASA."""
+def test_elapsed_visibility_preserves_source_and_sampled_provenance():
     points = hourly_points([2.0, 1.0, 3.0], [1.0, 2.0, 2.5])
-    res = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
 
-    assert res.status == "ok"
-    assert res.horizon_model == "geometric"
-    assert res.source == "JPL Horizons"
-    assert res.site_id == "test-site"
-    assert res.metrics.sunlit_fraction == 1.0
-    assert res.metrics.earth_visible_fraction == 1.0
-    assert res.metrics.sunlit_hours == 2.0
-    assert res.metrics.earth_visible_hours == 2.0
+    assert result.status == "ok"
+    assert result.horizon_model == "geometric"
+    assert result.source == "JPL Horizons"
+    assert result.metrics.sunlit_fraction == 1.0
+    assert result.metrics.earth_visible_fraction == 1.0
+    assert result.metrics.sunlit_hours == 2.0
+    assert result.metrics.earth_visible_hours == 2.0
     provenance = build_scientific_provenance(
-        LandingSite(
-            site_id="test-site",
-            name="Test Site",
-            latitude_deg=-89.0,
-            longitude_deg=0.0,
-        ),
-        res,
+        LandingSite(site_id="test-site", name="Test Site", latitude_deg=-89.0, longitude_deg=0.0),
+        result,
         duration_hours=2.0,
     )
     assert any("sampled estimates" in warning for warning in provenance.warnings)
 
 
-def test_analyze_site_conditions_unavailable_when_no_points():
-    """When ephemeris data is unavailable, return None metrics."""
-    with patch("app.services.visibility.fetch_jpl_horizons_ephemeris", return_value=[]):
-        res = analyze_site_conditions(
-            site_id="site_empty",
-            latitude_deg=-89.0,
-            longitude_deg=0.0,
-            start_utc=START_UTC,
-            end_utc="2026-11-21T00:00:00Z",
-            step_minutes=60,
-        )
-
-    assert res.status == "unavailable"
-    assert res.horizon_model == "geometric"
-    assert res.source == "JPL Horizons"
-    assert res.metrics.sunlit_fraction is None
-    assert res.metrics.earth_visible_fraction is None
-    assert res.metrics.sunlit_hours is None
-    assert res.metrics.earth_visible_hours is None
+def test_no_points_returns_unavailable_without_measurements():
+    result = analyze_with_mock([], "2026-11-20T02:00:00Z")
+    assert result.status == "unavailable"
+    assert result.source == "JPL Horizons"
+    assert result.metrics.sunlit_fraction is None
+    assert result.metrics.earth_visible_fraction is None
+    assert result.metrics.sunlit_hours is None
+    assert result.metrics.earth_visible_hours is None
+    assert result.power_modeling is None
 
 
-def test_73_positive_hourly_samples_over_72_hours_report_72_hours():
-    """Both endpoint samples define 72 elapsed intervals, not 73 hours."""
+def test_73_positive_hourly_samples_over_72_hours_produce_72_hours_everywhere():
     points = hourly_points([1.0] * 73, [1.0] * 73)
-    res = analyze_with_mock(points, "2026-11-23T00:00:00Z")
+    result = analyze_with_mock(points, "2026-11-23T00:00:00Z")
 
-    assert res.metrics.sunlit_hours == 72.0
-    assert res.metrics.earth_visible_hours == 72.0
-    assert res.metrics.sunlit_fraction == 1.0
-    assert res.metrics.earth_visible_fraction == 1.0
+    assert result.metrics.sunlit_hours == 72.0
+    assert result.metrics.earth_visible_hours == 72.0
+    assert result.metrics.sunlit_fraction == 1.0
+    assert result.metrics.earth_visible_fraction == 1.0
+    assert result.power_modeling["battery_sizing"]["longest_darkness_hours"] == 0.0
+    assert result.power_modeling["cumulative_energy_kwh"]["tracking"] == 72.0
+    for window in result.windows:
+        assert window.duration_hours <= 72.0
 
 
-def test_no_positive_visibility_samples_report_zero_hours_and_percent():
+def test_no_positive_samples_produce_zero_visible_time_and_full_darkness():
     points = hourly_points([-1.0, 0.0, -2.0], [-3.0, -1.0, 0.0])
-    res = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
 
-    assert res.metrics.sunlit_hours == 0.0
-    assert res.metrics.sunlit_fraction == 0.0
-    assert res.metrics.earth_visible_hours == 0.0
-    assert res.metrics.earth_visible_fraction == 0.0
-
-
-def test_partial_visibility_is_independent_and_bounded_by_window():
-    """Interpolate separate horizon crossings for Sun and Earth."""
-    points = hourly_points(
-        [10.0, -10.0, -10.0, 10.0],
-        [-5.0, 5.0, 5.0, -5.0],
-    )
-    res = analyze_with_mock(points, "2026-11-20T03:00:00Z")
-
-    assert res.metrics.sunlit_hours == 1.0
-    assert res.metrics.sunlit_fraction == pytest.approx(1 / 3, abs=0.0001)
-    assert res.metrics.earth_visible_hours == 2.0
-    assert res.metrics.earth_visible_fraction == pytest.approx(2 / 3, abs=0.0001)
-    for hours, fraction in (
-        (res.metrics.sunlit_hours, res.metrics.sunlit_fraction),
-        (res.metrics.earth_visible_hours, res.metrics.earth_visible_fraction),
-    ):
-        assert 0.0 <= hours <= 3.0
-        assert 0.0 <= fraction <= 1.0
+    assert result.metrics.sunlit_hours == 0.0
+    assert result.metrics.sunlit_fraction == 0.0
+    assert result.metrics.earth_visible_hours == 0.0
+    assert result.metrics.earth_visible_fraction == 0.0
+    assert result.power_modeling["battery_sizing"]["longest_darkness_hours"] == 2.0
+    assert not result.windows
 
 
-def test_rounded_duration_does_not_exceed_non_hour_aligned_window():
+def test_partial_sun_and_earth_visibility_are_interpolated_independently():
+    points = hourly_points([10.0, -10.0, -10.0, 10.0], [-5.0, 5.0, 5.0, -5.0])
+    result = analyze_with_mock(points, "2026-11-20T03:00:00Z")
+
+    assert result.metrics.sunlit_hours == 1.0
+    assert result.metrics.sunlit_fraction == pytest.approx(1 / 3, abs=0.0001)
+    assert result.metrics.earth_visible_hours == 2.0
+    assert result.metrics.earth_visible_fraction == pytest.approx(2 / 3, abs=0.0001)
+    durations = {
+        target: sum(window.duration_hours for window in result.windows if window.target == target)
+        for target in {window.target for window in result.windows}
+    }
+    assert durations["sunlight"] == pytest.approx(1.0)
+    assert durations["earth"] == pytest.approx(2.0)
+    assert all(window.duration_hours <= 3.0 for window in result.windows)
+    assert result.power_modeling["cumulative_energy_kwh"]["tracking"] == pytest.approx(1.0)
+
+
+def test_missing_elevation_is_unknown_and_does_not_become_dark_or_zero_power():
+    points = hourly_points([2.0, None, 3.0], [1.0, 2.0, 3.0])
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+
+    assert result.metrics.sunlit_fraction is None
+    assert result.metrics.sunlit_hours is None
+    assert result.metrics.earth_visible_fraction == 1.0
+    assert result.metrics.earth_visible_hours == 2.0
+    assert result.power_modeling is None
+    assert result.timeline[1]["is_sunlit"] is None
+    assert result.timeline[1]["power_watts_tracking"] is None
+
+
+@pytest.mark.parametrize(
+    "points,end_utc",
+    [
+        (hourly_points([1.0, 1.0, 1.0], [1.0, 1.0, 1.0])[1:], "2026-11-20T02:00:00Z"),
+        (hourly_points([1.0, 1.0], [1.0, 1.0]), "2026-11-20T02:00:00Z"),
+    ],
+)
+def test_missing_start_or_end_boundary_keeps_results_unknown(points, end_utc):
+    result = analyze_with_mock(points, end_utc)
+    assert result.metrics.sunlit_fraction is None
+    assert result.metrics.sunlit_hours is None
+    assert result.metrics.earth_visible_fraction is None
+    assert result.metrics.earth_visible_hours is None
+    assert result.power_modeling is None
+
+
+def test_non_hour_aligned_window_duration_never_exceeds_elapsed_time():
     end_utc = "2026-11-20T00:59:59Z"
     points = hourly_points([1.0, 1.0], [1.0, 1.0])
     points[-1]["timestamp_utc"] = end_utc
-    res = analyze_with_mock(points, end_utc)
+    result = analyze_with_mock(points, end_utc)
     actual_duration_hours = 3599 / 3600
 
-    assert res.metrics.sunlit_hours <= actual_duration_hours
-    assert res.metrics.earth_visible_hours <= actual_duration_hours
+    assert result.metrics.sunlit_hours <= actual_duration_hours
+    assert result.metrics.earth_visible_hours <= actual_duration_hours
+    assert all(window.duration_hours <= actual_duration_hours for window in result.windows)
+    assert result.power_modeling["battery_sizing"]["longest_darkness_hours"] <= actual_duration_hours
 
 
-def test_missing_sampled_elevations_remain_unknown():
-    points = hourly_points([2.0, None], [None, 3.0])
-    res = analyze_with_mock(points, "2026-11-20T01:00:00Z")
+def test_duplicate_timestamp_makes_visibility_unknown():
+    points = hourly_points([1.0, 1.0, 1.0], [1.0, 1.0, 1.0])
+    points[1]["timestamp_utc"] = points[0]["timestamp_utc"]
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+    assert result.metrics.sunlit_hours is None
+    assert result.metrics.earth_visible_hours is None
+    assert result.power_modeling is None
 
-    assert res.metrics.sunlit_fraction is None
-    assert res.metrics.sunlit_hours is None
-    assert res.metrics.earth_visible_fraction is None
-    assert res.metrics.earth_visible_hours is None
+
+def test_malformed_elevation_is_unknown_in_timeline_not_zero():
+    points = hourly_points(["bad", 1.0], [1.0, 1.0])
+    result = analyze_with_mock(points, "2026-11-20T01:00:00Z")
+    assert result.timeline[0]["sun_elevation_deg"] is None
+    assert result.timeline[0]["is_sunlit"] is None
+    assert result.timeline[0]["power_watts_tracking"] is None
