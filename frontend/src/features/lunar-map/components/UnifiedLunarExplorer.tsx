@@ -63,7 +63,7 @@ const replayObstruction =
 const beforeCrossing = Math.max(0, (replayObstruction?.first ?? 0) - 1);
 const behindRidge = obstructionReplay.points.length - 1;
 
-const MAX_3D_ZOOM = 12;
+const MAX_3D_ZOOM = 18;
 const playDurationMs = 22_000;
 const sampleDelayMs = 750;
 

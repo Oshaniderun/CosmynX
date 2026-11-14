@@ -197,7 +197,7 @@ function starField(scene: THREE.Scene) {
     const az = i * 137.507764 * degrees;
     const y = 1 - 2 * (i + 0.5) / 2200;
     const r = Math.sqrt(1 - y * y);
-    positions.set([48 * r * Math.cos(az), 48 * y, 48 * r * Math.sin(az)], i * 3);
+    positions.set([95 * r * Math.cos(az), 95 * y, 95 * r * Math.sin(az)], i * 3);
   }
   const geometry = new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(positions, 3));
   scene.add(new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0xaac4eb, size: 1.1, sizeAttenuation: false, transparent: true, opacity: 0.55 })));
@@ -217,18 +217,18 @@ export function createSpaceScene(
 
   const scene = new THREE.Scene();
   starField(scene);
-  const camera = new THREE.OrthographicCamera(-9, 9, 6, -6, 0.1, 100);
+  const camera = new THREE.OrthographicCamera(-9, 9, 6, -6, 0.1, 220);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enablePan = false;
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minZoom = 0.65;
-  controls.maxZoom = mode === "site" ? 12 : 3.8;
+  controls.minZoom = mode === "site" ? 0.35 : 0.65;
+  controls.maxZoom = mode === "site" ? 18 : 3.8;
   controls.autoRotateSpeed = 0.65;
   const reset = () => {
     if (mode === "eclipse") camera.position.set(2.5, 4.2, 15);
-    else camera.position.set(7, 2.5, 13);
-    controls.target.set(mode === "eclipse" ? -0.4 : 0, mode === "eclipse" ? 0 : -0.85, 0);
+    else camera.position.set(11.5, 4.2, 22);
+    controls.target.set(mode === "eclipse" ? -0.4 : 0, mode === "eclipse" ? 0 : -0.55, 0);
     camera.zoom = 1;
     camera.updateProjectionMatrix();
     controls.update();
@@ -411,10 +411,22 @@ export function createSpaceScene(
 
   const horizon = ring(scene, 0x53d8ef, 0.6);
   horizon.rotation.z = Math.PI / 2;
-  horizon.scale.setScalar(2.18);
+  horizon.scale.setScalar(1.22);
   const site = new THREE.Mesh(sphere(), new THREE.MeshBasicMaterial({ color: 0xb4f5ff }));
-  site.scale.setScalar(0.075);
+  site.scale.setScalar(0.06);
   scene.add(site);
+
+  // Subtle line-of-sight rays from landing site (0,0,0) toward Sun and Earth in "site" mode
+  const originZero = new THREE.Vector3(0, 0, 0);
+  const sunRay = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([originZero, new THREE.Vector3(1, 0, 0)]),
+    new THREE.LineDashedMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.38, dashSize: 0.18, gapSize: 0.14 })
+  );
+  const earthRay = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([originZero, new THREE.Vector3(0, 1, 0)]),
+    new THREE.LineDashedMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.38, dashSize: 0.18, gapSize: 0.14 })
+  );
+  scene.add(sunRay, earthRay);
 
   const pinGeometry = new THREE.SphereGeometry(0.026, 16, 12);
   const pinMaterialDefault = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
@@ -615,7 +627,7 @@ export function createSpaceScene(
     if (!width || !height) return;
     visible = true;
     const aspect = width / height;
-    const halfWidth = Math.max(mode === "eclipse" ? 8.5 : 6.5, aspect * 4.25);
+    const halfWidth = Math.max(mode === "eclipse" ? 8.5 : 11.5, aspect * 6.4);
     camera.left = -halfWidth;
     camera.right = halfWidth;
     camera.top = halfWidth / aspect;
@@ -631,8 +643,8 @@ export function createSpaceScene(
   const targetMoonQuat = moon.quaternion.clone();
 
   function updatePinScales() {
-    const zoomFactor = Math.max(0.28, 1 / Math.sqrt(Math.max(1, camera.zoom)));
-    site.scale.setScalar(0.075 * zoomFactor);
+    const zoomFactor = Math.max(0.22, 1 / Math.sqrt(Math.max(1, camera.zoom)));
+    site.scale.setScalar(0.06 * zoomFactor);
     for (const [pinObj, candidate] of pinSites.entries()) {
       const isSelected = candidate.site_id === lastSelectedPinId;
       pinObj.scale.setScalar((isSelected ? 1.45 : 1) * zoomFactor);
@@ -670,9 +682,9 @@ export function createSpaceScene(
   controls.addEventListener("change", () => {
     if (syncingTarget) return;
     if (mode === "site") {
-      // Gradually shift camera target from Moon body (-0.85) to the selected site surface (0,0,0) as zoom increases
-      const t = Math.min(1, Math.max(0, (camera.zoom - 1) / (3.2 - 1)));
-      const desiredY = -0.85 * (1 - t);
+      // Gradually shift camera target from Moon body (-0.5) to the selected site surface (0,0,0) as zoom increases
+      const t = Math.min(1, Math.max(0, (camera.zoom - 1) / (3.0 - 1)));
+      const desiredY = -0.5 * (1 - t);
       if (
         Math.abs(controls.target.y - desiredY) > 0.002 ||
         controls.target.x !== 0 ||
@@ -695,10 +707,11 @@ export function createSpaceScene(
     [axis, cone, umbra, penumbra].forEach((object) => { object.visible = replay; });
     horizon.visible = site.visible = !replay;
     if (frame.mode === "eclipse") {
+      sunRay.visible = earthRay.visible = false;
       const geometry = eclipseGeometry(frame.time);
       sun.visible = earth.visible = true;
       sun.position.copy(sunPosition);
-      sun.scale.setScalar(1.75);
+      sun.scale.setScalar(2.35);
       earth.position.set(0, 0, 0);
       earth.scale.setScalar(earthRadius);
       earth.rotation.y = 1.15 + (frame.time - Date.UTC(2025, 0, 1)) / 86_164_091 * 2 * Math.PI;
@@ -713,8 +726,11 @@ export function createSpaceScene(
       cone.scale.set(moon.position.x, earthRadius, earthRadius);
       cone.position.x = moon.position.x / 2;
     } else {
-      moon.position.set(0, -2.85, 0);
-      moon.scale.setScalar(2.85);
+      // Realistic hierarchy & deep-space separation:
+      // Moon (r=1.65 at origin) < Earth (r=1.95 at dist=10.5) < Sun (r=2.75 at dist=17.5)
+      const siteMoonRadius = 1.65;
+      moon.position.set(0, -siteMoonRadius, 0);
+      moon.scale.setScalar(siteMoonRadius);
       targetMoonQuat.setFromRotationMatrix(lunarOrientation(frame.latitude, frame.longitude));
       if (!hasInitialOrientation) {
         moon.quaternion.copy(targetMoonQuat);
@@ -723,15 +739,40 @@ export function createSpaceScene(
         scheduleSettle();
       }
       lastSelectedPinId = frame.selectedSiteId;
-      sun.scale.setScalar(0.56);
-      earth.scale.setScalar(0.38);
+      sun.scale.setScalar(2.75);
+      earth.scale.setScalar(1.95);
       earth.rotation.y = 1.6;
-      const place = (object: THREE.Mesh, az?: number | null, el?: number | null) => {
-        object.visible = az != null && el != null;
-        if (az != null && el != null) object.position.copy(direction(az, el).multiplyScalar(5.1));
+      if (labels[0]) {
+        labels[0].textContent = frame.point?.sun_distance_au
+          ? `Sun · ${(frame.point.sun_distance_au * 149.598).toFixed(1)}M km`
+          : "Sun · 149.6M km";
+      }
+      if (labels[1]) {
+        labels[1].textContent = frame.point?.earth_distance_km
+          ? `Earth · ${Math.round(frame.point.earth_distance_km).toLocaleString()} km`
+          : "Earth · 384,400 km";
+      }
+      const place = (
+        object: THREE.Mesh,
+        ray: THREE.Line,
+        dist: number,
+        az?: number | null,
+        el?: number | null
+      ) => {
+        const isVis = az != null && el != null;
+        object.visible = isVis;
+        ray.visible = isVis;
+        if (az != null && el != null) {
+          object.position.copy(direction(az, el).multiplyScalar(dist));
+          const posAttr = ray.geometry.attributes.position as THREE.BufferAttribute;
+          posAttr.setXYZ(0, 0, 0, 0);
+          posAttr.setXYZ(1, object.position.x, object.position.y, object.position.z);
+          posAttr.needsUpdate = true;
+          ray.computeLineDistances();
+        }
       };
-      place(sun, frame.point?.sun_azimuth_deg, frame.point?.sun_elevation_deg);
-      place(earth, frame.point?.earth_azimuth_deg, frame.point?.earth_elevation_deg);
+      place(sun, sunRay, 17.5, frame.point?.sun_azimuth_deg, frame.point?.sun_elevation_deg);
+      place(earth, earthRay, 10.5, frame.point?.earth_azimuth_deg, frame.point?.earth_elevation_deg);
       syncSitePins(frame.sites, frame.selectedSiteId);
       updatePinScales();
     }
@@ -739,7 +780,7 @@ export function createSpaceScene(
     atmosphere.scale.setScalar(earth.scale.x * 1.048);
     atmosphere.visible = earth.visible;
     glow.position.copy(sun.position);
-    glow.scale.setScalar(sun.scale.x * 5.2);
+    glow.scale.setScalar(sun.scale.x * 3.1);
     glow.visible = sun.visible;
     sunlight.position.copy(sun.visible ? sun.position : new THREE.Vector3(-3, 4, 2));
     render();
