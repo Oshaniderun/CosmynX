@@ -132,6 +132,13 @@ export interface EphemerisPoint {
   sun_elevation_deg: number | null;
   earth_azimuth_deg: number | null;
   earth_elevation_deg: number | null;
+  moon_illumination_pct?: number | null;
+  sub_earth_lon_deg?: number | null;
+  sub_earth_lat_deg?: number | null;
+  sub_solar_lon_deg?: number | null;
+  sub_solar_lat_deg?: number | null;
+  sun_distance_au?: number | null;
+  earth_distance_km?: number | null;
 }
 
 export interface EphemerisResponse {
