@@ -12,8 +12,8 @@ router = APIRouter()
 @router.get("/ephemeris", response_model=EphemerisResponse)
 def get_ephemeris(
     site_id: str = Query("candidate_001"),
-    latitude_deg: float = Query(-89.54, ge=-90.0, le=90.0),
-    longitude_deg: float = Query(0.0, ge=-180.0, le=180.0),
+    latitude_deg: float = Query(-87.50, ge=-90.0, le=90.0),
+    longitude_deg: float = Query(-5.00, ge=-180.0, le=180.0),
     start_utc: AwareDatetime = Query(datetime(2026, 11, 20, tzinfo=timezone.utc)),
     end_utc: AwareDatetime = Query(datetime(2026, 11, 23, tzinfo=timezone.utc)),
     step_minutes: int = Query(60, ge=1, le=1440),
