@@ -34,9 +34,21 @@ class LandingSite(BaseModel):
     name: str
     region: str = "Lunar South Pole"
     latitude_deg: float = Field(..., ge=-90.0, le=90.0)
-    longitude_deg: float = Field(..., ge=-180.0, le=180.0)
+    longitude_deg: float = Field(..., ge=-180.0, le=360.0)
     description: Optional[str] = None
     terrain: Optional[TerrainSafetyMetrics] = None
+    elevation_m: Optional[float] = None
+    source: str = "NASA Artemis III (Updated Oct 28, 2024) / LROC QuickMap"
+    coordinate_type: str = "approximate_region_centroid"
+
+
+class CustomSiteRequest(BaseModel):
+    """User-specified custom lunar coordinates."""
+
+    name: Optional[str] = "Custom Lunar Site"
+    latitude_deg: float = Field(..., ge=-90.0, le=90.0)
+    longitude_deg: float = Field(..., ge=-180.0, le=360.0)
+    description: Optional[str] = None
 
 
 class MapLayerResource(BaseModel):

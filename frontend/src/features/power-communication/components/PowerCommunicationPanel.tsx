@@ -20,8 +20,9 @@ import {
   YAxis,
 } from "recharts";
 import { ModuleCard } from "../../../components/shared/ModuleCard";
+import { useMission } from "../../../context/MissionContext";
 import type { ConditionsResponse, LandingSite } from "../../../types/helios";
-import { fetchConditions } from "../services/conditionsService";
+import { fetchConditions, type ConditionsQueryParams } from "../services/conditionsService";
 import { demoConditions } from "../services/demoConditions";
 import { fetchCandidateSites } from "../../lunar-map/services/sitesService";
 
@@ -72,8 +73,17 @@ function formatUtc(utcString: string): string {
 export function PowerCommunicationPanel({
   conditions: propConditions,
 }: PowerCommunicationPanelProps) {
+  const { selectedSite, missionDates, stepMinutes } = useMission();
   const [sites, setSites] = useState<LandingSite[]>(PREDEFINED_SITES);
-  const [selectedSiteId, setSelectedSiteId] = useState<string>("candidate_001");
+  const [selectedSiteId, setSelectedSiteId] = useState<string>(
+    selectedSite?.site_id ?? "candidate_001"
+  );
+
+  useEffect(() => {
+    if (selectedSite?.site_id) {
+      setSelectedSiteId(selectedSite.site_id);
+    }
+  }, [selectedSite]);
   const [data, setData] = useState<ConditionsResponse>(
     propConditions ?? demoConditions
   );
@@ -101,15 +111,23 @@ export function PowerCommunicationPanel({
       return;
     }
 
-    const currentSite = sites.find((s) => s.site_id === selectedSiteId) ?? sites[0];
+    const activeSite =
+      (selectedSite && selectedSite.site_id === selectedSiteId ? selectedSite : undefined) ??
+      sites.find((s) => s.site_id === selectedSiteId) ??
+      sites[0];
     let isMounted = true;
     setLoading(true);
 
-    fetchConditions({
-      site_id: currentSite.site_id,
-      latitude_deg: currentSite.latitude_deg,
-      longitude_deg: currentSite.longitude_deg,
-    })
+    const queryParams: ConditionsQueryParams = {
+      site_id: activeSite.site_id,
+      latitude_deg: activeSite.latitude_deg,
+      longitude_deg: activeSite.longitude_deg,
+      start_utc: missionDates.startUtc,
+      end_utc: missionDates.endUtc,
+      step_minutes: stepMinutes,
+    };
+
+    fetchConditions(queryParams)
       .then((res) => {
         if (isMounted) {
           setData(res);
@@ -129,7 +147,7 @@ export function PowerCommunicationPanel({
     return () => {
       isMounted = false;
     };
-  }, [propConditions, selectedSiteId, sites]);
+  }, [propConditions, selectedSiteId, selectedSite, sites, missionDates, stepMinutes]);
 
   const metrics = data.metrics;
   const isOk = data.status === "ok";
@@ -190,6 +208,14 @@ export function PowerCommunicationPanel({
       branch="feature/power-communication"
     >
       <div className="space-y-5">
+        {/* Active Target Banner (Member 1 Integration) */}
+        {selectedSite && (
+          <div className="flex items-center gap-2 rounded bg-slate-950/60 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            <span>Target: {selectedSite.name} ({selectedSite.site_id})</span>
+          </div>
+        )}
+
         {/* Site Selector & Controls Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
           <div className="flex items-center gap-2">

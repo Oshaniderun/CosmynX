@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useId, useMemo, useState } from "react";
 import { Eclipse, Moon, Pause, Play, RotateCcw } from "lucide-react";
 import type { EphemerisResponse, LandingSite } from "../../../types/helios";
+import { useMission } from "../../../context/MissionContext";
 import { fetchCandidateSites } from "../../lunar-map/services/sitesService";
 import { fetchEphemeris, initialMissionWindow } from "../services/ephemerisService";
 import { eclipseStage, lunarEclipses } from "../services/lunarEclipses";
@@ -24,20 +25,28 @@ const controlClass = "rounded-md border border-slate-700 bg-slate-950 px-3 py-2 
 const modeClass = controlClass + " inline-flex items-center gap-2 aria-pressed:border-sky-400/70 aria-pressed:bg-sky-400/10 aria-pressed:text-sky-200";
 
 export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } = {}) {
+  const { selectedSite, setSelectedSite } = useMission();
   const [mode, setMode] = useState<"eclipse" | "site">("site");
   const [eventIndex, setEventIndex] = useState(0);
   const [replayOffset, setReplayOffset] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [sampleIndex, setSampleIndex] = useState(0);
   const [sites, setSites] = useState<LandingSite[]>([]);
-  const [siteId, setSiteId] = useState("");
+  const [siteId, setSiteId] = useState(selectedSite?.site_id ?? "");
   const [result, setResult] = useState<EphemerisResponse>();
   const [loading, setLoading] = useState(!ephemeris);
   const [error, setError] = useState("");
   const [requestVersion, setRequestVersion] = useState(0);
   const scrubberId = useId();
 
-  const landingSite = sites.find((site) => site.site_id === siteId) ?? sites[0];
+  // Sync siteId when selectedSite changes in MissionContext
+  useEffect(() => {
+    if (selectedSite?.site_id) {
+      setSiteId(selectedSite.site_id);
+    }
+  }, [selectedSite?.site_id]);
+
+  const landingSite = sites.find((site) => site.site_id === siteId) ?? (selectedSite ?? sites[0]);
   const positions = ephemeris ?? (result?.site_id === landingSite?.site_id ? result : undefined);
   const missionWindow = positions ?? initialMissionWindow;
 
@@ -50,6 +59,8 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       if (!availableSites.length) {
         setError("No candidate landing sites are available.");
         setLoading(false);
+      } else if (!siteId && selectedSite?.site_id) {
+        setSiteId(selectedSite.site_id);
       }
     }).catch(() => {
       if (!active) return;
@@ -57,7 +68,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       setLoading(false);
     });
     return () => { active = false; };
-  }, [ephemeris, sites.length, requestVersion]);
+  }, [ephemeris, sites.length, requestVersion, siteId, selectedSite?.site_id]);
 
   useEffect(() => {
     if (ephemeris || !landingSite) return;
@@ -110,8 +121,14 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   return (
     <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-[#0a101b] shadow-lg md:col-span-2">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-4 py-4 sm:px-6">
-        <div>
+        <div className="flex flex-wrap items-center gap-3">
           <h2 id="space-explorer-title" className="text-lg font-semibold tracking-tight text-slate-100">Sun, Earth & Moon</h2>
+          {selectedSite && (
+            <div className="flex items-center gap-2 rounded bg-slate-950/80 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
+              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <span>Target: {selectedSite.name} ({selectedSite.site_id})</span>
+            </div>
+          )}
         </div>
         <div className="flex flex-wrap gap-2" role="group" aria-label="View mode">
           <button type="button" aria-pressed={mode === "eclipse"} className={modeClass} onClick={() => setMode("eclipse")}>
@@ -189,7 +206,12 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
               Landing site
               <select className={controlClass} value={landingSite?.site_id} onChange={(change) => {
                 clearPositions();
-                setSiteId(change.target.value);
+                const nextId = change.target.value;
+                setSiteId(nextId);
+                const matched = sites.find((s) => s.site_id === nextId);
+                if (matched) {
+                  setSelectedSite(matched);
+                }
               }}>
                 {sites.map((site) => <option key={site.site_id} value={site.site_id}>{site.name}</option>)}
               </select>

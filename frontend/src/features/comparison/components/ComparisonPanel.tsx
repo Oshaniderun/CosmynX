@@ -10,6 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import type { LandingSite } from "../../../types/helios";
+import { useMission } from "../../../context/MissionContext";
 import { fetchCandidateSites } from "../../lunar-map/services/sitesService";
 import { compareScenarios } from "../services/comparisonService";
 import type {
@@ -110,6 +111,7 @@ export function ComparisonPanel({
 }: {
   onComparison?: (result: CompareResponse) => void;
 }) {
+  const { selectedSite, setSelectedSite } = useMission();
   const [drafts, setDrafts] = useState<Draft[]>(initialDrafts);
   const [sites, setSites] = useState<LandingSite[]>([]);
   const [siteStatus, setSiteStatus] = useState("Loading candidate sites…");
@@ -126,6 +128,29 @@ export function ComparisonPanel({
   const sequence = useRef(1);
   const activeRequest = useRef(0);
   const requestController = useRef<AbortController | null>(null);
+
+  // Synchronize baseline draft when user selects a site from the Lunar Map
+  useEffect(() => {
+    if (!selectedSite) return;
+    setDrafts((current) => {
+      if (current.length === 0) return current;
+      const baseline = current[0];
+      if (baseline.siteId === selectedSite.site_id) return current;
+      const updatedBaseline: Draft = {
+        ...baseline,
+        siteId: selectedSite.site_id,
+        latitude:
+          selectedSite.latitude_deg !== undefined
+            ? String(selectedSite.latitude_deg)
+            : baseline.latitude,
+        longitude:
+          selectedSite.longitude_deg !== undefined
+            ? String(selectedSite.longitude_deg)
+            : baseline.longitude,
+      };
+      return [updatedBaseline, ...current.slice(1)];
+    });
+  }, [selectedSite]);
 
   useEffect(() => {
     let active = true;
@@ -192,10 +217,17 @@ export function ComparisonPanel({
   }
   function promoteBaseline(id: string) {
     clearResults();
-    setDrafts((current) => [
-      current.find((draft) => draft.id === id)!,
-      ...current.filter((draft) => draft.id !== id),
-    ]);
+    setDrafts((current) => {
+      const match = current.find((draft) => draft.id === id);
+      if (match) {
+        const siteMatch = sites.find((s) => s.site_id === match.siteId);
+        if (siteMatch) setSelectedSite(siteMatch);
+      }
+      return [
+        current.find((draft) => draft.id === id)!,
+        ...current.filter((draft) => draft.id !== id),
+      ];
+    });
   }
   function addScenario() {
     clearResults();
@@ -336,10 +368,18 @@ export function ComparisonPanel({
       <header className="cmp-header">
         <div>
           <p className="cmp-eyebrow">HELIOS / SCENARIO LAB</p>
-          <h2 id="comparison-title">
-            <ArrowRightLeft size={22} aria-hidden="true" /> Compare landing
-            scenarios
-          </h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 id="comparison-title">
+              <ArrowRightLeft size={22} aria-hidden="true" /> Compare landing
+              scenarios
+            </h2>
+            {selectedSite && (
+              <div className="flex items-center gap-2 rounded bg-slate-950/80 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
+                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span>Primary Target: {selectedSite.name} ({selectedSite.site_id})</span>
+              </div>
+            )}
+          </div>
           <p>
             One view for landing sites, launch delays, and visibility
             trade-offs.
@@ -482,9 +522,13 @@ export function ComparisonPanel({
                     required
                     disabled={!sites.length}
                     value={draft.siteId}
-                    onChange={(e) =>
-                      update(draft.id, { siteId: e.target.value })
-                    }
+                    onChange={(e) => {
+                      update(draft.id, { siteId: e.target.value });
+                      if (index === 0) {
+                        const match = sites.find((s) => s.site_id === e.target.value);
+                        if (match) setSelectedSite(match);
+                      }
+                    }}
                   >
                     {!sites.length && (
                       <option value={draft.siteId}>

@@ -26,6 +26,9 @@ export interface LandingSite {
   longitude_deg: number;
   description?: string | null;
   terrain?: TerrainSafetyMetrics | null;
+  elevation_m?: number | null;
+  source?: string;
+  coordinate_type?: string;
 }
 
 export interface MapLayerResource {
