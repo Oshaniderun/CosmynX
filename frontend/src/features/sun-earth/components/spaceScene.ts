@@ -136,6 +136,126 @@ export const APOLLO_LANDING_SITES: ApolloLandingSite[] = [
   },
 ];
 
+/**
+ * Procedural 3D Vector Model of the Apollo Lunar Module (LM) Spaceship.
+ * Features:
+ * - Surface target beacon disc on lunar terrain
+ * - Gold foil wrapped octagonal descent stage
+ * - Descent rocket engine nozzle
+ * - 4 angled outrigger landing gear legs with circular footpads
+ * - Satin-silver crew cabin ascent stage with forward visor cockpit windows
+ * - Side propellant tanks
+ * - Overhead docking collar and steerable VHF/rendezvous radar dish
+ */
+function createApolloLanderModel(): THREE.Mesh {
+  const goldFoilMat = new THREE.MeshStandardMaterial({
+    color: 0xf59e0b, // Distinctive Apollo Kapton gold foil
+    roughness: 0.28,
+    metalness: 0.85,
+  });
+  const cabinMat = new THREE.MeshStandardMaterial({
+    color: 0xf1f5f9, // Ascent stage satin metallic silver/white
+    roughness: 0.35,
+    metalness: 0.55,
+  });
+  const darkMetalMat = new THREE.MeshStandardMaterial({
+    color: 0x334155, // Titanium / dark alloy
+    roughness: 0.6,
+    metalness: 0.5,
+  });
+  const windowMat = new THREE.MeshStandardMaterial({
+    color: 0x0284c7,
+    emissive: 0x38bdf8,
+    emissiveIntensity: 0.8,
+    roughness: 0.1,
+  });
+  const beaconMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.6,
+  });
+
+  // Root mesh: Octagonal gold descent stage base
+  const descentBaseGeo = new THREE.CylinderGeometry(0.018, 0.022, 0.014, 8);
+  const lander = new THREE.Mesh(descentBaseGeo, goldFoilMat);
+
+  // 1. Lunar Surface Target Beacon Disc (Ground Pad)
+  const beaconGeo = new THREE.CylinderGeometry(0.038, 0.038, 0.001, 24);
+  const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+  beacon.position.y = -0.014;
+  lander.add(beacon);
+
+  // 2. Descent engine nozzle cone (pointing down toward surface)
+  const nozzleGeo = new THREE.CylinderGeometry(0.007, 0, 0.009, 8);
+  const nozzle = new THREE.Mesh(nozzleGeo, darkMetalMat);
+  nozzle.position.y = -0.009;
+  lander.add(nozzle);
+
+  // 3. Four Outrigger Landing Gear Legs & Footpads
+  const legAngles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+  const legStrutGeo = new THREE.CylinderGeometry(0.0016, 0.0016, 0.024, 6);
+  const footpadGeo = new THREE.CylinderGeometry(0.0055, 0.0055, 0.0018, 8);
+
+  legAngles.forEach((angle) => {
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+
+    // Primary strut angled outward and down
+    const strut = new THREE.Mesh(legStrutGeo, goldFoilMat);
+    strut.position.set(0.019 * cosA, -0.006, 0.019 * sinA);
+    strut.rotation.y = angle;
+    strut.rotation.z = -0.65;
+    lander.add(strut);
+
+    // Footpad on the lunar surface
+    const footpad = new THREE.Mesh(footpadGeo, goldFoilMat);
+    footpad.position.set(0.027 * cosA, -0.0135, 0.027 * sinA);
+    lander.add(footpad);
+  });
+
+  // 4. Ascent Stage (Faceted Cabin & Cockpit)
+  const cabinGeo = new THREE.CylinderGeometry(0.016, 0.018, 0.016, 6);
+  const cabin = new THREE.Mesh(cabinGeo, cabinMat);
+  cabin.position.y = 0.015;
+  lander.add(cabin);
+
+  // Front Cockpit Windows
+  const windowGeo = new THREE.PlaneGeometry(0.012, 0.004);
+  const windows = new THREE.Mesh(windowGeo, windowMat);
+  windows.position.set(0, 0.018, 0.0165);
+  lander.add(windows);
+
+  // Side Propellant Tanks (+X and -X)
+  const tankGeo = new THREE.CylinderGeometry(0.005, 0.005, 0.012, 8);
+  const leftTank = new THREE.Mesh(tankGeo, darkMetalMat);
+  leftTank.position.set(-0.014, 0.014, 0);
+  lander.add(leftTank);
+
+  const rightTank = new THREE.Mesh(tankGeo, darkMetalMat);
+  rightTank.position.set(0.014, 0.014, 0);
+  lander.add(rightTank);
+
+  // 5. Docking Tunnel & Steerable Rendezvous Radar Antenna (Top)
+  const dockGeo = new THREE.CylinderGeometry(0.005, 0.005, 0.004, 8);
+  const dock = new THREE.Mesh(dockGeo, darkMetalMat);
+  dock.position.y = 0.025;
+  lander.add(dock);
+
+  const radarMastGeo = new THREE.CylinderGeometry(0.0008, 0.0008, 0.008, 6);
+  const radarMast = new THREE.Mesh(radarMastGeo, cabinMat);
+  radarMast.position.set(0.004, 0.03, 0);
+  lander.add(radarMast);
+
+  const radarDishGeo = new THREE.CylinderGeometry(0.006, 0.001, 0.003, 8);
+  radarDishGeo.rotateZ(0.5);
+  const radarDish = new THREE.Mesh(radarDishGeo, goldFoilMat);
+  radarDish.position.set(0.0055, 0.034, 0);
+  lander.add(radarDish);
+
+  return lander;
+}
+
 function createSouthPoleCapGeometry() {
   // Covers 60°S to 90°S with exact NASA Moon Trek South Polar Stereographic UVs
   const geom = new THREE.SphereGeometry(
@@ -537,10 +657,9 @@ export function createSpaceScene(
     };
   });
 
-  // Apollo Historical Landing Site Pins (Apollo 11, 12, 14, 15, 16, 17)
-  const apolloPinGeometry = new THREE.SphereGeometry(0.024, 16, 12);
-  const apolloPinMaterial = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+  // Apollo Historical Landing Sites (Apollo 11, 12, 14, 15, 16, 17)
   const apolloPins = new Map<THREE.Mesh, LandingSite>();
+  const surfaceNormalRef = new THREE.Vector3(0, 1, 0);
 
   const apolloPlaceEntries: PlaceLabelEntry[] = APOLLO_LANDING_SITES.map((ap) => {
     const lat = ap.lat * degrees;
@@ -550,9 +669,12 @@ export function createSpaceScene(
       Math.sin(lat),
       -Math.cos(lat) * Math.sin(lon)
     );
-    const pin = new THREE.Mesh(apolloPinGeometry, apolloPinMaterial);
-    pin.position.copy(unitVec).multiplyScalar(1.015);
-    moon.add(pin);
+    const spaceship = createApolloLanderModel();
+    // Plant spaceship feet directly onto the lunar sphere
+    spaceship.position.copy(unitVec).multiplyScalar(1.015);
+    // Orient spaceship: local +Y axis points outward along surface normal
+    spaceship.quaternion.setFromUnitVectors(surfaceNormalRef, unitVec);
+    moon.add(spaceship);
 
     const apolloSite: LandingSite = {
       site_id: ap.id,
@@ -565,13 +687,13 @@ export function createSpaceScene(
       source: "NASA Apollo Lunar Surface Journal",
       coordinate_type: "historical_touchdown",
     };
-    apolloPins.set(pin, apolloSite);
+    apolloPins.set(spaceship, apolloSite);
 
     const el = document.createElement("span");
     el.className =
       "absolute -translate-x-1/2 -translate-y-full -mt-1.5 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-semibold text-sky-200 bg-slate-950/90 border border-sky-400/50 shadow-sm backdrop-blur-[1px]";
-    el.textContent = `▲ ${ap.name}`;
-    el.title = `${ap.name} — ${ap.landmark} (${ap.year})`;
+    el.textContent = `🚀 ${ap.name}`;
+    el.title = `${ap.name} Lunar Module — ${ap.landmark} (${ap.year})`;
     el.hidden = true;
     placeLabelsContainer.appendChild(el);
 
@@ -768,7 +890,7 @@ export function createSpaceScene(
     }
     for (const [pinObj, apSite] of apolloPins.entries()) {
       const isSelected = apSite.site_id === lastSelectedPinId;
-      pinObj.scale.setScalar((isSelected ? 1.45 : 1) * zoomFactor);
+      pinObj.scale.setScalar((isSelected ? 1.6 : 1.15) * zoomFactor);
     }
   }
 
@@ -938,8 +1060,6 @@ export function createSpaceScene(
       pinGeometry.dispose();
       pinMaterialDefault.dispose();
       pinMaterialSelected.dispose();
-      apolloPinGeometry.dispose();
-      apolloPinMaterial.dispose();
       controls.dispose();
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.Points) {
