@@ -125,7 +125,7 @@ function formatUtc(utcString: string): string {
 export function PowerCommunicationPanel({
   conditions: propConditions,
 }: PowerCommunicationPanelProps) {
-  const { selectedSite, missionDates, stepMinutes } = useMission();
+  const { selectedSite, setSelectedSite, missionDates, stepMinutes } = useMission();
   const [sites, setSites] = useState<LandingSite[]>(PREDEFINED_SITES);
   const [selectedSiteId, setSelectedSiteId] = useState<string>(
     selectedSite?.site_id ?? "candidate_001"
@@ -139,6 +139,7 @@ export function PowerCommunicationPanel({
   const [data, setData] = useState<ConditionsResponse>(
     propConditions ?? demoConditions
   );
+  const [isDemoData, setIsDemoData] = useState(!propConditions);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -176,6 +177,8 @@ export function PowerCommunicationPanel({
   useEffect(() => {
     if (propConditions) {
       setData(propConditions);
+      setIsDemoData(false);
+      setError(null);
       return;
     }
 
@@ -199,6 +202,7 @@ export function PowerCommunicationPanel({
       .then((res) => {
         if (isMounted) {
           setData(res);
+          setIsDemoData(false);
           setError(null);
         }
       })
@@ -206,6 +210,8 @@ export function PowerCommunicationPanel({
         if (isMounted) {
           console.warn("Could not fetch conditions, falling back to demo:", err);
           setData(demoConditions);
+          setIsDemoData(true);
+          setError("The conditions service is unavailable. A fixed synthetic example is shown; it is unrelated to the selected site and mission window.");
         }
       })
       .finally(() => {
@@ -219,33 +225,36 @@ export function PowerCommunicationPanel({
 
   const metrics = data.metrics;
   const isOk = data.status === "ok";
+  const hasMeasuredMetrics = isOk && !isDemoData &&
+    metrics.sunlit_fraction !== null && metrics.earth_visible_fraction !== null;
 
   const sunlitPct =
-    metrics.sunlit_fraction !== null
+    isOk && metrics.sunlit_fraction !== null
       ? (metrics.sunlit_fraction * 100).toFixed(1)
       : null;
   const earthVisiblePct =
-    metrics.earth_visible_fraction !== null
+    isOk && metrics.earth_visible_fraction !== null
       ? (metrics.earth_visible_fraction * 100).toFixed(1)
       : null;
 
   // Feasibility status badge calculation
-  const sunPctNum = metrics.sunlit_fraction ?? 0;
-  const earthPctNum = metrics.earth_visible_fraction ?? 0;
-
-  let feasibilityBadge = {
-    label: "Optimal Power & Comms",
+  let feasibilityBadge = hasMeasuredMetrics ? {
+    label: "Conditions available",
     style: "bg-emerald-950 text-emerald-400 border-emerald-800",
     icon: Zap,
+  } : {
+    label: isDemoData ? "Demo values · not assessed" : "Insufficient scientific data",
+    style: "bg-slate-900 text-slate-400 border-slate-700",
+    icon: AlertTriangle,
   };
 
-  if (sunPctNum < 0.3 || earthPctNum < 0.3) {
+  if (hasMeasuredMetrics && (metrics.sunlit_fraction! < 0.3 || metrics.earth_visible_fraction! < 0.3)) {
     feasibilityBadge = {
       label: "Critical Battery / Blackout Risk",
       style: "bg-rose-950 text-rose-400 border-rose-800",
       icon: AlertTriangle,
     };
-  } else if (sunPctNum < 0.7 || earthPctNum < 0.7) {
+  } else if (hasMeasuredMetrics && (metrics.sunlit_fraction! < 0.7 || metrics.earth_visible_fraction! < 0.7)) {
     feasibilityBadge = {
       label: "Intermittent Operational Conditions",
       style: "bg-amber-950 text-amber-400 border-amber-800",
@@ -257,48 +266,45 @@ export function PowerCommunicationPanel({
 
   // Battery sizing calculation based on user hotel load
   const powerModeling = data.power_modeling;
-  const longestDarknessHrs =
-    powerModeling?.battery_sizing?.longest_darkness_hours ?? 0;
+  const longestDarknessHrs = powerModeling?.battery_sizing?.longest_darkness_hours ?? null;
 
-  const usableStorageKwh = (longestDarknessHrs * hotelLoadWatts) / 1000.0;
-  const nominalCapacityKwh = usableStorageKwh > 0 ? usableStorageKwh / 0.7 : 0; // 70% Max DoD
-  const estimatedBatteryMassKg = (nominalCapacityKwh * 1000.0) / 150.0; // 150 Wh/kg space Li-ion
+  const usableStorageKwh = longestDarknessHrs === null ? null : (longestDarknessHrs * hotelLoadWatts) / 1000.0;
+  const nominalCapacityKwh = usableStorageKwh === null ? null : usableStorageKwh > 0 ? usableStorageKwh / 0.7 : 0; // 70% Max DoD
+  const estimatedBatteryMassKg = nominalCapacityKwh === null ? null : (nominalCapacityKwh * 1000.0) / 150.0; // 150 Wh/kg space Li-ion
 
   // Cumulative energy calculation based on user selected array rating and architecture
-  const baseCumulativeKwh =
-    powerModeling?.cumulative_energy_kwh?.[arrayArch] ??
-    (metrics.sunlit_hours ?? 0) * (arrayArch === "horizontal" ? 0.05 : arrayArch === "vertical_polar" ? 0.32 : 1.0);
-  const totalGeneratedKwh = baseCumulativeKwh * ratedArrayKw;
+  const baseCumulativeKwh = powerModeling?.cumulative_energy_kwh?.[arrayArch] ?? null;
+  const totalGeneratedKwh = baseCumulativeKwh === null ? null : baseCumulativeKwh * ratedArrayKw;
 
   // Chart data formatting
   const chartPoints = (data.timeline ?? []).map((pt) => {
     const rawPwr =
       arrayArch === "vertical_polar"
-        ? pt.power_watts_vertical ?? (pt.is_sunlit ? 318 : 0)
+        ? pt.power_watts_vertical ?? null
         : arrayArch === "horizontal"
-        ? pt.power_watts_horizontal ?? (pt.is_sunlit ? 32 : 0)
-        : pt.power_watts_tracking ?? (pt.is_sunlit ? 1000 : 0);
+        ? pt.power_watts_horizontal ?? null
+        : pt.power_watts_tracking ?? null;
 
-    const scaledPwrWatts = rawPwr * ratedArrayKw;
+    const scaledPwrWatts = rawPwr === null ? null : rawPwr * ratedArrayKw;
 
     return {
       time: formatUtc(pt.timestamp_utc),
       rawTime: pt.timestamp_utc,
       sunElevation: pt.sun_elevation_deg,
       earthElevation: pt.earth_elevation_deg,
-      powerWatts: Math.round(scaledPwrWatts),
-      sunlit: pt.is_sunlit ? 1 : 0,
-      earthVisible: pt.is_earth_visible ? 1 : 0,
+      powerWatts: scaledPwrWatts === null ? null : Math.round(scaledPwrWatts),
+      sunlit: pt.is_sunlit === null ? null : Number(pt.is_sunlit),
+      earthVisible: pt.is_earth_visible === null ? null : Number(pt.is_earth_visible),
     };
   });
 
-  const earthWindows = (data.windows ?? []).filter(
-    (w) => w.target === "earth" || w.target === "both"
-  );
+  const earthWindows = (data.windows ?? []).filter((w) => w.target === "earth");
+  const simultaneousWindows = (data.windows ?? []).filter((w) => w.target === "both");
 
   // Derived transitions calculation (README Section 7: Next transition estimation)
   const derivedTransitions = data.transitions ?? (() => {
-    if (!data.timeline || data.timeline.length === 0) return null;
+    if (!isOk || !data.timeline || data.timeline.length === 0 ||
+        data.timeline.some((point) => point.is_sunlit === null || point.is_earth_visible === null)) return null;
     const s0 = data.timeline[0].is_sunlit;
     const e0 = data.timeline[0].is_earth_visible;
     const stepHours = (data.step_minutes ?? 60) / 60;
@@ -376,20 +382,20 @@ export function PowerCommunicationPanel({
       pt.sun_elevation_deg !== null && pt.sun_elevation_deg !== undefined
         ? pt.sun_elevation_deg.toFixed(2)
         : "N/A",
-      pt.is_sunlit ? "SUNLIT" : "SHADOW",
+      pt.is_sunlit === null ? "N/A" : pt.is_sunlit ? "SUNLIT" : "SHADOW",
       pt.earth_elevation_deg !== null && pt.earth_elevation_deg !== undefined
         ? pt.earth_elevation_deg.toFixed(2)
         : "N/A",
-      pt.is_earth_visible ? "CONTACT_LOS" : "BLACKOUT",
-      pt.power_watts_vertical !== undefined
+      pt.is_earth_visible === null ? "N/A" : pt.is_earth_visible ? "GEOMETRIC_LOS" : "NO_GEOMETRIC_LOS",
+      pt.power_watts_vertical != null
         ? (pt.power_watts_vertical * ratedArrayKw).toFixed(1)
-        : "0.0",
-      pt.power_watts_tracking !== undefined
+        : "N/A",
+      pt.power_watts_tracking != null
         ? (pt.power_watts_tracking * ratedArrayKw).toFixed(1)
-        : "0.0",
-      pt.power_watts_horizontal !== undefined
+        : "N/A",
+      pt.power_watts_horizontal != null
         ? (pt.power_watts_horizontal * ratedArrayKw).toFixed(1)
-        : "0.0",
+        : "N/A",
     ]);
 
     const csvLines = [
@@ -398,8 +404,8 @@ export function PowerCommunicationPanel({
       `# Coordinates: Lat ${data.latitude_deg} deg, Lon ${data.longitude_deg} deg`,
       `# Mission Interval: ${data.start_utc} to ${data.end_utc} (Step: ${data.step_minutes} min)`,
       `# Rated Solar Array: ${ratedArrayKw} kW (${arrayArch})`,
-      `# Daylight Availability: ${sunlitPct ?? "—"}% (${metrics.sunlit_hours ?? 0} hrs)`,
-      `# Earth DTE Coverage: ${earthVisiblePct ?? "—"}% (${metrics.earth_visible_hours ?? 0} hrs)`,
+      `# Daylight Availability: ${sunlitPct ?? "N/A"}% (${isOk ? metrics.sunlit_hours ?? "N/A" : "N/A"} hrs)`,
+      `# Geometric Earth LOS: ${earthVisiblePct ?? "N/A"}% (${isOk ? metrics.earth_visible_hours ?? "N/A" : "N/A"} hrs; not RF reliability)`,
       headers.join(","),
       ...rows.map((r) => r.join(",")),
     ];
@@ -420,11 +426,14 @@ export function PowerCommunicationPanel({
   const panelContent = (
     <ModuleCard
       title="Solar Power & Communication Analysis"
-      owner="Member 4"
-      branch="feature/power-communication"
     >
       <div className="space-y-5">
-        {/* Active Target Banner (Member 1 Integration) */}
+        {isDemoData && (
+          <div className="rounded border border-amber-700/70 bg-amber-950/40 p-2.5 text-xs text-amber-200" role="status">
+            <strong>DEMO MODE — SYNTHETIC DATA.</strong> Fixed illustrative values for Haworth from {formatUtc(demoConditions.start_utc)} to {formatUtc(demoConditions.end_utc)}; unrelated to the selected site and mission window and not live NASA measurements.
+          </div>
+        )}
+        {/* Active Target Banner */}
         {selectedSite && (
           <div className="flex items-center gap-2 rounded bg-slate-950/60 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
@@ -441,7 +450,12 @@ export function PowerCommunicationPanel({
             <select
               id="site-select"
               value={selectedSiteId}
-              onChange={(e) => setSelectedSiteId(e.target.value)}
+              onChange={(e) => {
+                const nextId = e.target.value;
+                setSelectedSiteId(nextId);
+                const nextSite = sites.find((site) => site.site_id === nextId);
+                if (nextSite) setSelectedSite(nextSite);
+              }}
               className="rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-100 shadow-sm focus-visible:outline-2 focus-visible:outline-amber-400"
             >
               {sites.map((site) => (
@@ -449,6 +463,9 @@ export function PowerCommunicationPanel({
                   {site.name} ({site.latitude_deg}°, {site.longitude_deg}°)
                 </option>
               ))}
+              {selectedSite && !sites.some((site) => site.site_id === selectedSite.site_id) && (
+                <option value={selectedSite.site_id}>{selectedSite.name} (custom)</option>
+              )}
             </select>
           </div>
 
@@ -496,7 +513,7 @@ export function PowerCommunicationPanel({
         </div>
 
         {error && (
-          <div className="rounded border border-rose-800 bg-rose-950/40 p-2.5 text-xs text-rose-300">
+          <div className={`rounded border p-2.5 text-xs ${isDemoData ? "border-amber-800/70 bg-amber-950/30 text-amber-200" : "border-rose-800 bg-rose-950/40 text-rose-300"}`}>
             {error}
           </div>
         )}
@@ -551,7 +568,7 @@ export function PowerCommunicationPanel({
                 <div className="mt-2.5 flex items-center justify-between text-xs text-slate-400">
                   <span>Geometric sun elevation &gt; 0°</span>
                   <span className="font-mono text-amber-300/90 font-medium">
-                    {totalGeneratedKwh.toFixed(1)} kWh est.
+                    {totalGeneratedKwh === null ? "N/A" : `${totalGeneratedKwh.toFixed(1)} kWh est.`}
                   </span>
                 </div>
               </div>
@@ -809,7 +826,7 @@ export function PowerCommunicationPanel({
                     <span>Total Energy Yield</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {totalGeneratedKwh.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">kWh</span>
+                    {totalGeneratedKwh === null ? "N/A" : totalGeneratedKwh.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{totalGeneratedKwh === null ? "" : "kWh est."}</span>
                   </div>
                   <div className="text-[10px] text-amber-400/80">Over mission window</div>
                 </div>
@@ -821,7 +838,7 @@ export function PowerCommunicationPanel({
                     <span>Max Shadow Stretch</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {longestDarknessHrs.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">hrs</span>
+                    {longestDarknessHrs === null ? "N/A" : longestDarknessHrs.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{longestDarknessHrs === null ? "" : "hrs"}</span>
                   </div>
                   <div className="text-[10px] text-slate-400">Battery duration needed</div>
                 </div>
@@ -833,7 +850,7 @@ export function PowerCommunicationPanel({
                     <span>Required Battery Pack</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {nominalCapacityKwh.toFixed(2)} <span className="text-[11px] font-normal text-slate-400">kWh</span>
+                    {nominalCapacityKwh === null ? "N/A" : nominalCapacityKwh.toFixed(2)} <span className="text-[11px] font-normal text-slate-400">{nominalCapacityKwh === null ? "" : "kWh est."}</span>
                   </div>
                   <div className="text-[10px] text-cyan-400/80">At 70% Max DoD (Li-ion)</div>
                 </div>
@@ -845,7 +862,7 @@ export function PowerCommunicationPanel({
                     <span>Est. Battery Mass</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {estimatedBatteryMassKg.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">kg</span>
+                    {estimatedBatteryMassKg === null ? "N/A" : estimatedBatteryMassKg.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{estimatedBatteryMassKg === null ? "" : "kg est."}</span>
                   </div>
                   <div className="text-[10px] text-indigo-400/80">@ 150 Wh/kg space cells</div>
                 </div>

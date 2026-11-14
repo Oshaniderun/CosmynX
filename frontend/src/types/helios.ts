@@ -68,11 +68,11 @@ export interface ConditionTimelinePoint {
   timestamp_utc: string;
   sun_elevation_deg: number | null;
   earth_elevation_deg: number | null;
-  is_sunlit: boolean;
-  is_earth_visible: boolean;
-  power_watts_vertical?: number;
-  power_watts_horizontal?: number;
-  power_watts_tracking?: number;
+  is_sunlit: boolean | null;
+  is_earth_visible: boolean | null;
+  power_watts_vertical?: number | null;
+  power_watts_horizontal?: number | null;
+  power_watts_tracking?: number | null;
 }
 
 export interface BatterySizingInfo {
@@ -93,6 +93,7 @@ export interface PowerModelingInfo {
     horizontal: number;
   };
   battery_sizing: BatterySizingInfo;
+  model_assumptions?: string[];
 }
 
 export interface VisibilityTransitionDetail {
