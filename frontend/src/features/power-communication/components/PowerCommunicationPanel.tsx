@@ -6,6 +6,8 @@ import {
   Clock,
   Download,
   Gauge,
+  Maximize2,
+  Minimize2,
   Radio,
   RefreshCw,
   Sliders,
@@ -145,6 +147,17 @@ export function PowerCommunicationPanel({
   const [arrayArch, setArrayArch] = useState<ArrayArchitecture>("vertical_polar");
   const [hotelLoadWatts, setHotelLoadWatts] = useState<number>(100);
   const [chartView, setChartView] = useState<ChartViewMode>("power");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen]);
 
   // Load available landing sites
   useEffect(() => {
@@ -404,7 +417,7 @@ export function PowerCommunicationPanel({
     URL.revokeObjectURL(url);
   };
 
-  return (
+  const panelContent = (
     <ModuleCard
       title="Solar Power & Communication Analysis"
       owner="Member 4"
@@ -455,6 +468,25 @@ export function PowerCommunicationPanel({
             >
               <Download className="h-3 w-3 text-cyan-400" />
               <span>Export CSV</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 transition shadow-sm hover:border-slate-500"
+              title={isFullscreen ? "Exit Fullscreen (Esc)" : "Expand to Fullscreen"}
+            >
+              {isFullscreen ? (
+                <>
+                  <Minimize2 className="h-3 w-3 text-cyan-400" />
+                  <span>Exit Fullscreen</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="h-3 w-3 text-cyan-400" />
+                  <span>Fullscreen</span>
+                </>
+              )}
             </button>
 
             {loading && (
@@ -1036,4 +1068,16 @@ export function PowerCommunicationPanel({
       </div>
     </ModuleCard>
   );
+
+  if (isFullscreen) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/95 backdrop-blur-md p-4 md:p-8 animate-in fade-in duration-200">
+        <div className="mx-auto max-w-7xl">
+          {panelContent}
+        </div>
+      </div>
+    );
+  }
+
+  return panelContent;
 }

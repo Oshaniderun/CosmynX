@@ -15,8 +15,12 @@ export default function App() {
           <div className="md:col-span-2">
             <LunarMapPanel />
           </div>
-          <SunEarthPanel />
-          <PowerCommunicationPanel />
+          <div className="md:col-span-2">
+            <SunEarthPanel />
+          </div>
+          <div className="md:col-span-2">
+            <PowerCommunicationPanel />
+          </div>
           <ComparisonPanel />
           <HeliosAdvisorPanel />
         </main>
