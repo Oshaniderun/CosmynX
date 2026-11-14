@@ -2,13 +2,27 @@ import * as THREE from "../vendor/three-runtime.js";
 import { OrbitControls } from "../vendor/three-runtime.js";
 import { Body, GeoMoon, GeoVector, KM_PER_AU } from "../vendor/astronomy-runtime.js";
 import earthMap from "../assets/earth.webp";
-import moonMap from "../assets/moon.webp";
+import moonLrocMap from "../assets/moon-lroc-2k.webp";
+import moonLolaLdem from "../assets/moon-lola-ldem.webp";
+import moonSpoleWac from "../assets/moon-spole-wac.webp";
 import sunMap from "../assets/sun.webp";
-import type { EphemerisPoint } from "../../../types/helios";
+import type { EphemerisPoint, LandingSite } from "../../../types/helios";
 
 export type SceneFrame =
   | { mode: "eclipse"; time: number }
-  | { mode: "site"; point?: EphemerisPoint; latitude: number; longitude: number };
+  | {
+      mode: "site";
+      point?: EphemerisPoint;
+      latitude: number;
+      longitude: number;
+      sites?: LandingSite[];
+      selectedSiteId?: string;
+    };
+
+export interface SpaceSceneCallbacks {
+  onSelectSite?: (site: LandingSite) => void;
+  onZoomChange?: (zoom: number) => void;
+}
 
 const degrees = Math.PI / 180;
 const earthRadiusKm = 6378.1;
@@ -17,6 +31,117 @@ const earthRadius = 1.34;
 const moonRadius = earthRadius * 1737.4 / earthRadiusKm;
 const sunPosition = new THREE.Vector3(-6, 0, 0);
 const sphere = () => new THREE.SphereGeometry(1, 56, 36);
+
+// Major South Polar craters & massifs (lat°, lon°, angular radius°, depth/height) for 3D relief
+const LUNAR_RELIEF_FEATURES: Array<[number, number, number, number]> = [
+  [-89.9, 0.0, 0.65, -0.022],     // Shackleton Crater
+  [-88.1, 44.9, 1.35, -0.018],    // Shoemaker Crater
+  [-87.3, 77.0, 1.15, -0.016],    // Faustini Crater
+  [-87.5, -5.2, 1.45, -0.017],    // Haworth Crater
+  [-84.9, -35.5, 1.8, -0.019],    // Cabeus Crater
+  [-86.0, 0.0, 0.9, 0.014],       // Malapert Massif / Ridge
+  [-89.4, -135.0, 0.75, 0.013],   // Connecting Ridge
+  [-84.6, 31.0, 1.1, 0.015],      // Mons Mouton
+  [-85.2, 53.5, 1.0, 0.012],      // Nobile Rim
+];
+
+// Named places across the Moon (Global Maria, Craters, Basins & South Polar Landmarks)
+const LUNAR_NAMED_PLACES: Array<{
+  name: string;
+  lat: number;
+  lon: number;
+  category: "mare" | "crater" | "polar";
+  minZoom: number;
+}> = [
+  { name: "Mare Imbrium", lat: 32.8, lon: -15.6, category: "mare", minZoom: 0.65 },
+  { name: "Mare Serenitatis", lat: 28.0, lon: 17.5, category: "mare", minZoom: 0.65 },
+  { name: "Mare Tranquillitatis", lat: 8.5, lon: 31.4, category: "mare", minZoom: 0.65 },
+  { name: "Oceanus Procellarum", lat: 18.4, lon: -57.4, category: "mare", minZoom: 0.65 },
+  { name: "Mare Crisium", lat: 17.0, lon: 59.1, category: "mare", minZoom: 0.8 },
+  { name: "Mare Orientale", lat: -19.4, lon: -92.8, category: "mare", minZoom: 0.8 },
+  { name: "South Pole–Aitken Basin", lat: -53.0, lon: -169.0, category: "mare", minZoom: 0.65 },
+  { name: "Tycho Crater", lat: -43.3, lon: -11.2, category: "crater", minZoom: 0.75 },
+  { name: "Copernicus Crater", lat: 9.6, lon: -20.1, category: "crater", minZoom: 0.75 },
+  { name: "Plato Crater", lat: 51.6, lon: -9.3, category: "crater", minZoom: 0.9 },
+  { name: "Cabeus Crater", lat: -84.9, lon: -35.5, category: "polar", minZoom: 1.5 },
+  { name: "Shoemaker Crater", lat: -88.1, lon: 44.9, category: "polar", minZoom: 1.8 },
+  { name: "Faustini Crater", lat: -87.3, lon: 77.0, category: "polar", minZoom: 1.8 },
+];
+
+function createSouthPoleCapGeometry() {
+  // Covers 60°S to 90°S with exact NASA Moon Trek South Polar Stereographic UVs
+  const geom = new THREE.SphereGeometry(
+    1,
+    180,
+    56,
+    0,
+    Math.PI * 2,
+    (150 * Math.PI) / 180,
+    (30 * Math.PI) / 180
+  );
+  const pos = geom.attributes.position as THREE.BufferAttribute;
+  const uv = geom.attributes.uv as THREE.BufferAttribute;
+  const v = new THREE.Vector3();
+  const rMoonM = 1_737_400;
+  const extentFullM = 2 * 1_095_930;
+
+  const features = LUNAR_RELIEF_FEATURES.map(([latDeg, lonDeg, radDeg, amp]) => {
+    const lat = latDeg * degrees;
+    const lon = lonDeg * degrees;
+    return {
+      dir: new THREE.Vector3(
+        Math.cos(lat) * Math.cos(lon),
+        Math.sin(lat),
+        -Math.cos(lat) * Math.sin(lon)
+      ),
+      radRad: radDeg * degrees,
+      amp,
+    };
+  });
+
+  for (let i = 0; i < pos.count; i++) {
+    v.fromBufferAttribute(pos, i).normalize();
+    const nx = v.x;
+    const ny = v.y;
+    const nz = v.z;
+
+    // Exact South Polar Stereographic projection matching LRO_WAC_Mosaic_SPole60_100mp
+    const k = (2 * rMoonM) / Math.max(0.05, 1 - ny);
+    const xMap = k * -nz;
+    const yMap = k * nx;
+    uv.setXY(i, 0.5 + xMap / extentFullM, 0.5 + yMap / extentFullM);
+
+    let h =
+      0.0045 * Math.sin(nx * 11 + nz * 7) * Math.cos(ny * 9) +
+      0.0025 * Math.sin(nx * 27 - ny * 19 + nz * 23) +
+      0.0012 * Math.cos(nx * 53 + ny * 47 - nz * 41);
+
+    for (const f of features) {
+      const angle = Math.acos(Math.min(1, Math.max(-1, v.dot(f.dir))));
+      if (angle < f.radRad * 1.45) {
+        const u = angle / f.radRad;
+        if (f.amp < 0) {
+          const bowl = u < 1 ? (1 - u * u) * f.amp : 0;
+          const rim = Math.exp(-Math.pow((u - 1.0) / 0.22, 2)) * (-f.amp * 0.35);
+          h += bowl + rim;
+        } else {
+          const ridge = Math.exp(-Math.pow(u / 0.75, 2)) * f.amp;
+          h += ridge;
+        }
+      }
+    }
+
+    // Smoothly feather polar micro-relief to 0 at 60°S so cap meets global sphere seamlessly
+    const polarWeight = Math.min(1, Math.max(0, (-ny - 0.87) / 0.08));
+    v.multiplyScalar(1.001 + h * polarWeight);
+    pos.setXYZ(i, v.x, v.y, v.z);
+  }
+
+  pos.needsUpdate = true;
+  uv.needsUpdate = true;
+  geom.computeVertexNormals();
+  return geom;
+}
 
 function eclipseGeometry(time: number) {
   const date = new Date(time);
@@ -72,13 +197,18 @@ function starField(scene: THREE.Scene) {
     const az = i * 137.507764 * degrees;
     const y = 1 - 2 * (i + 0.5) / 2200;
     const r = Math.sqrt(1 - y * y);
-    positions.set([48 * r * Math.cos(az), 48 * y, 48 * r * Math.sin(az)], i * 3);
+    positions.set([95 * r * Math.cos(az), 95 * y, 95 * r * Math.sin(az)], i * 3);
   }
   const geometry = new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(positions, 3));
   scene.add(new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0xaac4eb, size: 1.1, sizeAttenuation: false, transparent: true, opacity: 0.55 })));
 }
 
-export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[], mode: SceneFrame["mode"]) {
+export function createSpaceScene(
+  host: HTMLDivElement,
+  labels: HTMLSpanElement[],
+  mode: SceneFrame["mode"],
+  callbacks?: SpaceSceneCallbacks
+) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "low-power" });
   renderer.setClearColor(0, 0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
@@ -87,16 +217,18 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
 
   const scene = new THREE.Scene();
   starField(scene);
-  const camera = new THREE.OrthographicCamera(-9, 9, 6, -6, 0.1, 100);
+  const camera = new THREE.OrthographicCamera(-9, 9, 6, -6, 0.1, 220);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enablePan = false;
-  controls.minZoom = 0.65;
-  controls.maxZoom = 3.8;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minZoom = mode === "site" ? 0.35 : 0.65;
+  controls.maxZoom = mode === "site" ? 18 : 3.8;
   controls.autoRotateSpeed = 0.65;
   const reset = () => {
     if (mode === "eclipse") camera.position.set(2.5, 4.2, 15);
-    else camera.position.set(7, 2.5, 13);
-    controls.target.set(mode === "eclipse" ? -0.4 : 0, mode === "eclipse" ? 0 : -0.85, 0);
+    else camera.position.set(11.5, 4.2, 22);
+    controls.target.set(mode === "eclipse" ? -0.4 : 0, mode === "eclipse" ? 0 : -0.55, 0);
     camera.zoom = 1;
     camera.updateProjectionMatrix();
     controls.update();
@@ -117,9 +249,93 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
   const sunlight = new THREE.DirectionalLight(0xffefd9, 2.4);
   scene.add(sunlight, new THREE.AmbientLight(0xbfbfcc, mode === "eclipse" ? 0.48 : 0.64));
 
+  const moonTexture = texture(moonLrocMap);
+  const lolaDemTexture = loader.load(moonLolaLdem, () => { if (!disposed) render(); });
+  textures.push(lolaDemTexture);
+  const spoleWacTexture = texture(moonSpoleWac);
   const sun = new THREE.Mesh(sphere(), new THREE.MeshBasicMaterial({ color: 0xffdb9d, map: texture(sunMap) }));
   const earth = new THREE.Mesh(sphere(), new THREE.MeshStandardMaterial({ map: texture(earthMap), roughness: 0.9 }));
-  const moon = new THREE.Mesh(sphere(), new THREE.MeshStandardMaterial({ map: texture(moonMap), roughness: 1 }));
+  const moonGeom = mode === "site" ? new THREE.SphereGeometry(1, 180, 120) : sphere();
+  const moon = new THREE.Mesh(
+    moonGeom,
+    new THREE.MeshStandardMaterial({
+      map: moonTexture,
+      bumpMap: lolaDemTexture,
+      bumpScale: 0.04,
+      roughness: 0.96,
+      metalness: 0.02,
+    })
+  );
+  let southPoleCapMesh: THREE.Mesh | null = null;
+  if (mode === "site") {
+    const capGeom = createSouthPoleCapGeometry();
+    southPoleCapMesh = new THREE.Mesh(
+      capGeom,
+      new THREE.MeshStandardMaterial({
+        map: spoleWacTexture,
+        bumpMap: spoleWacTexture,
+        bumpScale: 0.036,
+        roughness: 0.96,
+        metalness: 0.02,
+        transparent: true,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+      })
+    );
+    moon.add(southPoleCapMesh);
+
+    // Displace the entire 3D Moon sphere + recompute vertex normals using real NASA LOLA LDEM
+    const ldemImg = new Image();
+    ldemImg.onload = () => {
+      if (disposed) return;
+      const canvas = document.createElement("canvas");
+      canvas.width = ldemImg.width;
+      canvas.height = ldemImg.height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(ldemImg, 0, 0);
+      const { data, width, height } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      const sampleLdem = (u: number, v: number) => {
+        const px = Math.min(width - 1, Math.max(0, Math.round(u * (width - 1))));
+        const py = Math.min(height - 1, Math.max(0, Math.round((1 - v) * (height - 1))));
+        return data[(py * width + px) * 4] / 255 - 0.5;
+      };
+
+      const moonPos = moonGeom.attributes.position as THREE.BufferAttribute;
+      const moonUv = moonGeom.attributes.uv as THREE.BufferAttribute;
+      const tmp = new THREE.Vector3();
+      for (let i = 0; i < moonPos.count; i++) {
+        tmp.fromBufferAttribute(moonPos, i).normalize();
+        const elev = sampleLdem(moonUv.getX(i), moonUv.getY(i));
+        tmp.multiplyScalar(1 + elev * 0.055);
+        moonPos.setXYZ(i, tmp.x, tmp.y, tmp.z);
+      }
+      moonPos.needsUpdate = true;
+      moonGeom.computeVertexNormals();
+
+      // Match the South Pole cap base elevation to the global LOLA elevation for a seamless 60°S join
+      if (southPoleCapMesh) {
+        const capPos = capGeom.attributes.position as THREE.BufferAttribute;
+        for (let i = 0; i < capPos.count; i++) {
+          tmp.fromBufferAttribute(capPos, i);
+          const rCur = tmp.length();
+          tmp.normalize();
+          const uEq = 0.5 + Math.atan2(-tmp.z, tmp.x) / (2 * Math.PI);
+          const vEq = 0.5 + Math.asin(Math.min(1, Math.max(-1, tmp.y))) / Math.PI;
+          const elev = sampleLdem(uEq, vEq);
+          tmp.multiplyScalar(rCur + elev * 0.055);
+          capPos.setXYZ(i, tmp.x, tmp.y, tmp.z);
+        }
+        capPos.needsUpdate = true;
+        capGeom.computeVertexNormals();
+      }
+      render();
+    };
+    ldemImg.src = moonLolaLdem;
+  }
   scene.add(sun, earth, moon);
 
   const glow = new THREE.Mesh(
@@ -195,11 +411,147 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
 
   const horizon = ring(scene, 0x53d8ef, 0.6);
   horizon.rotation.z = Math.PI / 2;
-  horizon.scale.setScalar(2.18);
+  horizon.scale.setScalar(1.22);
   const site = new THREE.Mesh(sphere(), new THREE.MeshBasicMaterial({ color: 0xb4f5ff }));
-  site.scale.setScalar(0.075);
+  site.scale.setScalar(0.06);
   scene.add(site);
+
+  // Subtle line-of-sight rays from landing site (0,0,0) toward Sun and Earth in "site" mode
+  const originZero = new THREE.Vector3(0, 0, 0);
+  const sunRay = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([originZero, new THREE.Vector3(1, 0, 0)]),
+    new THREE.LineDashedMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.38, dashSize: 0.18, gapSize: 0.14 })
+  );
+  const earthRay = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints([originZero, new THREE.Vector3(0, 1, 0)]),
+    new THREE.LineDashedMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.38, dashSize: 0.18, gapSize: 0.14 })
+  );
+  scene.add(sunRay, earthRay);
+
+  const pinGeometry = new THREE.SphereGeometry(0.026, 16, 12);
+  const pinMaterialDefault = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
+  const pinMaterialSelected = new THREE.MeshBasicMaterial({ color: 0x22d3ee });
+  const pinSites = new Map<THREE.Mesh, LandingSite>();
+  let lastPinKey = "";
+
+  // Overlay container for 3D Moon place & landing-site labels
+  const placeLabelsContainer = document.createElement("div");
+  placeLabelsContainer.setAttribute("aria-hidden", "true");
+  placeLabelsContainer.className = "pointer-events-none absolute inset-0 overflow-hidden select-none";
+  host.appendChild(placeLabelsContainer);
+
+  interface PlaceLabelEntry {
+    el: HTMLSpanElement;
+    unitVec: THREE.Vector3;
+    minZoom: number;
+    priority: number;
+  }
+  const staticPlaceEntries: PlaceLabelEntry[] = LUNAR_NAMED_PLACES.map((place) => {
+    const el = document.createElement("span");
+    const isMare = place.category === "mare";
+    el.className = isMare
+      ? "absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase text-slate-200/85 bg-slate-950/55 border border-slate-700/50 backdrop-blur-[1px]"
+      : "absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] italic text-amber-100/85 bg-slate-950/60 border border-amber-500/25";
+    el.textContent = place.name;
+    el.hidden = true;
+    placeLabelsContainer.appendChild(el);
+    const lat = place.lat * degrees;
+    const lon = place.lon * degrees;
+    return {
+      el,
+      unitVec: new THREE.Vector3(
+        Math.cos(lat) * Math.cos(lon),
+        Math.sin(lat),
+        -Math.cos(lat) * Math.sin(lon)
+      ),
+      minZoom: place.minZoom,
+      priority: isMare ? 2 : 1,
+    };
+  });
+  let dynamicSiteEntries: PlaceLabelEntry[] = [];
+
+  function syncSitePins(sites?: LandingSite[], selectedSiteId?: string) {
+    const key = (sites ?? []).map((s) => `${s.site_id}:${s.latitude_deg}:${s.longitude_deg}`).join("|") + `#${selectedSiteId ?? ""}`;
+    if (key === lastPinKey) return;
+    lastPinKey = key;
+    for (const pinObj of pinSites.keys()) {
+      moon.remove(pinObj);
+    }
+    pinSites.clear();
+    for (const entry of dynamicSiteEntries) {
+      entry.el.remove();
+    }
+    dynamicSiteEntries = [];
+    if (!sites || mode === "eclipse") return;
+    for (const candidate of sites) {
+      const lat = candidate.latitude_deg * degrees;
+      const lon = candidate.longitude_deg * degrees;
+      const isSelected = candidate.site_id === selectedSiteId;
+      const unitVec = new THREE.Vector3(
+        Math.cos(lat) * Math.cos(lon),
+        Math.sin(lat),
+        -Math.cos(lat) * Math.sin(lon)
+      );
+      const pin = new THREE.Mesh(
+        pinGeometry,
+        isSelected ? pinMaterialSelected : pinMaterialDefault
+      );
+      pin.position.copy(unitVec).multiplyScalar(1.015);
+      if (isSelected) pin.scale.setScalar(1.45);
+      moon.add(pin);
+      pinSites.set(pin, candidate);
+
+      const labelEl = document.createElement("span");
+      labelEl.className = isSelected
+        ? "absolute -translate-x-1/2 -translate-y-full -mt-2 whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-semibold text-cyan-200 bg-slate-950/90 border border-cyan-400/70 shadow-sm"
+        : "absolute -translate-x-1/2 -translate-y-full -mt-1.5 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium text-amber-200 bg-slate-950/80 border border-amber-400/40";
+      labelEl.textContent = isSelected ? `★ ${candidate.name}` : candidate.name;
+      labelEl.hidden = true;
+      placeLabelsContainer.appendChild(labelEl);
+      dynamicSiteEntries.push({
+        el: labelEl,
+        unitVec,
+        minZoom: isSelected ? 0.65 : 1.45,
+        priority: isSelected ? 10 : 5,
+      });
+    }
+  }
+
+  const pinWorldPos = new THREE.Vector3();
+  let downX = 0;
+  let downY = 0;
+  const onPointerDown = (e: PointerEvent) => {
+    downX = e.clientX;
+    downY = e.clientY;
+  };
+  const onPointerUp = (e: PointerEvent) => {
+    if (mode !== "site" || !callbacks?.onSelectSite || pinSites.size === 0) return;
+    if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6) return;
+    const rect = renderer.domElement.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const clickX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const clickY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    let bestHit: { site: LandingSite; distSq: number } | null = null;
+    for (const [pinObj, candidate] of pinSites.entries()) {
+      pinWorldPos
+        .copy(pinObj.position)
+        .multiplyScalar(moon.scale.x)
+        .applyQuaternion(moon.quaternion)
+        .add(moon.position);
+      pinWorldPos.project(camera);
+      if (pinWorldPos.z < -1 || pinWorldPos.z > 1) continue;
+      const distSq = (pinWorldPos.x - clickX) ** 2 + (pinWorldPos.y - clickY) ** 2;
+      if (distSq <= 0.0036 && (!bestHit || distSq < bestHit.distSq)) {
+        bestHit = { site: candidate, distSq };
+      }
+    }
+    if (bestHit) callbacks.onSelectSite(bestHit.site);
+  };
+  renderer.domElement.addEventListener("pointerdown", onPointerDown);
+  renderer.domElement.addEventListener("pointerup", onPointerUp);
   const projected = new THREE.Vector3();
+  const worldNormal = new THREE.Vector3();
+  const camToMoonDir = new THREE.Vector3();
   const objects = [sun, earth, moon];
   let frameTime = 0;
   let visible = false;
@@ -217,6 +569,56 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
       const worldHeight = (camera.top - camera.bottom) / camera.zoom;
       label.style.marginTop = `${object.scale.x * host.clientHeight / worldHeight + 8}px`;
     });
+
+    // Update 3D Moon place & landing-site labels with hemisphere culling + screen-space de-cluttering
+    if (mode !== "site") {
+      placeLabelsContainer.hidden = true;
+      return;
+    }
+    placeLabelsContainer.hidden = false;
+    camToMoonDir.copy(camera.position).sub(controls.target).normalize();
+    const w = host.clientWidth || 1;
+    const h = host.clientHeight || 1;
+    const placedBoxes: Array<{ x: number; y: number }> = [];
+    const allEntries = [...dynamicSiteEntries, ...staticPlaceEntries].sort(
+      (a, b) => b.priority - a.priority
+    );
+
+    for (const entry of allEntries) {
+      if (camera.zoom < entry.minZoom) {
+        entry.el.hidden = true;
+        continue;
+      }
+      worldNormal.copy(entry.unitVec).applyQuaternion(moon.quaternion);
+      const facing = worldNormal.dot(camToMoonDir);
+      if (facing < 0.22) {
+        entry.el.hidden = true;
+        continue;
+      }
+      projected
+        .copy(worldNormal)
+        .multiplyScalar(moon.scale.x * 1.02)
+        .add(moon.position)
+        .project(camera);
+      if (Math.abs(projected.x) > 0.92 || Math.abs(projected.y) > 0.88) {
+        entry.el.hidden = true;
+        continue;
+      }
+      const px = (projected.x + 1) * 0.5 * w;
+      const py = (1 - projected.y) * 0.5 * h;
+      const minSep = entry.priority >= 10 ? 0 : 48;
+      if (
+        minSep > 0 &&
+        placedBoxes.some((b) => Math.hypot(b.x - px, b.y - py) < minSep)
+      ) {
+        entry.el.hidden = true;
+        continue;
+      }
+      placedBoxes.push({ x: px, y: py });
+      entry.el.hidden = false;
+      entry.el.style.left = `${(projected.x + 1) * 50}%`;
+      entry.el.style.top = `${(1 - projected.y) * 50}%`;
+    }
   }
 
   const resize = new ResizeObserver(() => {
@@ -225,7 +627,7 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
     if (!width || !height) return;
     visible = true;
     const aspect = width / height;
-    const halfWidth = Math.max(mode === "eclipse" ? 8.5 : 6.5, aspect * 4.25);
+    const halfWidth = Math.max(mode === "eclipse" ? 8.5 : 11.5, aspect * 6.4);
     camera.left = -halfWidth;
     camera.right = halfWidth;
     camera.top = halfWidth / aspect;
@@ -235,7 +637,69 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
     render();
   });
   resize.observe(host);
-  controls.addEventListener("change", render);
+  let syncingTarget = false;
+  let hasInitialOrientation = false;
+  let settleRaf = 0;
+  const targetMoonQuat = moon.quaternion.clone();
+
+  function updatePinScales() {
+    const zoomFactor = Math.max(0.22, 1 / Math.sqrt(Math.max(1, camera.zoom)));
+    site.scale.setScalar(0.06 * zoomFactor);
+    for (const [pinObj, candidate] of pinSites.entries()) {
+      const isSelected = candidate.site_id === lastSelectedPinId;
+      pinObj.scale.setScalar((isSelected ? 1.45 : 1) * zoomFactor);
+    }
+  }
+
+  let lastSelectedPinId: string | undefined;
+
+  function scheduleSettle() {
+    if (settleRaf || disposed) return;
+    const step = () => {
+      settleRaf = 0;
+      if (disposed) return;
+      let needsMore = false;
+      if (mode === "site" && hasInitialOrientation) {
+        const dot = Math.abs(moon.quaternion.dot(targetMoonQuat));
+        if (dot < 0.99999) {
+          moon.quaternion.slerp(targetMoonQuat, 0.12);
+          needsMore = true;
+        } else {
+          moon.quaternion.copy(targetMoonQuat);
+        }
+      }
+      if (controls.update()) {
+        needsMore = true;
+      }
+      render();
+      if (needsMore) {
+        settleRaf = requestAnimationFrame(step);
+      }
+    };
+    settleRaf = requestAnimationFrame(step);
+  }
+
+  controls.addEventListener("change", () => {
+    if (syncingTarget) return;
+    if (mode === "site") {
+      // Gradually shift camera target from Moon body (-0.5) to the selected site surface (0,0,0) as zoom increases
+      const t = Math.min(1, Math.max(0, (camera.zoom - 1) / (3.0 - 1)));
+      const desiredY = -0.5 * (1 - t);
+      if (
+        Math.abs(controls.target.y - desiredY) > 0.002 ||
+        controls.target.x !== 0 ||
+        controls.target.z !== 0
+      ) {
+        syncingTarget = true;
+        controls.target.set(0, desiredY, 0);
+        controls.update();
+        syncingTarget = false;
+      }
+      updatePinScales();
+      callbacks?.onZoomChange?.(camera.zoom);
+    }
+    render();
+  });
   reset();
 
   function update(frame: SceneFrame) {
@@ -243,10 +707,11 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
     [axis, cone, umbra, penumbra].forEach((object) => { object.visible = replay; });
     horizon.visible = site.visible = !replay;
     if (frame.mode === "eclipse") {
+      sunRay.visible = earthRay.visible = false;
       const geometry = eclipseGeometry(frame.time);
       sun.visible = earth.visible = true;
       sun.position.copy(sunPosition);
-      sun.scale.setScalar(1.75);
+      sun.scale.setScalar(2.35);
       earth.position.set(0, 0, 0);
       earth.scale.setScalar(earthRadius);
       earth.rotation.y = 1.15 + (frame.time - Date.UTC(2025, 0, 1)) / 86_164_091 * 2 * Math.PI;
@@ -261,24 +726,61 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
       cone.scale.set(moon.position.x, earthRadius, earthRadius);
       cone.position.x = moon.position.x / 2;
     } else {
-      moon.position.set(0, -2.85, 0);
-      moon.scale.setScalar(2.85);
-      moon.setRotationFromMatrix(lunarOrientation(frame.latitude, frame.longitude));
-      sun.scale.setScalar(0.56);
-      earth.scale.setScalar(0.38);
+      // Realistic hierarchy & deep-space separation:
+      // Moon (r=1.65 at origin) < Earth (r=1.95 at dist=10.5) < Sun (r=2.75 at dist=17.5)
+      const siteMoonRadius = 1.65;
+      moon.position.set(0, -siteMoonRadius, 0);
+      moon.scale.setScalar(siteMoonRadius);
+      targetMoonQuat.setFromRotationMatrix(lunarOrientation(frame.latitude, frame.longitude));
+      if (!hasInitialOrientation) {
+        moon.quaternion.copy(targetMoonQuat);
+        hasInitialOrientation = true;
+      } else {
+        scheduleSettle();
+      }
+      lastSelectedPinId = frame.selectedSiteId;
+      sun.scale.setScalar(2.75);
+      earth.scale.setScalar(1.95);
       earth.rotation.y = 1.6;
-      const place = (object: THREE.Mesh, az?: number | null, el?: number | null) => {
-        object.visible = az != null && el != null;
-        if (az != null && el != null) object.position.copy(direction(az, el).multiplyScalar(5.1));
+      if (labels[0]) {
+        labels[0].textContent = frame.point?.sun_distance_au
+          ? `Sun · ${(frame.point.sun_distance_au * 149.598).toFixed(1)}M km`
+          : "Sun · 149.6M km";
+      }
+      if (labels[1]) {
+        labels[1].textContent = frame.point?.earth_distance_km
+          ? `Earth · ${Math.round(frame.point.earth_distance_km).toLocaleString()} km`
+          : "Earth · 384,400 km";
+      }
+      const place = (
+        object: THREE.Mesh,
+        ray: THREE.Line,
+        dist: number,
+        az?: number | null,
+        el?: number | null
+      ) => {
+        const isVis = az != null && el != null;
+        object.visible = isVis;
+        ray.visible = isVis;
+        if (az != null && el != null) {
+          object.position.copy(direction(az, el).multiplyScalar(dist));
+          const posAttr = ray.geometry.attributes.position as THREE.BufferAttribute;
+          posAttr.setXYZ(0, 0, 0, 0);
+          posAttr.setXYZ(1, object.position.x, object.position.y, object.position.z);
+          posAttr.needsUpdate = true;
+          ray.computeLineDistances();
+        }
       };
-      place(sun, frame.point?.sun_azimuth_deg, frame.point?.sun_elevation_deg);
-      place(earth, frame.point?.earth_azimuth_deg, frame.point?.earth_elevation_deg);
+      place(sun, sunRay, 17.5, frame.point?.sun_azimuth_deg, frame.point?.sun_elevation_deg);
+      place(earth, earthRay, 10.5, frame.point?.earth_azimuth_deg, frame.point?.earth_elevation_deg);
+      syncSitePins(frame.sites, frame.selectedSiteId);
+      updatePinScales();
     }
     atmosphere.position.copy(earth.position);
     atmosphere.scale.setScalar(earth.scale.x * 1.048);
     atmosphere.visible = earth.visible;
     glow.position.copy(sun.position);
-    glow.scale.setScalar(sun.scale.x * 5.2);
+    glow.scale.setScalar(sun.scale.x * 3.1);
     glow.visible = sun.visible;
     sunlight.position.copy(sun.visible ? sun.position : new THREE.Vector3(-3, 4, 2));
     render();
@@ -308,7 +810,13 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
     dispose() {
       disposed = true;
       cancelAnimationFrame(frameTime);
+      cancelAnimationFrame(settleRaf);
       resize.disconnect();
+      renderer.domElement.removeEventListener("pointerdown", onPointerDown);
+      renderer.domElement.removeEventListener("pointerup", onPointerUp);
+      pinGeometry.dispose();
+      pinMaterialDefault.dispose();
+      pinMaterialSelected.dispose();
       controls.dispose();
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.Points) {
@@ -319,6 +827,7 @@ export function createSpaceScene(host: HTMLDivElement, labels: HTMLSpanElement[]
       textures.forEach((map) => map.dispose());
       renderer.dispose();
       renderer.domElement.remove();
+      placeLabelsContainer.remove();
     },
   };
 }

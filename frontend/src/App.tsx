@@ -2,8 +2,7 @@ import { lazy, Suspense } from "react";
 import { ArrowDown, ArrowUpRight, Compass, Orbit, Radio, Sparkles } from "lucide-react";
 import { Navbar } from "./components/layout/Navbar";
 import { CosmicBackground } from "./components/layout/CosmicBackground";
-import { LunarMapPanel } from "./features/lunar-map/components/LunarMapPanel";
-import { SunEarthPanel } from "./features/sun-earth/components/SunEarthPanel";
+import { UnifiedLunarExplorer } from "./features/lunar-map/components/UnifiedLunarExplorer";
 import { PowerCommunicationPanel } from "./features/power-communication/components/PowerCommunicationPanel";
 import { HeliosAdvisorPanel } from "./features/helios-ai/components/HeliosAdvisorPanel";
 import { MissionProvider } from "./context/MissionContext";
@@ -76,7 +75,6 @@ export default function App() {
                   <span>Lunar horizon visual · supplied project reference</span>
                 </div>
               </div>
-
               <aside className="hero-overview" aria-label="Mission workspace capabilities">
                 <div className="hero-overview__topline font-mono">
                   <span>MISSION WORKSPACE</span>
@@ -109,13 +107,17 @@ export default function App() {
               <SectionHeading
                 id="environment-heading"
                 index="01"
-                eyebrow="Mission environment"
+                eyebrow="Mission environment & site explorer"
                 title="See the system in motion."
-                detail="Explore Sun, Earth, and lunar geometry, then inspect measured illumination and direct-to-Earth line of sight for the selected mission window."
+                detail="Explore 3D Sun, Earth, and lunar South Pole topography, select candidate landing sites, and inspect measured illumination and direct-to-Earth line of sight."
               />
-              <div className="environment-grid">
-                <div className="environment-grid__orbital"><SunEarthPanel /></div>
-                <div className="environment-grid__conditions"><PowerCommunicationPanel /></div>
+              <div className="space-y-6">
+                <UnifiedLunarExplorer />
+                <div className="environment-grid">
+                  <div className="environment-grid__conditions col-span-full">
+                    <PowerCommunicationPanel />
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -125,16 +127,14 @@ export default function App() {
                 index="02"
                 eyebrow="Site workspace"
                 title="Put candidate sites in context."
-                detail="Review the available south-pole landing-site workspace and compare mission scenarios using the connected scientific services."
+                detail="Compare south-pole landing-site scenarios side by side using the connected scientific services."
               />
               <div className="workspace-grid">
-                <LunarMapPanel />
                 <Suspense fallback={<div className="mission-panel comparison-loading p-6 text-center text-slate-400 font-mono text-sm" role="status">Loading comparison workspace…</div>}>
                   <ComparisonPanel />
                 </Suspense>
               </div>
             </section>
-
             <section id="helios-advisor" className="dashboard-section dashboard-section--advisor" aria-labelledby="advisor-heading">
               <SectionHeading
                 id="advisor-heading"

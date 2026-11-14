@@ -265,7 +265,7 @@ export function PowerCommunicationPanel({
   const FeasIcon = feasibilityBadge.icon;
 
   // Battery sizing calculation based on user hotel load
-  const powerModeling = data.power_modeling;
+  const powerModeling = isOk ? data.power_modeling : undefined;
   const longestDarknessHrs = powerModeling?.battery_sizing?.longest_darkness_hours ?? null;
 
   const usableStorageKwh = longestDarknessHrs === null ? null : (longestDarknessHrs * hotelLoadWatts) / 1000.0;
@@ -282,8 +282,8 @@ export function PowerCommunicationPanel({
       arrayArch === "vertical_polar"
         ? pt.power_watts_vertical ?? null
         : arrayArch === "horizontal"
-        ? pt.power_watts_horizontal ?? null
-        : pt.power_watts_tracking ?? null;
+          ? pt.power_watts_horizontal ?? null
+          : pt.power_watts_tracking ?? null;
 
     const scaledPwrWatts = rawPwr === null ? null : rawPwr * ratedArrayKw;
 
@@ -299,15 +299,24 @@ export function PowerCommunicationPanel({
   });
 
   const earthWindows = (data.windows ?? []).filter((w) => w.target === "earth");
+  const simultaneousWindows = (data.windows ?? []).filter((w) => w.target === "both");
 
-  // Derived transitions calculation (README Section 7: Next transition estimation)
   const derivedTransitions = data.transitions ?? (() => {
-    if (!isOk || !data.timeline || data.timeline.length === 0 ||
-        data.timeline.some((point) => point.is_sunlit === null || point.is_earth_visible === null)) return null;
+    if (
+      !isOk ||
+      !data.timeline ||
+      data.timeline.length === 0 ||
+      data.timeline.some(
+        (point) =>
+          point.is_sunlit == null ||
+          point.is_earth_visible == null
+      )
+    ) {
+      return null;
+    }
+
     const s0 = data.timeline[0].is_sunlit;
     const e0 = data.timeline[0].is_earth_visible;
-    const stepHours = (data.step_minutes ?? 60) / 60;
-
     let solarNext: "sunset" | "sunrise" | "none" = "none";
     let solarUtc: string | null = null;
     let solarHours: number | null = null;
@@ -315,7 +324,7 @@ export function PowerCommunicationPanel({
       if (data.timeline[i].is_sunlit !== s0) {
         solarNext = s0 ? "sunset" : "sunrise";
         solarUtc = data.timeline[i].timestamp_utc;
-        solarHours = Math.round(i * stepHours * 10) / 10;
+        solarHours = Math.round(((Date.parse(data.timeline[i].timestamp_utc) - Date.parse(data.start_utc)) / 3_600_000) * 10) / 10;
         break;
       }
     }
@@ -327,7 +336,7 @@ export function PowerCommunicationPanel({
       if (data.timeline[i].is_earth_visible !== e0) {
         earthNext = e0 ? "earthset" : "earthrise";
         earthUtc = data.timeline[i].timestamp_utc;
-        earthHours = Math.round(i * stepHours * 10) / 10;
+        earthHours = Math.round(((Date.parse(data.timeline[i].timestamp_utc) - Date.parse(data.start_utc)) / 3_600_000) * 10) / 10;
         break;
       }
     }
@@ -342,8 +351,8 @@ export function PowerCommunicationPanel({
           solarNext !== "none"
             ? `${s0 ? "Sunset" : "Sunrise"} in ${solarHours}h`
             : s0
-            ? "Continuous daylight throughout window"
-            : "Continuous shadow throughout window",
+              ? "Continuous daylight throughout window"
+              : "Continuous shadow throughout window",
       },
       earth: {
         current_state: e0 ? ("contact_active" as const) : ("blackout" as const),
@@ -354,8 +363,8 @@ export function PowerCommunicationPanel({
           earthNext !== "none"
             ? `${e0 ? "Earthset (LOS)" : "Earthrise (AOS)"} in ${earthHours}h`
             : e0
-            ? "Continuous direct contact throughout window"
-            : "Continuous blackout throughout window",
+              ? "Continuous direct contact throughout window"
+              : "Continuous blackout throughout window",
       },
     };
   })();
@@ -590,7 +599,7 @@ export function PowerCommunicationPanel({
                   <span className="text-3xl font-extrabold tracking-tight text-slate-100">
                     {earthVisiblePct !== null ? `${earthVisiblePct}%` : "—"}
                   </span>
-                  <span className="text-xs text-slate-400">contact coverage</span>
+                  <span className="text-xs text-slate-400">geometric line-of-sight visibility</span>
                 </div>
 
                 {/* Progress bar */}
@@ -608,7 +617,7 @@ export function PowerCommunicationPanel({
 
                 <div className="mt-2.5 flex items-center justify-between text-xs text-slate-400">
                   <span>Direct line-of-sight &gt; 0°</span>
-                  <span className="text-sky-300/80">DTE Comms Link</span>
+                  <span className="text-sky-300/80">Not RF reliability</span>
                 </div>
               </div>
             </div>
@@ -620,11 +629,11 @@ export function PowerCommunicationPanel({
                   <div className="flex items-center gap-2">
                     <Timer className="h-4 w-4 text-cyan-400" />
                     <h3 className="text-xs font-semibold text-slate-200">
-                      Next Visibility &amp; Contact Transitions
+                      Sampled Visibility Transition Estimates
                     </h3>
                   </div>
                   <span className="text-[11px] text-slate-400 font-mono">
-                    NASA Mission Operations Horizon Predictor
+                    Based on the available ephemeris samples
                   </span>
                 </div>
 
@@ -632,11 +641,10 @@ export function PowerCommunicationPanel({
                   {/* Solar Transition Card */}
                   <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
                     <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
-                        derivedTransitions.solar.current_state === "sunlit"
-                          ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
-                          : "bg-indigo-950/40 text-indigo-400 border border-indigo-500/30"
-                      }`}
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${derivedTransitions.solar.current_state === "sunlit"
+                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                        : "bg-indigo-950/40 text-indigo-400 border border-indigo-500/30"
+                        }`}
                     >
                       <Sun className="h-4 w-4" />
                     </div>
@@ -646,11 +654,10 @@ export function PowerCommunicationPanel({
                           Solar Illumination
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                            derivedTransitions.solar.current_state === "sunlit"
-                              ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                              : "bg-slate-800 text-slate-300 border border-slate-700"
-                          }`}
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${derivedTransitions.solar.current_state === "sunlit"
+                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                            : "bg-slate-800 text-slate-300 border border-slate-700"
+                            }`}
                         >
                           {derivedTransitions.solar.current_state === "sunlit" ? "Sunlit (Day)" : "In Shadow (Night)"}
                         </span>
@@ -683,27 +690,25 @@ export function PowerCommunicationPanel({
                   {/* Earth Direct-to-Earth Transition Card */}
                   <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
                     <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
-                        derivedTransitions.earth.current_state === "contact_active"
-                          ? "bg-sky-500/10 text-sky-400 border border-sky-500/30"
-                          : "bg-rose-950/40 text-rose-400 border border-rose-500/30"
-                      }`}
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${derivedTransitions.earth.current_state === "contact_active"
+                        ? "bg-sky-500/10 text-sky-400 border border-sky-500/30"
+                        : "bg-rose-950/40 text-rose-400 border border-rose-500/30"
+                        }`}
                     >
                       <Radio className="h-4 w-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
-                          Direct-to-Earth (DTE)
+                          Earth geometric line of sight
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                            derivedTransitions.earth.current_state === "contact_active"
-                              ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
-                              : "bg-rose-900/30 text-rose-300 border border-rose-700/40"
-                          }`}
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${derivedTransitions.earth.current_state === "contact_active"
+                            ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                            : "bg-rose-900/30 text-rose-300 border border-rose-700/40"
+                            }`}
                         >
-                          {derivedTransitions.earth.current_state === "contact_active" ? "Contact Active" : "No LOS (Blackout)"}
+                          {derivedTransitions.earth.current_state === "contact_active" ? "Earth geometrically visible" : "Earth below geometric horizon"}
                         </span>
                       </div>
                       <div className="mt-1 text-sm font-bold text-slate-100">
@@ -761,11 +766,10 @@ export function PowerCommunicationPanel({
                         key={kw}
                         type="button"
                         onClick={() => setRatedArrayKw(kw)}
-                        className={`flex-1 rounded px-2 py-1 text-[11px] font-medium transition ${
-                          ratedArrayKw === kw
-                            ? "bg-amber-500 text-slate-950 font-semibold"
-                            : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                        }`}
+                        className={`flex-1 rounded px-2 py-1 text-[11px] font-medium transition ${ratedArrayKw === kw
+                          ? "bg-amber-500 text-slate-950 font-semibold"
+                          : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                          }`}
                       >
                         {kw} kW
                       </button>
@@ -868,6 +872,12 @@ export function PowerCommunicationPanel({
               </div>
             </div>
 
+            {powerModeling?.model_assumptions && powerModeling.model_assumptions.length > 0 && (
+              <ul className="list-disc space-y-1 pl-5 text-[11px] text-slate-400" aria-label="Power model assumptions">
+                {powerModeling.model_assumptions.map((assumption) => <li key={assumption}>{assumption}</li>)}
+              </ul>
+            )}
+
             {/* Recharts Timeline Visualization (Togglable: Elevation Angles vs Power Watts) */}
             {chartPoints.length > 0 && (
               <figure className="rounded-lg border border-slate-800 bg-slate-950/70 p-3.5">
@@ -884,22 +894,20 @@ export function PowerCommunicationPanel({
                     <button
                       type="button"
                       onClick={() => setChartView("power")}
-                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${
-                        chartView === "power"
-                          ? "bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30"
-                          : "text-slate-400 hover:text-slate-200"
-                      }`}
+                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${chartView === "power"
+                        ? "bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30"
+                        : "text-slate-400 hover:text-slate-200"
+                        }`}
                     >
                       Power Output (Watts)
                     </button>
                     <button
                       type="button"
                       onClick={() => setChartView("elevation")}
-                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${
-                        chartView === "elevation"
-                          ? "bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30"
-                          : "text-slate-400 hover:text-slate-200"
-                      }`}
+                      className={`rounded px-2.5 py-1 text-[11px] font-medium transition ${chartView === "elevation"
+                        ? "bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30"
+                        : "text-slate-400 hover:text-slate-200"
+                        }`}
                     >
                       Elevation Angles (°)
                     </button>
@@ -1022,12 +1030,12 @@ export function PowerCommunicationPanel({
             <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3.5">
               <div className="flex items-center gap-1.5 text-xs font-medium text-slate-200">
                 <Clock className="h-3.5 w-3.5 text-sky-400" />
-                <span>Continuous DTE Communication Windows</span>
+                <span>Geometric Earth Line-of-Sight Windows</span>
               </div>
 
               {earthWindows.length === 0 ? (
                 <p className="mt-2 text-xs text-slate-400">
-                  No continuous communication window detected within this observation interval.
+                  No known geometric Earth line-of-sight window was detected within this observation interval.
                 </p>
               ) : (
                 <div className="mt-2.5 overflow-x-auto">
@@ -1057,6 +1065,18 @@ export function PowerCommunicationPanel({
                   </table>
                 </div>
               )}
+              {simultaneousWindows.length > 0 && (
+                <div className="mt-4 border-t border-slate-800 pt-3">
+                  <p className="text-xs font-medium text-slate-200">Simultaneous sunlight and Earth line of sight</p>
+                  <ul className="mt-2 space-y-1 text-xs text-slate-300">
+                    {simultaneousWindows.map((win, idx) => (
+                      <li key={`${win.start_utc}-${idx}`}>
+                        {formatUtc(win.start_utc)} – {formatUtc(win.end_utc)} UTC · {win.duration_hours.toFixed(1)} h
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -1070,7 +1090,7 @@ export function PowerCommunicationPanel({
                 NASA SpaceApps Scientific Reality Note
               </p>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Calculations use a <strong>geometric horizon model</strong> ({data.horizon_model}). At the lunar south pole, solar power generation and radio line-of-sight are heavily governed by low sun grazing angles and local crater rim/ridge topography not captured by ideal spherical body approximations.
+                Sunlight and Earth visibility use a <strong>geometric horizon model</strong> ({data.horizon_model}); Earth line of sight does not guarantee RF communication. Power and battery outputs are estimates from the displayed array, load, depth-of-discharge, and cell-specific-energy assumptions.
               </p>
             </div>
           </div>
@@ -1078,7 +1098,7 @@ export function PowerCommunicationPanel({
 
         {/* Metadata Footer */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/60 pt-2 text-[11px] text-slate-500">
-          <span>Source: <span className="text-slate-400">{data.source}</span></span>
+          <span>Source: <span className="text-slate-400">{isDemoData ? "Synthetic fixed demonstration data (not NASA/JPL)" : data.source}</span></span>
           <span>Observation: <span className="font-mono text-slate-400">{formatUtc(data.start_utc)} – {formatUtc(data.end_utc)}</span></span>
         </div>
       </div>

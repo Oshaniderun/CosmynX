@@ -29,6 +29,7 @@ interface LunarMapProps {
   customSite: LandingSite | null;
   onMapClickCoordinates?: (lat: number, lon: number) => void;
   isPinDropMode?: boolean;
+  onZoomOutToGlobe?: () => void;
 }
 
 export function LunarMap({
@@ -38,9 +39,12 @@ export function LunarMap({
   customSite,
   onMapClickCoordinates,
   isPinDropMode = false,
+  onZoomOutToGlobe,
 }: LunarMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<Map | null>(null);
+  const onZoomOutRef = useRef(onZoomOutToGlobe);
+  onZoomOutRef.current = onZoomOutToGlobe;
   const siteVectorSourceRef = useRef<VectorSource>(new VectorSource());
   const graticuleVectorSourceRef = useRef<VectorSource>(new VectorSource());
   const graticuleLayerRef = useRef<VectorLayer<VectorSource> | null>(null);
@@ -299,7 +303,16 @@ export function LunarMap({
       }
     });
 
+    const containerEl = mapContainerRef.current;
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY > 0 && (view.getZoom() ?? 2.2) <= 1.55) {
+        onZoomOutRef.current?.();
+      }
+    };
+    containerEl.addEventListener("wheel", handleWheel, { passive: true });
+
     return () => {
+      containerEl.removeEventListener("wheel", handleWheel);
       map.setTarget(undefined);
       mapRef.current = null;
     };
