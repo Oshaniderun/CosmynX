@@ -185,7 +185,7 @@ export function LunarMapPanel() {
             <div className="flex items-center gap-2 text-xs text-slate-400">
               <Compass className="h-3.5 w-3.5 text-cyan-400" />
               <span className="font-medium text-slate-200">
-                LRO LOLA South Polar Stereographic (R = 1,737.4 km)
+                Simulated South Polar Topography — Illustrative Basemap (R = 1,737.4 km)
               </span>
             </div>
 
@@ -234,7 +234,7 @@ export function LunarMapPanel() {
               </span>
             </div>
             <span className="text-slate-500 font-mono">
-              IAU/NASA Lunar South Polar Stereographic (0° Prime Meridian)
+              IAU/NASA Lunar South Polar Stereographic (0° Prime Meridian facing Earth)
             </span>
           </div>
         </div>
@@ -251,7 +251,7 @@ export function LunarMapPanel() {
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              Artemis Sites ({sites.length})
+              Artemis Candidate Regions ({sites.length})
             </button>
             <button
               onClick={() => setActiveTab("custom")}
@@ -320,7 +320,10 @@ export function LunarMapPanel() {
                             {site.latitude_deg.toFixed(2)}°S,{" "}
                             {site.longitude_deg >= 0
                               ? `${site.longitude_deg.toFixed(2)}°E`
-                              : `${Math.abs(site.longitude_deg).toFixed(2)}°W`}
+                              : `${Math.abs(site.longitude_deg).toFixed(2)}°W`}{" "}
+                            <span className="text-[10px] text-slate-500 font-sans italic">
+                              (centroid)
+                            </span>
                           </p>
                         </div>
                       </div>
@@ -448,18 +451,22 @@ export function LunarMapPanel() {
                       : `${Math.abs(selectedSite.longitude_deg).toFixed(3)}°W`}
                   </p>
                 </div>
-                {selectedSite.elevation_m !== undefined &&
-                  selectedSite.elevation_m !== null && (
-                    <div className="col-span-2 flex items-center justify-between rounded bg-slate-950/80 px-2.5 py-1.5 font-mono text-[11px]">
-                      <span className="flex items-center gap-1 text-slate-400">
-                        <Mountain className="h-3.5 w-3.5 text-amber-400" />
-                        Elevation Datum:
-                      </span>
-                      <span className="text-amber-300">
-                        +{selectedSite.elevation_m.toFixed(0)} m
-                      </span>
-                    </div>
+                <div className="col-span-2 flex items-center justify-between rounded bg-slate-950/80 px-2.5 py-1.5 text-[11px]">
+                  <span className="flex items-center gap-1 text-slate-400">
+                    <Mountain className="h-3.5 w-3.5 text-slate-400" />
+                    Elevation:
+                  </span>
+                  {selectedSite.elevation_m !== undefined &&
+                  selectedSite.elevation_m !== null ? (
+                    <span className="font-mono text-amber-300">
+                      +{selectedSite.elevation_m.toFixed(0)} m (approx)
+                    </span>
+                  ) : (
+                    <span className="text-slate-500 italic font-mono text-[10px]">
+                      Varies across 15×15 km zone
+                    </span>
                   )}
+                </div>
               </div>
 
               {/* Scientific Description */}
@@ -471,11 +478,11 @@ export function LunarMapPanel() {
 
               {/* Data Provenance & Attribution */}
               <div className="flex items-center justify-between pt-1 text-[10px] text-slate-500">
-                <span>
+                <span className="truncate max-w-[240px]" title={selectedSite.source || "NASA Artemis III / LRO"}>
                   Source: {selectedSite.source || "NASA Artemis III / LRO"}
                 </span>
-                <span className="rounded bg-slate-800 px-1 py-0.2 text-[9px] text-slate-400 uppercase">
-                  {selectedSite.coordinate_type || "centroid"}
+                <span className="rounded bg-slate-800 px-1 py-0.5 text-[9px] text-slate-400 uppercase">
+                  {selectedSite.coordinate_type?.replace(/_/g, " ") || "centroid"}
                 </span>
               </div>
             </div>

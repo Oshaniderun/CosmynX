@@ -206,7 +206,7 @@ export function LunarMap({
 
     const lunarProj = setupLunarProjection();
 
-    // Base LOLA Shaded Relief Raster Layer
+    // Base Layer: Simulated South Polar Topography (Illustrative Basemap)
     const baseLayer = new ImageLayer({
       source: new Static({
         url: "/assets/lunar/lunar-south-pole-lola.png",
@@ -336,7 +336,9 @@ export function LunarMap({
               }),
             }),
             text: new Text({
-              text: `★ ${site.name}\n${site.latitude_deg.toFixed(2)}°S, ${site.longitude_deg.toFixed(2)}°`,
+              text: isCustom
+                ? `★ ${site.name}\n${site.latitude_deg.toFixed(2)}°S, ${site.longitude_deg >= 0 ? `${site.longitude_deg.toFixed(2)}°E` : `${Math.abs(site.longitude_deg).toFixed(2)}°W`}`
+                : `★ ${site.name} (Region Centroid)\n${site.latitude_deg.toFixed(2)}°S, ${site.longitude_deg >= 0 ? `${site.longitude_deg.toFixed(2)}°E` : `${Math.abs(site.longitude_deg).toFixed(2)}°W`}`,
               font: "bold 11px system-ui, sans-serif",
               fill: new Fill({ color: "#ffffff" }),
               backgroundFill: new Fill({

@@ -12,8 +12,8 @@ class LandingSite(BaseModel):
     longitude_deg: float = Field(..., ge=-180.0, le=360.0)
     description: Optional[str] = None
     elevation_m: Optional[float] = None
-    source: str = "NASA Artemis III / LRO"
-    coordinate_type: str = "region_center"
+    source: str = "NASA Artemis III (Updated Oct 28, 2024) / LROC QuickMap"
+    coordinate_type: str = "approximate_region_centroid"
 
 
 class CustomSiteRequest(BaseModel):

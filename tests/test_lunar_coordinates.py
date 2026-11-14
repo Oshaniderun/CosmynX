@@ -43,10 +43,10 @@ def test_south_pole_origin():
 @pytest.mark.parametrize(
     "lat,lon,expected_dist_km",
     [
-        (-89.70, 129.00, 9.1),    # Peak Near Shackleton (~9.1 km from pole)
-        (-89.50, -136.00, 15.2),  # Connecting Ridge (~15.2 km from pole)
-        (-88.50, -68.00, 45.5),   # de Gerlache Rim 1 (~45.5 km from pole)
+        (-87.50, -5.00, 75.8),    # Haworth (~75.8 km from pole)
         (-86.00, 0.30, 121.3),    # Malapert Massif (~121.3 km from pole)
+        (-88.70, -64.00, 39.4),   # de Gerlache Rim 2 (~39.4 km from pole)
+        (-85.42, 31.85, 138.9),   # Mons Mouton (~138.9 km from pole)
     ],
 )
 def test_forward_and_inverse_roundtrip(lat, lon, expected_dist_km):

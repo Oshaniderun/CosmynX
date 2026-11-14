@@ -17,34 +17,38 @@ from fastapi import HTTPException
 
 
 def test_default_sites_count_and_types():
-    """Verify that DEFAULT_SITES contains 8 verified Artemis candidate regions."""
-    assert len(DEFAULT_SITES) == 8
+    """Verify that DEFAULT_SITES contains the 9 updated NASA Artemis III candidate regions."""
+    assert len(DEFAULT_SITES) == 9
     for site in DEFAULT_SITES:
         assert isinstance(site, LandingSite)
         assert site.site_id.startswith("candidate_")
         assert -90.0 <= site.latitude_deg <= -80.0
         assert -180.0 <= site.longitude_deg <= 180.0
-        assert site.elevation_m is not None
-        assert site.source == "NASA Artemis III / LRO LOLA"
+        # Elevation is None to avoid misrepresenting a 15km x 15km region as a single flat landing point
+        assert site.elevation_m is None
+        assert "NASA Artemis III (Updated Oct 28, 2024)" in site.source
+        assert site.coordinate_type == "approximate_region_centroid"
 
 
 def test_get_sites_endpoint():
     """Verify GET /api/sites returns all candidate sites."""
     sites = get_sites()
-    assert len(sites) == 8
+    assert len(sites) == 9
     ids = [s.site_id for s in sites]
     assert "candidate_001" in ids
     assert "candidate_002" in ids
     assert "candidate_003" in ids
+    assert "candidate_009" in ids
 
 
 def test_get_site_by_id_success():
     """Verify GET /api/sites/{site_id} returns correct landing site."""
     site = get_site("candidate_001")
     assert site.site_id == "candidate_001"
-    assert site.name == "Peak Near Shackleton"
-    assert site.latitude_deg == -89.70
-    assert site.longitude_deg == 129.00
+    assert site.name == "Haworth"
+    assert site.latitude_deg == -87.50
+    assert site.longitude_deg == -5.00
+    assert site.elevation_m is None
 
 
 def test_get_site_by_id_not_found():
@@ -90,6 +94,8 @@ def test_comparison_service_compatibility():
     res = compare_scenarios(req)
     assert len(res.results) == 2
     assert res.results[0].site_id == "candidate_001"
+    assert res.results[0].latitude_deg == -87.50
+    assert res.results[0].longitude_deg == -5.00
     assert res.results[1].site_id == "candidate_003"
-    assert res.results[1].latitude_deg == -86.0
-    assert res.results[1].longitude_deg == 0.3
+    assert res.results[1].latitude_deg == -85.30
+    assert res.results[1].longitude_deg == 31.50
