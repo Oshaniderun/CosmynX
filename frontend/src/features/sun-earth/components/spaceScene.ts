@@ -68,6 +68,74 @@ const LUNAR_NAMED_PLACES: Array<{
   { name: "Faustini Crater", lat: -87.3, lon: 77.0, category: "polar", minZoom: 1.8 },
 ];
 
+// Official NASA Apollo human landing sites (Apollo 11, 12, 14, 15, 16, 17)
+export interface ApolloLandingSite {
+  id: string;
+  name: string;
+  missionNumber: number;
+  lat: number;
+  lon: number;
+  landmark: string;
+  year: number;
+}
+
+export const APOLLO_LANDING_SITES: ApolloLandingSite[] = [
+  {
+    id: "apollo_11",
+    name: "Apollo 11",
+    missionNumber: 11,
+    lat: 0.67408,
+    lon: 23.47297,
+    landmark: "Mare Tranquillitatis",
+    year: 1969,
+  },
+  {
+    id: "apollo_12",
+    name: "Apollo 12",
+    missionNumber: 12,
+    lat: -3.01239,
+    lon: -23.42157,
+    landmark: "Oceanus Procellarum",
+    year: 1969,
+  },
+  {
+    id: "apollo_14",
+    name: "Apollo 14",
+    missionNumber: 14,
+    lat: -3.6453,
+    lon: -17.47136,
+    landmark: "Fra Mauro",
+    year: 1971,
+  },
+  {
+    id: "apollo_15",
+    name: "Apollo 15",
+    missionNumber: 15,
+    lat: 26.13222,
+    lon: 3.63386,
+    landmark: "Hadley–Apennine",
+    year: 1971,
+  },
+  {
+    id: "apollo_16",
+    name: "Apollo 16",
+    missionNumber: 16,
+    lat: -8.97301,
+    lon: 15.49812,
+    landmark: "Descartes Highlands",
+    year: 1972,
+  },
+  {
+    id: "apollo_17",
+    name: "Apollo 17",
+    missionNumber: 17,
+    lat: 20.1908,
+    lon: 30.77168,
+    landmark: "Taurus–Littrow",
+    year: 1972,
+  },
+];
+
 function createSouthPoleCapGeometry() {
   // Covers 60°S to 90°S with exact NASA Moon Trek South Polar Stereographic UVs
   const geom = new THREE.SphereGeometry(
@@ -468,6 +536,52 @@ export function createSpaceScene(
       priority: isMare ? 2 : 1,
     };
   });
+
+  // Apollo Historical Landing Site Pins (Apollo 11, 12, 14, 15, 16, 17)
+  const apolloPinGeometry = new THREE.SphereGeometry(0.024, 16, 12);
+  const apolloPinMaterial = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+  const apolloPins = new Map<THREE.Mesh, LandingSite>();
+
+  const apolloPlaceEntries: PlaceLabelEntry[] = APOLLO_LANDING_SITES.map((ap) => {
+    const lat = ap.lat * degrees;
+    const lon = ap.lon * degrees;
+    const unitVec = new THREE.Vector3(
+      Math.cos(lat) * Math.cos(lon),
+      Math.sin(lat),
+      -Math.cos(lat) * Math.sin(lon)
+    );
+    const pin = new THREE.Mesh(apolloPinGeometry, apolloPinMaterial);
+    pin.position.copy(unitVec).multiplyScalar(1.015);
+    moon.add(pin);
+
+    const apolloSite: LandingSite = {
+      site_id: ap.id,
+      name: `${ap.name} (${ap.landmark})`,
+      region: ap.landmark,
+      latitude_deg: ap.lat,
+      longitude_deg: ap.lon,
+      description: `Historic NASA Apollo mission landing site (${ap.year}). Location: ${ap.landmark}.`,
+      elevation_m: null,
+      source: "NASA Apollo Lunar Surface Journal",
+      coordinate_type: "historical_touchdown",
+    };
+    apolloPins.set(pin, apolloSite);
+
+    const el = document.createElement("span");
+    el.className =
+      "absolute -translate-x-1/2 -translate-y-full -mt-1.5 whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-semibold text-sky-200 bg-slate-950/90 border border-sky-400/50 shadow-sm backdrop-blur-[1px]";
+    el.textContent = `▲ ${ap.name}`;
+    el.title = `${ap.name} — ${ap.landmark} (${ap.year})`;
+    el.hidden = true;
+    placeLabelsContainer.appendChild(el);
+
+    return {
+      el,
+      unitVec,
+      minZoom: 0.55,
+      priority: 8,
+    };
+  });
   let dynamicSiteEntries: PlaceLabelEntry[] = [];
 
   function syncSitePins(sites?: LandingSite[], selectedSiteId?: string) {
@@ -525,14 +639,15 @@ export function createSpaceScene(
     downY = e.clientY;
   };
   const onPointerUp = (e: PointerEvent) => {
-    if (mode !== "site" || !callbacks?.onSelectSite || pinSites.size === 0) return;
+    if (mode !== "site" || !callbacks?.onSelectSite || (pinSites.size === 0 && apolloPins.size === 0)) return;
     if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6) return;
     const rect = renderer.domElement.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const clickX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     const clickY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
     let bestHit: { site: LandingSite; distSq: number } | null = null;
-    for (const [pinObj, candidate] of pinSites.entries()) {
+    const allClickablePins = [...pinSites.entries(), ...apolloPins.entries()];
+    for (const [pinObj, candidate] of allClickablePins) {
       pinWorldPos
         .copy(pinObj.position)
         .multiplyScalar(moon.scale.x)
@@ -580,9 +695,11 @@ export function createSpaceScene(
     const w = host.clientWidth || 1;
     const h = host.clientHeight || 1;
     const placedBoxes: Array<{ x: number; y: number }> = [];
-    const allEntries = [...dynamicSiteEntries, ...staticPlaceEntries].sort(
-      (a, b) => b.priority - a.priority
-    );
+    const allEntries = [
+      ...dynamicSiteEntries,
+      ...apolloPlaceEntries,
+      ...staticPlaceEntries,
+    ].sort((a, b) => b.priority - a.priority);
 
     for (const entry of allEntries) {
       if (camera.zoom < entry.minZoom) {
@@ -647,6 +764,10 @@ export function createSpaceScene(
     site.scale.setScalar(0.06 * zoomFactor);
     for (const [pinObj, candidate] of pinSites.entries()) {
       const isSelected = candidate.site_id === lastSelectedPinId;
+      pinObj.scale.setScalar((isSelected ? 1.45 : 1) * zoomFactor);
+    }
+    for (const [pinObj, apSite] of apolloPins.entries()) {
+      const isSelected = apSite.site_id === lastSelectedPinId;
       pinObj.scale.setScalar((isSelected ? 1.45 : 1) * zoomFactor);
     }
   }
@@ -817,6 +938,8 @@ export function createSpaceScene(
       pinGeometry.dispose();
       pinMaterialDefault.dispose();
       pinMaterialSelected.dispose();
+      apolloPinGeometry.dispose();
+      apolloPinMaterial.dispose();
       controls.dispose();
       scene.traverse((object) => {
         if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.Points) {

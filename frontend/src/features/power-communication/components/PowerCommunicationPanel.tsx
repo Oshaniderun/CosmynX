@@ -298,6 +298,13 @@ export function PowerCommunicationPanel({
     };
   });
 
+  const earthWindows = (data.windows ?? []).filter(
+    (w) => w.target === "earth" || w.target === "both"
+  );
+  const simultaneousWindows = (data.windows ?? []).filter(
+    (w) => w.target === "both"
+  );
+
    const derivedTransitions = data.transitions ?? (() => {
     if (
       !isOk ||

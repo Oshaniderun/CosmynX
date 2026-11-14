@@ -75,7 +75,19 @@ export default function SpaceViewport({
         </div>
       ) : (
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-2 bg-gradient-to-t from-[#04070d] to-transparent p-3 sm:p-4">
-          <p className="text-[11px] text-slate-300">Drag to orbit · Scroll or pinch to zoom</p>
+          <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-300">
+            <span>Drag to orbit · Scroll or pinch to zoom</span>
+            <span className="hidden sm:inline-flex items-center gap-2.5 rounded-full border border-slate-800 bg-slate-950/80 px-2 py-0.5 text-[10px]">
+              <span className="inline-flex items-center gap-1 text-amber-300 font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                Artemis III
+              </span>
+              <span className="inline-flex items-center gap-1 text-sky-300 font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                Apollo 11–17
+              </span>
+            </span>
+          </div>
           <div className="pointer-events-auto flex shrink-0 gap-1.5">
             {mode === "eclipse" && (
               <button type="button" onClick={() => { setRotating(false); scene.current?.focusShadow(); }}
