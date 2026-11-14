@@ -7,7 +7,7 @@ import pytest
 
 from app.models.schemas import LandingSite
 from app.services.helios_data_consumer import build_scientific_provenance
-from app.services.visibility import analyze_site_conditions
+from app.services.visibility import analyze_site_conditions, calculate_visibility_transitions
 
 
 START_UTC = "2026-11-20T00:00:00Z"
@@ -56,6 +56,99 @@ def test_elapsed_visibility_preserves_source_and_sampled_provenance():
         duration_hours=2.0,
     )
     assert any("sampled estimates" in warning for warning in provenance.warnings)
+
+
+def test_transitions_use_sample_timestamps_and_describe_earth_geometrically():
+    points = hourly_points([2.0, 1.0, -1.0], [1.0, -1.0, -2.0])
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+
+    assert result.transitions["solar"]["next_event"] == "sunset"
+    assert result.transitions["solar"]["transition_utc"] == "2026-11-20T02:00:00Z"
+    assert result.transitions["solar"]["hours_until"] == 2.0
+    assert result.transitions["earth"]["next_event"] == "earthset"
+    assert "geometric" in result.transitions["earth"]["description"].lower()
+    assert "rf" not in result.transitions["earth"]["description"].lower()
+
+
+def test_missing_visibility_boundaries_do_not_produce_transitions():
+    points = hourly_points([1.0, 1.0, 1.0], [1.0, 1.0, 1.0])[1:]
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+    assert result.transitions is None
+
+
+def test_duplicate_timestamps_do_not_produce_transitions():
+    points = hourly_points([1.0, -1.0, -2.0], [1.0, -1.0, -2.0])
+    points[1]["timestamp_utc"] = points[0]["timestamp_utc"]
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+    assert result.transitions is None
+
+
+def test_out_of_order_transition_timestamps_remain_unknown():
+    points = hourly_points([1.0, -1.0, -2.0, -3.0], [1.0, -1.0, -2.0, -3.0])
+    timeline = [
+        {"timestamp_utc": point["timestamp_utc"], "is_sunlit": point["sun_elevation_deg"] > 0,
+         "is_earth_visible": point["earth_elevation_deg"] > 0}
+        for point in points
+    ]
+    timeline[1], timeline[2] = timeline[2], timeline[1]
+    result = calculate_visibility_transitions(
+        timeline,
+        datetime.fromisoformat(START_UTC.replace("Z", "+00:00")),
+        datetime.fromisoformat("2026-11-20T03:00:00+00:00"),
+    )
+    assert result is None
+
+
+def test_invalid_transition_timestamp_remains_unknown():
+    points = hourly_points([1.0, -1.0, -2.0], [1.0, -1.0, -2.0])
+    timeline = [
+        {"timestamp_utc": point["timestamp_utc"], "is_sunlit": point["sun_elevation_deg"] > 0,
+         "is_earth_visible": point["earth_elevation_deg"] > 0}
+        for point in points
+    ]
+    timeline[1]["timestamp_utc"] = "not-a-timestamp"
+    result = calculate_visibility_transitions(
+        timeline,
+        datetime.fromisoformat(START_UTC.replace("Z", "+00:00")),
+        datetime.fromisoformat("2026-11-20T02:00:00+00:00"),
+    )
+    assert result is None
+
+
+def test_invalid_source_timestamp_suppresses_transitions():
+    points = hourly_points([1.0, -1.0, -2.0], [1.0, -1.0, -2.0])
+    points[1]["timestamp_utc"] = "not-a-timestamp"
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+    assert result.transitions is None
+
+
+def test_unknown_visibility_state_remains_unknown():
+    points = hourly_points([1.0, None, -2.0], [1.0, -1.0, -2.0])
+    result = analyze_with_mock(points, "2026-11-20T02:00:00Z")
+    assert result.transitions is None
+
+
+def test_cached_jpl_ephemeris_drives_visibility_without_network():
+    with patch(
+        "app.services.nasa_data._query_horizons_target",
+        side_effect=AssertionError("Expected exact matching cached ephemeris"),
+    ) as query_mock:
+        result = analyze_site_conditions(
+            site_id="cached-site",
+            latitude_deg=-87.45,
+            longitude_deg=-5.2,
+            start_utc=START_UTC,
+            end_utc="2026-11-23T00:00:00Z",
+            step_minutes=60,
+        )
+
+    query_mock.assert_not_called()
+    assert result.status == "ok"
+    assert result.source == "JPL Horizons"
+    assert result.metrics.sunlit_hours is not None
+    assert result.metrics.earth_visible_hours is not None
+    assert result.metrics.sunlit_hours <= 72.0
+    assert result.metrics.earth_visible_hours <= 72.0
 
 
 def test_no_points_returns_unavailable_without_measurements():

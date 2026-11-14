@@ -15,12 +15,12 @@ export const demoConditions: ConditionsResponse = {
   },
   horizon_model: "geometric",
   status: "ok",
-  source: "JPL Horizons (Cached Ephemeris)",
+  source: "Synthetic fixed demonstration data (not NASA/JPL)",
   windows: [
     {
       target: "sunlight",
       start_utc: "2026-11-20T00:00:00Z",
-      end_utc: "2026-11-20T04:00:00Z",
+      end_utc: "2026-11-20T05:00:00Z",
       duration_hours: 5.0,
     },
     {
@@ -32,7 +32,7 @@ export const demoConditions: ConditionsResponse = {
     {
       target: "both",
       start_utc: "2026-11-20T00:00:00Z",
-      end_utc: "2026-11-20T04:00:00Z",
+      end_utc: "2026-11-20T05:00:00Z",
       duration_hours: 5.0,
     },
   ],
@@ -89,7 +89,7 @@ export const demoConditions: ConditionsResponse = {
     },
     {
       timestamp_utc: "2026-11-20T05:00:00Z",
-      sun_elevation_deg: -0.25,
+      sun_elevation_deg: 0.0,
       earth_elevation_deg: 3.89,
       is_sunlit: false,
       is_earth_visible: true,

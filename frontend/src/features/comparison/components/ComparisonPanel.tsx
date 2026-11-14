@@ -378,7 +378,7 @@ export function ComparisonPanel({
 
   return (
     <section
-      className="comparison-panel"
+      className="comparison-panel md:col-span-2"
       aria-labelledby="comparison-title"
     >
       <header className="cmp-header">
