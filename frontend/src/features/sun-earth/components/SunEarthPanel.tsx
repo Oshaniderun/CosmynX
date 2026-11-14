@@ -69,16 +69,25 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
 
   // Sync siteId and request when selectedSite changes in MissionContext
   useEffect(() => {
-    if (!selectedSite?.site_id) return;
+    if (!selectedSite?.site_id || request.siteId === selectedSite.site_id) return;
+    setShowObstructionReplay(false);
+    clearPositions();
     setSiteId(selectedSite.site_id);
-    setRequest((prev) =>
-      prev.siteId === selectedSite.site_id
-        ? prev
-        : { ...prev, siteId: selectedSite.site_id }
-    );
-  }, [selectedSite?.site_id]);
+    setRequest((prev) => ({ ...prev, siteId: selectedSite.site_id }));
+  }, [selectedSite?.site_id, request.siteId]);
 
-  const requestedSite = sites.find((site) => site.site_id === request.siteId) ?? (selectedSite ?? sites[0]);
+  const selectSites = useMemo(() => {
+    if (selectedSite && !sites.some((s) => s.site_id === selectedSite.site_id)) {
+      return [selectedSite, ...sites];
+    }
+    return sites;
+  }, [sites, selectedSite]);
+
+  const requestedSite =
+    (selectedSite && selectedSite.site_id === request.siteId ? selectedSite : undefined) ??
+    sites.find((site) => site.site_id === request.siteId) ??
+    selectedSite ??
+    sites[0];
   const positions = showObstructionReplay ? obstructionReplay : ephemeris ?? result;
   const missionWindow = positions ?? request.window;
   const isCustomWindow = missionWindow.start_utc !== initialMissionWindow.start_utc ||
@@ -107,17 +116,39 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   useEffect(() => {
     if (ephemeris || !requestedSite || showObstructionReplay) return;
     let active = true;
+    const timeoutId = window.setTimeout(() => {
+      if (!active) return;
+      active = false;
+      setError("Timed out waiting for NASA ephemeris from the HELIOS API.");
+      setLoading(false);
+    }, 15_000);
+
     fetchEphemeris(requestedSite, request.window).then((response) => {
       if (!active) return;
+      window.clearTimeout(timeoutId);
       setResult(response);
       setLoading(false);
     }).catch(() => {
       if (!active) return;
+      window.clearTimeout(timeoutId);
       setError("Couldn’t load Sun and Earth positions from the HELIOS API.");
       setLoading(false);
     });
-    return () => { active = false; };
-  }, [ephemeris, requestedSite, request.window, requestVersion, showObstructionReplay]);
+    return () => {
+      active = false;
+      window.clearTimeout(timeoutId);
+    };
+  }, [
+    ephemeris,
+    requestedSite?.site_id,
+    requestedSite?.latitude_deg,
+    requestedSite?.longitude_deg,
+    request.window.start_utc,
+    request.window.end_utc,
+    request.window.step_minutes,
+    requestVersion,
+    showObstructionReplay,
+  ]);
 
   function clearPositions() {
     setLoading(true);
@@ -253,8 +284,26 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
           <div className="flex flex-wrap items-end gap-3">
             <label className="flex min-w-44 flex-1 flex-col gap-1.5 text-xs text-slate-300">
               Landing site
-              <select className={controlClass} value={siteId || sites[0].site_id} onChange={(change) => setSiteId(change.target.value)}>
-                {sites.map((site) => <option key={site.site_id} value={site.site_id}>{site.name}</option>)}
+              <select
+                className={controlClass}
+                value={requestedSite?.site_id ?? siteId}
+                onChange={(change) => {
+                  const nextId = change.target.value;
+                  setShowObstructionReplay(false);
+                  clearPositions();
+                  setSiteId(nextId);
+                  setRequest((prev) => ({ ...prev, siteId: nextId }));
+                  const matched = selectSites.find((s) => s.site_id === nextId);
+                  if (matched) {
+                    setSelectedSite(matched);
+                  }
+                }}
+              >
+                {selectSites.map((site) => (
+                  <option key={site.site_id} value={site.site_id}>
+                    {site.name}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="flex min-w-44 flex-1 flex-col gap-1.5 text-xs text-slate-300">
@@ -342,23 +391,6 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
         </div>
       ) : (
         <div className="space-y-3 border-t border-slate-800 px-4 py-4 sm:px-6">
-          {!ephemeris && sites.length > 0 && (
-            <label className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
-              Landing site
-              <select className={controlClass} value={requestedSite?.site_id ?? siteId} onChange={(change) => {
-                clearPositions();
-                const nextId = change.target.value;
-                setSiteId(nextId);
-                setRequest((prev) => ({ ...prev, siteId: nextId }));
-                const matched = sites.find((s) => s.site_id === nextId);
-                if (matched) {
-                  setSelectedSite(matched);
-                }
-              }}>
-                {sites.map((site) => <option key={site.site_id} value={site.site_id}>{site.name}</option>)}
-              </select>
-            </label>
-          )}
           {positions && (
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
               <p className="text-slate-300">
