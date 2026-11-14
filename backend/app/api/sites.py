@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
-from app.models.schemas import LandingSite
+from app.models.schemas import LandingSite, MapLayerResource, MapLayersResponse
+from app.services.nasa_data import get_lunar_map_resources
+from app.services.terrain import get_terrain_for_site
 
 router = APIRouter()
 
@@ -35,5 +37,42 @@ DEFAULT_SITES: list[LandingSite] = [
 
 @router.get("/sites", response_model=list[LandingSite])
 def get_sites() -> list[LandingSite]:
-    """Return available candidate lunar landing sites."""
-    return DEFAULT_SITES
+    """Return available candidate lunar landing sites with LOLA terrain metrics."""
+    enriched: list[LandingSite] = []
+    for site in DEFAULT_SITES:
+        terrain = get_terrain_for_site(
+            site_id=site.site_id,
+            latitude_deg=site.latitude_deg,
+            longitude_deg=site.longitude_deg,
+        )
+        enriched.append(
+            site.model_copy(
+                update={"terrain": terrain.metrics if terrain.status == "ok" else None}
+            )
+        )
+    return enriched
+
+
+@router.get("/sites/layers", response_model=MapLayersResponse)
+def get_map_layers() -> MapLayersResponse:
+    """Return NASA Moon Trek South Pole (SP) and Global (EQ) WMTS layer configs."""
+    moon_trek = get_lunar_map_resources()["moon_trek"]
+    south_pole_layers = [
+        MapLayerResource(**layer) for layer in moon_trek["south_pole_layers"]
+    ]
+    global_layer = MapLayerResource(
+        layer_id="LRO_WAC_Mosaic_Global_303ppd_v02",
+        name="LRO WAC Global Mosaic (303 ppd)",
+        projection="EQ",
+        coverage="Global",
+        format="image/jpeg",
+        tile_matrix_set="default028mm",
+        max_zoom=7,
+        wmts_capabilities=moon_trek["wac_wmts_capabilities"],
+        tile_template=moon_trek["wac_tile_template"],
+    )
+    return MapLayersResponse(
+        portal_url=moon_trek["portal_url"],
+        south_pole_layers=south_pole_layers,
+        global_layer=global_layer,
+    )

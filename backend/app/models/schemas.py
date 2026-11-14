@@ -2,6 +2,30 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 
+class TerrainSafetyMetrics(BaseModel):
+    """LRO LOLA DEM-derived elevation, slope, roughness, and safety summary."""
+
+    elevation_m: Optional[float] = None
+    mean_slope_deg: Optional[float] = Field(default=None, ge=0.0, le=90.0)
+    max_slope_deg: Optional[float] = Field(default=None, ge=0.0, le=90.0)
+    roughness_m: Optional[float] = Field(default=None, ge=0.0)
+    psr_proximity_km: Optional[float] = Field(default=None, ge=0.0)
+    terrain_safety_score: Optional[float] = Field(default=None, ge=0.0, le=100.0)
+    safety_rating: Optional[Literal["safe", "caution", "hazardous"]] = None
+
+
+class TerrainSafetyResponse(BaseModel):
+    """Terrain safety evaluation for a lunar landing site."""
+
+    site_id: str
+    latitude_deg: float
+    longitude_deg: float
+    metrics: TerrainSafetyMetrics = Field(default_factory=TerrainSafetyMetrics)
+    source: str = "NASA LRO LOLA DEM"
+    status: Literal["ok", "unavailable"] = "unavailable"
+    notes: Optional[str] = None
+
+
 class LandingSite(BaseModel):
     """Candidate lunar landing site."""
 
@@ -11,6 +35,30 @@ class LandingSite(BaseModel):
     latitude_deg: float = Field(..., ge=-90.0, le=90.0)
     longitude_deg: float = Field(..., ge=-180.0, le=180.0)
     description: Optional[str] = None
+    terrain: Optional[TerrainSafetyMetrics] = None
+
+
+class MapLayerResource(BaseModel):
+    """NASA Moon Trek WMTS map layer metadata."""
+
+    layer_id: str
+    name: str
+    projection: Literal["SP", "EQ"]
+    coverage: str
+    format: str
+    tile_matrix_set: str = "default028mm"
+    max_zoom: int
+    extent_m: Optional[list[float]] = None
+    wmts_capabilities: str
+    tile_template: str
+
+
+class MapLayersResponse(BaseModel):
+    """Available Moon Trek South Pole and Global WMTS map layers."""
+
+    portal_url: str
+    south_pole_layers: list[MapLayerResource] = Field(default_factory=list)
+    global_layer: MapLayerResource
 
 
 class EphemerisPoint(BaseModel):

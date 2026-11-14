@@ -219,15 +219,42 @@ def fetch_jpl_horizons_ephemeris(
 
 
 def get_lunar_map_resources() -> dict[str, Any]:
-    """Return official NASA Moon Trek and LROC QuickMap portal metadata."""
+    """Return official NASA Moon Trek (EQ + SP) and LROC QuickMap portal metadata."""
     return {
         "moon_trek": {
             "name": "NASA Moon Trek",
             "portal_url": "https://trek.nasa.gov/moon/",
             "wmts_base_url": "https://trek.nasa.gov/tiles/Moon/EQ/",
+            "south_pole_wmts_base_url": "https://trek.nasa.gov/tiles/Moon/SP/",
             "wac_wmts_capabilities": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/WMTSCapabilities.xml",
             "wac_tile_template": "https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm/{z}/{y}/{x}.jpg",
-            "purpose": "Lunar maps, terrain visualization, and available map layers",
+            "south_pole_layers": [
+                {
+                    "layer_id": "LRO_WAC_Mosaic_SPole60_100mp",
+                    "name": "LRO WAC South Pole Mosaic (100 m/px)",
+                    "projection": "SP",
+                    "coverage": "60S to 90S",
+                    "format": "image/png",
+                    "tile_matrix_set": "default028mm",
+                    "max_zoom": 4,
+                    "extent_m": [-931100.0, -931100.0, 931100.0, 931100.0],
+                    "wmts_capabilities": "https://trek.nasa.gov/tiles/Moon/SP/LRO_WAC_Mosaic_SPole60_100mp/1.0.0/WMTSCapabilities.xml",
+                    "tile_template": "https://trek.nasa.gov/tiles/Moon/SP/LRO_WAC_Mosaic_SPole60_100mp/1.0.0/default/default028mm/{z}/{y}/{x}.png",
+                },
+                {
+                    "layer_id": "WAC_POLE_ILL_PCT_SOUTH_100M",
+                    "name": "LRO WAC South Pole Solar Illumination % (100 m/px)",
+                    "projection": "SP",
+                    "coverage": "South Pole",
+                    "format": "image/png",
+                    "tile_matrix_set": "default028mm",
+                    "max_zoom": 5,
+                    "extent_m": [-931100.0, -931100.0, 931100.0, 931100.0],
+                    "wmts_capabilities": "https://trek.nasa.gov/tiles/Moon/SP/WAC_POLE_ILL_PCT_SOUTH_100M/1.0.0/WMTSCapabilities.xml",
+                    "tile_template": "https://trek.nasa.gov/tiles/Moon/SP/WAC_POLE_ILL_PCT_SOUTH_100M/1.0.0/default/default028mm/{z}/{y}/{x}.png",
+                },
+            ],
+            "purpose": "Lunar maps, South Pole polar-projection layers, and terrain visualization",
         },
         "lroc_quickmap": {
             "name": "LROC QuickMap",
