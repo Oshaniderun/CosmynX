@@ -1,5 +1,6 @@
+from datetime import datetime, timezone
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class LandingSite(BaseModel):
@@ -64,22 +65,94 @@ class ConditionsResponse(BaseModel):
 class ScenarioInput(BaseModel):
     """Single landing site + mission window scenario."""
 
-    site_id: str
+    site_id: str = Field(min_length=1, max_length=100)
     start_utc: str
     end_utc: str
-    step_minutes: int = 60
+    step_minutes: int = Field(default=60, ge=1, le=1440)
+    scenario_id: Optional[str] = Field(default=None, min_length=1, max_length=100)
+
+    @field_validator("start_utc", "end_utc")
+    @classmethod
+    def normalize_utc(cls, value: str) -> str:
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise ValueError("Use an ISO 8601 timestamp with a timezone") from exc
+        if parsed.tzinfo is None or parsed.utcoffset() is None:
+            raise ValueError("Timestamps must include Z or a timezone offset")
+        return parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+    @model_validator(mode="after")
+    def validate_window(self) -> "ScenarioInput":
+        start = datetime.fromisoformat(self.start_utc.replace("Z", "+00:00"))
+        end = datetime.fromisoformat(self.end_utc.replace("Z", "+00:00"))
+        duration = (end - start).total_seconds()
+        if duration <= 0:
+            raise ValueError("end_utc must be after start_utc")
+        if duration > 31 * 86400:
+            raise ValueError("Mission windows must not exceed 31 days")
+        if duration / (self.step_minutes * 60) > 2000:
+            raise ValueError("Choose a larger step: at most 2000 timeline intervals are supported")
+        return self
 
 
 class CompareRequest(BaseModel):
     """Request to compare multiple landing scenarios."""
 
-    scenarios: list[ScenarioInput]
+    scenarios: list[ScenarioInput] = Field(min_length=2, max_length=4)
+    data_mode: Literal["live", "demo"] = "live"
+
+    @model_validator(mode="after")
+    def unique_scenarios(self) -> "CompareRequest":
+        ids = [s.scenario_id or f"scenario_{i + 1}" for i, s in enumerate(self.scenarios)]
+        if len(ids) != len(set(ids)):
+            raise ValueError("scenario_id values must be unique")
+        return self
+
+
+class VisibilityInterval(BaseModel):
+    """Sample-and-hold state over [start_utc, end_utc); null means unknown."""
+
+    start_utc: str
+    end_utc: str
+    elapsed_hours: float
+    sunlit: Optional[bool] = None
+    earth_visible: Optional[bool] = None
+
+
+class ScenarioComparison(BaseModel):
+    scenario_id: str
+    site_name: str
+    duration_hours: float
+    conditions: ConditionsResponse
+    timeline: list[VisibilityInterval] = Field(default_factory=list)
+    timeline_status: Literal["ok", "partial", "unavailable"] = "unavailable"
+    timeline_source: str
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ComparisonDelta(BaseModel):
+    """Alternative minus baseline; fractions are expressed in percentage points."""
+
+    baseline_scenario_id: str
+    scenario_id: str
+    start_delay_hours: float
+    sunlit_percentage_points: Optional[float] = None
+    earth_visible_percentage_points: Optional[float] = None
+    sunlit_hours: Optional[float] = None
+    earth_visible_hours: Optional[float] = None
+    warnings: list[str] = Field(default_factory=list)
 
 
 class CompareResponse(BaseModel):
     """Side-by-side comparison results."""
 
     results: list[ConditionsResponse] = Field(default_factory=list)
+    scenarios: list[ScenarioComparison] = Field(default_factory=list)
+    deltas: list[ComparisonDelta] = Field(default_factory=list)
+    data_mode: Literal["live", "demo"] = "live"
+    status: Literal["ok", "partial", "pending", "unavailable"] = "pending"
+    assumptions: list[str] = Field(default_factory=list)
 
 
 class HeliosRecommendRequest(BaseModel):

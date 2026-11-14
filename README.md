@@ -385,7 +385,9 @@ Modules will be developed independently and integrated through shared APIs and d
 - Date-based scenario comparison
 - Mission-delay analysis feature
 
-**Branch:** `feature/comparison`
+**Branch:** `Ravindu`
+
+**Implementation:** Side-by-side comparison, UTC mission windows, Recharts visibility timelines, mission-delay analysis, and structured comparison results are implemented. Scientific mode consumes the shared services; an explicitly labeled synthetic preview is available while NASA/visibility integration is pending. See [Member 5 setup and integration guide](docs/member-5-comparison.md).
 
 ### Member 6 — HELIOS AI Lunar Landing Advisor
 
@@ -857,7 +859,7 @@ Formal testing will take place separately after development, while essential fun
 - [ ] Implement basic sunlight and visibility calculation functions.
 
 **Member 5**
-- [ ] Build the comparison interface with agreed mock data.
+- [x] Build the comparison interface with explicitly labeled synthetic preview data.
 
 **Member 6**
 - [ ] Create the HELIOS advisor interface and constraint schema.
@@ -1088,7 +1090,7 @@ HELIOS evaluates supported candidates, produces a ranked shortlist, and explains
 | Lunar map | Pending |
 | Sun/Earth visualization | Pending |
 | Power and communication analysis | Pending |
-| Scenario comparison | Pending |
+| Scenario comparison | Implemented on Ravindu; live scientific data integration pending |
 | HELIOS recommendation engine | Pending |
 | Deployment | Pending |
 | Formal testing | Separate later phase |
@@ -1134,7 +1136,7 @@ AI-assisted development tools may be used for code generation, debugging, docume
 | Member 2 | NASA Data Integration | To be added |
 | Member 3 | Sun & Earth Visualization | To be added |
 | Member 4 | Power & Communication Analysis | To be added |
-| Member 5 | Scenario Comparison & Timeline | To be added |
+| Member 5 | Scenario Comparison & Timeline | Ravindu |
 | Member 6 | HELIOS AI Landing Advisor | To be added |
 
 ---

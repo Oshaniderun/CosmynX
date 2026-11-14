@@ -17,3 +17,9 @@ Base URL (local): `http://localhost:8000`
 - **Angles**: Degrees.
 - **Durations**: Hours.
 - **Visibility Fractions**: `0.0` to `1.0` (UI calculates percentages from these).
+
+## Scenario comparison (Member 5)
+
+`POST /api/compare` retains `scenarios` input and `results` output. It also supports optional scenario IDs, explicit `data_mode` (`live` by default, `demo` for synthetic fixtures), per-scenario visibility intervals, and differences against the first scenario. Fraction differences use percentage points; durations use hours. Missing values remain null.
+
+See [the comparison contract and HELIOS handoff](member-5-comparison.md) for request examples, validation limits, result fields, provenance, and sampling assumptions.
