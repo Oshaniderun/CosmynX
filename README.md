@@ -385,7 +385,9 @@ Modules will be developed independently and integrated through shared APIs and d
 - Date-based scenario comparison
 - Mission-delay analysis feature
 
-**Branch:** `feature/comparison`
+**Branch:** `feature/scenario-comparison`
+
+**Implementation:** Side-by-side comparison, UTC mission windows, Recharts visibility timelines, mission-delay analysis, and structured comparison results are implemented. Dev is integrated. Scientific comparisons use real Horizons samples, validated service metrics or complete duration-weighted comparison intervals, explicit coverage, and operational windows. A clearly labeled synthetic preview is also available. The Scenario Lab includes a compact trade-off table, simultaneous visibility and sampled outage metrics, scenario reuse, provenance, and CSV/JSON exports. Scientific snapshots were audited against Horizons; this remains a mission-screening prototype, not flight-validated software. See [Member 5 setup and integration guide](docs/member-5-comparison.md) and [data verification evidence](docs/member-5-data-verification.json).
 
 ### Member 6 — HELIOS AI Lunar Landing Advisor
 
@@ -857,7 +859,7 @@ Formal testing will take place separately after development, while essential fun
 - [ ] Implement basic sunlight and visibility calculation functions.
 
 **Member 5**
-- [ ] Build the comparison interface with agreed mock data.
+- [x] Build the comparison interface with explicitly labeled synthetic preview data.
 
 **Member 6**
 - [ ] Create the HELIOS advisor interface and constraint schema.
@@ -1088,7 +1090,7 @@ HELIOS evaluates supported candidates, produces a ranked shortlist, and explains
 | Lunar map | Pending |
 | Sun/Earth visualization | Pending |
 | Power and communication analysis | Pending |
-| Scenario comparison | Pending |
+| Scenario comparison | Finalized on feature/scenario-comparison with Dev integration and real Horizons comparison summaries |
 | HELIOS recommendation engine | Pending |
 | Deployment | Pending |
 | Formal testing | Separate later phase |
@@ -1134,7 +1136,7 @@ AI-assisted development tools may be used for code generation, debugging, docume
 | Member 2 | NASA Data Integration | To be added |
 | Member 3 | Sun & Earth Visualization | To be added |
 | Member 4 | Power & Communication Analysis | To be added |
-| Member 5 | Scenario Comparison & Timeline | To be added |
+| Member 5 | Scenario Comparison & Timeline | Ravindu |
 | Member 6 | HELIOS AI Landing Advisor | To be added |
 
 ---
@@ -1152,6 +1154,86 @@ Rather than simply presenting raw data, HELIOS helps users understand:
 - How sunlight and Earth visibility affect mission feasibility.
 - Why one landing scenario may be preferable to another.
 - What trade-offs should be considered when mission conditions change.
+
+---
+
+## 23. Quick Start — Running the Project Locally
+
+Follow these steps if you are a new team member setting up the project for the first time.
+
+### Prerequisites
+
+- **Git**
+- **Python 3.10+** (tested with Python 3.12)
+- **Node.js 20+** and **npm**
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Oshaniderun/CosmynX.git
+cd CosmynX
+```
+
+Create or switch to your assigned feature branch (see Section 7):
+
+```bash
+git switch main
+git pull origin main
+git switch -c feature/your-module-name
+```
+
+### 2. Start the Backend (FastAPI)
+
+Open a terminal in the repository root:
+
+```bash
+cd backend
+python -m venv .venv
+```
+
+Activate the virtual environment:
+
+- **Windows (PowerShell):**
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+- **macOS / Linux:**
+  ```bash
+  source .venv/bin/activate
+  ```
+
+Install dependencies, create your local `.env` file, and start the API server:
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+uvicorn app.main:app --reload
+```
+
+- Backend runs at: `http://localhost:8000`
+- Interactive API docs (Swagger): `http://localhost:8000/docs`
+- Health check: `http://localhost:8000/api/health`
+
+### 3. Start the Frontend (React + Vite)
+
+Open a **second terminal** in the repository root:
+
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+- Frontend runs at: `http://localhost:5173`
+
+### 4. Where to Add Your Code
+
+- **Backend API routes:** `backend/app/api/`
+- **Backend services (business & scientific logic):** `backend/app/services/`
+- **Shared backend schemas:** `backend/app/models/schemas.py`
+- **Frontend feature modules:** `frontend/src/features/<your-module>/`
+- **Shared frontend types & API client:** `frontend/src/types/helios.ts` and `frontend/src/services/api.ts`
 
 ### HELIOS — Explore the Moon. Understand the Conditions. Choose with Confidence. 🌕🚀
 

@@ -4,8 +4,8 @@ Consumes NASA ephemeris data from Member 2 and formats azimuth/elevation series
 for the local-horizon visualization.
 """
 
-from app.models.schemas import EphemerisResponse
-from app.services.nasa_data import fetch_jpl_horizons_ephemeris
+from app.models.schemas import EphemerisPoint, EphemerisResponse
+from app.services.nasa_data import fetch_jpl_horizons_ephemeris, get_cached_ephemeris_metadata
 
 
 def get_ephemeris_for_site(
@@ -16,17 +16,16 @@ def get_ephemeris_for_site(
     end_utc: str,
     step_minutes: int = 60,
 ) -> EphemerisResponse:
-    """Return Sun and Earth azimuth/elevation time-series for a lunar site.
-
-    TODO (Member 3): Transform raw NASA data into EphemerisPoint records.
-    """
-    _raw = fetch_jpl_horizons_ephemeris(
+    """Return Sun and Earth azimuth/elevation time-series for a lunar site."""
+    raw_points = fetch_jpl_horizons_ephemeris(
         latitude_deg=latitude_deg,
         longitude_deg=longitude_deg,
         start_utc=start_utc,
         end_utc=end_utc,
         step_minutes=step_minutes,
+        use_cache=True,
     )
+    points = [EphemerisPoint(**point) for point in raw_points]
     return EphemerisResponse(
         site_id=site_id,
         latitude_deg=latitude_deg,
@@ -34,6 +33,8 @@ def get_ephemeris_for_site(
         start_utc=start_utc,
         end_utc=end_utc,
         step_minutes=step_minutes,
-        status="pending",
-        points=[],
+        source="JPL Horizons",
+        status="ok" if points else "unavailable",
+        points=points,
+        **get_cached_ephemeris_metadata(latitude_deg, longitude_deg, start_utc, end_utc, step_minutes),
     )
