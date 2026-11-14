@@ -2,8 +2,8 @@ import type { ConditionsResponse } from "../../../types/helios";
 
 export const demoConditions: ConditionsResponse = {
   site_id: "candidate_001",
-  latitude_deg: -89.54,
-  longitude_deg: 0.0,
+  latitude_deg: -87.5,
+  longitude_deg: -5.0,
   start_utc: "2026-11-20T00:00:00Z",
   end_utc: "2026-11-20T06:00:00Z",
   step_minutes: 60,

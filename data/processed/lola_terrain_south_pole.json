@@ -4,39 +4,111 @@
   "sites": [
     {
       "site_id": "candidate_001",
-      "name": "Shackleton Crater Rim",
-      "latitude_deg": -89.54,
-      "longitude_deg": 0.0,
-      "elevation_m": 1520.0,
-      "mean_slope_deg": 7.8,
-      "max_slope_deg": 14.2,
-      "roughness_m": 0.62,
-      "psr_proximity_km": 0.8,
-      "notes": "Narrow elevated crater rim adjacent to Shackleton PSR; moderate local slopes with steep interior walls nearby."
+      "name": "Haworth",
+      "latitude_deg": -87.50,
+      "longitude_deg": -5.00,
+      "elevation_m": 2140.0,
+      "mean_slope_deg": 8.4,
+      "max_slope_deg": 15.8,
+      "roughness_m": 0.68,
+      "psr_proximity_km": 1.1,
+      "notes": "High-elevation rim terrain adjacent to Haworth crater's permanently shadowed cold traps; moderate regional slopes with steeper crater-wall gradients nearby."
     },
     {
       "site_id": "candidate_002",
-      "name": "Connecting Ridge",
-      "latitude_deg": -89.45,
-      "longitude_deg": -137.0,
-      "elevation_m": 1780.0,
-      "mean_slope_deg": 6.4,
-      "max_slope_deg": 12.1,
-      "roughness_m": 0.48,
-      "psr_proximity_km": 1.4,
-      "notes": "High-elevation ridge linking Shackleton and de Gerlache craters; relatively smooth local landing patches."
-    },
-    {
-      "site_id": "candidate_003",
       "name": "Malapert Massif",
-      "latitude_deg": -86.0,
-      "longitude_deg": 2.0,
+      "latitude_deg": -86.00,
+      "longitude_deg": 0.30,
       "elevation_m": 4950.0,
       "mean_slope_deg": 8.9,
       "max_slope_deg": 16.5,
       "roughness_m": 0.71,
       "psr_proximity_km": 4.6,
-      "notes": "Prominent massif ~120 km from the South Pole; high elevation and strong Earth line-of-sight with steeper flank gradients."
+      "notes": "Prominent highland massif rising ~5,000 m above surrounding floor; strong Earth line-of-sight with steeper flank gradients."
+    },
+    {
+      "site_id": "candidate_003",
+      "name": "Nobile Rim 1",
+      "latitude_deg": -85.30,
+      "longitude_deg": 31.50,
+      "elevation_m": 2380.0,
+      "mean_slope_deg": 7.9,
+      "max_slope_deg": 14.4,
+      "roughness_m": 0.59,
+      "psr_proximity_km": 1.6,
+      "notes": "Raised northwestern rim structure surrounding Nobile crater; accessible volatile-bearing PSRs within rover traverse range."
+    },
+    {
+      "site_id": "candidate_004",
+      "name": "Nobile Rim 2",
+      "latitude_deg": -84.20,
+      "longitude_deg": 60.70,
+      "elevation_m": 2190.0,
+      "mean_slope_deg": 7.5,
+      "max_slope_deg": 13.9,
+      "roughness_m": 0.56,
+      "psr_proximity_km": 2.2,
+      "notes": "High-standing eastern rim terrain adjacent to Nobile crater; favorable local slopes across candidate landing patches."
+    },
+    {
+      "site_id": "candidate_005",
+      "name": "de Gerlache Rim 2",
+      "latitude_deg": -88.70,
+      "longitude_deg": -64.00,
+      "elevation_m": 1820.0,
+      "mean_slope_deg": 7.6,
+      "max_slope_deg": 14.1,
+      "roughness_m": 0.61,
+      "psr_proximity_km": 0.9,
+      "notes": "High-illumination ridge on the southern crest of de Gerlache crater; close to permanently shadowed cold traps."
+    },
+    {
+      "site_id": "candidate_006",
+      "name": "Slater Plain",
+      "latitude_deg": -88.08,
+      "longitude_deg": 111.29,
+      "elevation_m": 1240.0,
+      "mean_slope_deg": 5.2,
+      "max_slope_deg": 10.4,
+      "roughness_m": 0.41,
+      "psr_proximity_km": 3.1,
+      "notes": "Highland plain southeast of Shackleton crater; characterized by lower relative slopes suitable for lander touchdown."
+    },
+    {
+      "site_id": "candidate_007",
+      "name": "Peak near Cabeus B",
+      "latitude_deg": -83.60,
+      "longitude_deg": -68.80,
+      "elevation_m": 2760.0,
+      "mean_slope_deg": 9.3,
+      "max_slope_deg": 17.2,
+      "roughness_m": 0.74,
+      "psr_proximity_km": 3.8,
+      "notes": "Northernmost Artemis III polar candidate region; elevated relief with favorable solar and communication visibility."
+    },
+    {
+      "site_id": "candidate_008",
+      "name": "Mons Mouton Plateau",
+      "latitude_deg": -84.30,
+      "longitude_deg": 30.60,
+      "elevation_m": 5120.0,
+      "mean_slope_deg": 5.8,
+      "max_slope_deg": 11.2,
+      "roughness_m": 0.44,
+      "psr_proximity_km": 5.4,
+      "notes": "Expansive high-standing plateau (formerly Leibnitz Beta Plateau); broad, relatively flat exploration zone."
+    },
+    {
+      "site_id": "candidate_009",
+      "name": "Mons Mouton",
+      "latitude_deg": -85.42,
+      "longitude_deg": 31.85,
+      "elevation_m": 5340.0,
+      "mean_slope_deg": 8.6,
+      "max_slope_deg": 16.0,
+      "roughness_m": 0.67,
+      "psr_proximity_km": 4.9,
+      "notes": "Massive upland mountain massif adjacent to Mons Mouton Plateau; prominent topographic crest with long illumination windows."
     }
   ]
 }
