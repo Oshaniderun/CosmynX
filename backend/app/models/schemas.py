@@ -75,13 +75,20 @@ class MapLayersResponse(BaseModel):
 
 
 class EphemerisPoint(BaseModel):
-    """Sun and Earth position at a single UTC timestamp."""
+    """Sun, Earth, and lunar physical telemetry at a single UTC timestamp."""
 
     timestamp_utc: str
     sun_azimuth_deg: Optional[float] = None
     sun_elevation_deg: Optional[float] = None
     earth_azimuth_deg: Optional[float] = None
     earth_elevation_deg: Optional[float] = None
+    moon_illumination_pct: Optional[float] = None
+    sub_earth_lon_deg: Optional[float] = None
+    sub_earth_lat_deg: Optional[float] = None
+    sub_solar_lon_deg: Optional[float] = None
+    sub_solar_lat_deg: Optional[float] = None
+    sun_distance_au: Optional[float] = None
+    earth_distance_km: Optional[float] = None
 
 
 class EphemerisResponse(BaseModel):

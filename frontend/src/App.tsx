@@ -1,7 +1,6 @@
 import { MissionProvider } from "./context/MissionContext";
 import { Navbar } from "./components/layout/Navbar";
-import { LunarMapPanel } from "./features/lunar-map/components/LunarMapPanel";
-import { SunEarthPanel } from "./features/sun-earth/components/SunEarthPanel";
+import { UnifiedLunarExplorer } from "./features/lunar-map/components/UnifiedLunarExplorer";
 import { PowerCommunicationPanel } from "./features/power-communication/components/PowerCommunicationPanel";
 import { ComparisonPanel } from "./features/comparison/components/ComparisonPanel";
 import { HeliosAdvisorPanel } from "./features/helios-ai/components/HeliosAdvisorPanel";
@@ -13,9 +12,8 @@ export default function App() {
         <Navbar />
         <main className="mx-auto grid max-w-7xl gap-6 px-6 py-8 md:grid-cols-2">
           <div className="md:col-span-2">
-            <LunarMapPanel />
+            <UnifiedLunarExplorer />
           </div>
-          <SunEarthPanel />
           <PowerCommunicationPanel />
           <ComparisonPanel />
           <HeliosAdvisorPanel />
