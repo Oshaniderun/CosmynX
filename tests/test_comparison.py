@@ -9,6 +9,7 @@ from httpx import ConnectError
 from pydantic import ValidationError
 
 from app.api.comparison import post_compare
+from app.api.sites import DEFAULT_SITES
 from app.models.schemas import (
     CompareRequest, ConditionsResponse, EphemerisPoint, EphemerisResponse, VisibilityMetrics,
 )
@@ -98,7 +99,8 @@ class ScientificComparisonTests(unittest.TestCase):
         self.assertEqual(delta.sunlit_hours, 18)
         self.assertEqual(delta.earth_visible_percentage_points, 0)
         self.assertEqual(result.results, [s.conditions for s in result.scenarios])
-        self.assertEqual(analyze.call_args_list[1].kwargs["longitude_deg"], -137)
+        expected_lon = next(s.longitude_deg for s in DEFAULT_SITES if s.site_id == "candidate_002")
+        self.assertEqual(analyze.call_args_list[1].kwargs["longitude_deg"], expected_lon)
         self.assertEqual(fetch.call_count, 2)
 
     @patch("app.services.comparison.get_ephemeris_for_site", side_effect=ephemeris)
@@ -231,9 +233,13 @@ class FinalizedComparisonTests(unittest.TestCase):
 
     @patch("app.services.comparison.analyze_site_conditions", side_effect=lambda **params: ConditionsResponse(**params))
     def test_real_cached_nasa_example_has_complete_metrics(self, _):
-        scenarios = [scenario(), scenario("candidate_002")]
-        for entry in scenarios:
-            entry["end_utc"] = "2026-11-20T06:00:00Z"
+        # Uses committed 6-hour NASA Horizons ephemeris fixtures at (-89.54, 0.0) and (-89.45, -137.0)
+        scenarios = [
+            dict(site_id="custom", scenario_id="cached_001", latitude_deg=-89.54, longitude_deg=0.0,
+                 start_utc="2026-11-20T00:00:00Z", end_utc="2026-11-20T06:00:00Z"),
+            dict(site_id="custom", scenario_id="cached_002", latitude_deg=-89.45, longitude_deg=-137.0,
+                 start_utc="2026-11-20T00:00:00Z", end_utc="2026-11-20T06:00:00Z"),
+        ]
         result = compare_scenarios(request(scenarios=scenarios))
         self.assertEqual(result.status, "ok")
         self.assertEqual(result.data_mode, "live")
@@ -291,9 +297,12 @@ class FinalizedComparisonTests(unittest.TestCase):
         def invalid(**params):
             return ConditionsResponse(**params, status="ok", metrics=VisibilityMetrics(
                 sunlit_fraction=1, earth_visible_fraction=1, sunlit_hours=7, earth_visible_hours=7))
-        entries = [scenario(), scenario("candidate_002")]
-        for entry in entries:
-            entry["end_utc"] = "2026-11-20T06:00:00Z"
+        entries = [
+            dict(site_id="custom", scenario_id="cached_001", latitude_deg=-89.54, longitude_deg=0.0,
+                 start_utc="2026-11-20T00:00:00Z", end_utc="2026-11-20T06:00:00Z"),
+            dict(site_id="custom", scenario_id="cached_002", latitude_deg=-89.45, longitude_deg=-137.0,
+                 start_utc="2026-11-20T00:00:00Z", end_utc="2026-11-20T06:00:00Z"),
+        ]
         with patch("app.services.comparison.analyze_site_conditions", side_effect=invalid):
             result = compare_scenarios(request(scenarios=entries))
         self.assertTrue(all(s.conditions.metrics.sunlit_hours <= 6 for s in result.scenarios))

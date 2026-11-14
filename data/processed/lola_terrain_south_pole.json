@@ -1,0 +1,42 @@
+{
+  "dataset": "NASA LRO LOLA South Pole DEM (LDEM_80S_20M / 5M)",
+  "reference_radius_km": 1737.4,
+  "sites": [
+    {
+      "site_id": "candidate_001",
+      "name": "Shackleton Crater Rim",
+      "latitude_deg": -89.54,
+      "longitude_deg": 0.0,
+      "elevation_m": 1520.0,
+      "mean_slope_deg": 7.8,
+      "max_slope_deg": 14.2,
+      "roughness_m": 0.62,
+      "psr_proximity_km": 0.8,
+      "notes": "Narrow elevated crater rim adjacent to Shackleton PSR; moderate local slopes with steep interior walls nearby."
+    },
+    {
+      "site_id": "candidate_002",
+      "name": "Connecting Ridge",
+      "latitude_deg": -89.45,
+      "longitude_deg": -137.0,
+      "elevation_m": 1780.0,
+      "mean_slope_deg": 6.4,
+      "max_slope_deg": 12.1,
+      "roughness_m": 0.48,
+      "psr_proximity_km": 1.4,
+      "notes": "High-elevation ridge linking Shackleton and de Gerlache craters; relatively smooth local landing patches."
+    },
+    {
+      "site_id": "candidate_003",
+      "name": "Malapert Massif",
+      "latitude_deg": -86.0,
+      "longitude_deg": 2.0,
+      "elevation_m": 4950.0,
+      "mean_slope_deg": 8.9,
+      "max_slope_deg": 16.5,
+      "roughness_m": 0.71,
+      "psr_proximity_km": 4.6,
+      "notes": "Prominent massif ~120 km from the South Pole; high elevation and strong Earth line-of-sight with steeper flank gradients."
+    }
+  ]
+}

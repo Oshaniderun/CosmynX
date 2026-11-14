@@ -1,6 +1,30 @@
 from datetime import datetime, timezone
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
+
+
+class TerrainSafetyMetrics(BaseModel):
+    """LRO LOLA DEM-derived elevation, slope, roughness, and safety summary."""
+
+    elevation_m: Optional[float] = None
+    mean_slope_deg: Optional[float] = Field(default=None, ge=0.0, le=90.0)
+    max_slope_deg: Optional[float] = Field(default=None, ge=0.0, le=90.0)
+    roughness_m: Optional[float] = Field(default=None, ge=0.0)
+    psr_proximity_km: Optional[float] = Field(default=None, ge=0.0)
+    terrain_safety_score: Optional[float] = Field(default=None, ge=0.0, le=100.0)
+    safety_rating: Optional[Literal["safe", "caution", "hazardous"]] = None
+
+
+class TerrainSafetyResponse(BaseModel):
+    """Terrain safety evaluation for a lunar landing site."""
+
+    site_id: str
+    latitude_deg: float
+    longitude_deg: float
+    metrics: TerrainSafetyMetrics = Field(default_factory=TerrainSafetyMetrics)
+    source: str = "NASA LRO LOLA DEM"
+    status: Literal["ok", "unavailable"] = "unavailable"
+    notes: Optional[str] = None
 
 
 class LandingSite(BaseModel):
@@ -10,8 +34,44 @@ class LandingSite(BaseModel):
     name: str
     region: str = "Lunar South Pole"
     latitude_deg: float = Field(..., ge=-90.0, le=90.0)
-    longitude_deg: float = Field(..., ge=-180.0, le=180.0)
+    longitude_deg: float = Field(..., ge=-180.0, le=360.0)
     description: Optional[str] = None
+    terrain: Optional[TerrainSafetyMetrics] = None
+    elevation_m: Optional[float] = None
+    source: str = "NASA Artemis III (Updated Oct 28, 2024) / LROC QuickMap"
+    coordinate_type: str = "approximate_region_centroid"
+
+
+class CustomSiteRequest(BaseModel):
+    """User-specified custom lunar coordinates."""
+
+    name: Optional[str] = "Custom Lunar Site"
+    latitude_deg: float = Field(..., ge=-90.0, le=90.0)
+    longitude_deg: float = Field(..., ge=-180.0, le=360.0)
+    description: Optional[str] = None
+
+
+class MapLayerResource(BaseModel):
+    """NASA Moon Trek WMTS map layer metadata."""
+
+    layer_id: str
+    name: str
+    projection: Literal["SP", "EQ"]
+    coverage: str
+    format: str
+    tile_matrix_set: str = "default028mm"
+    max_zoom: int
+    extent_m: Optional[list[float]] = None
+    wmts_capabilities: str
+    tile_template: str
+
+
+class MapLayersResponse(BaseModel):
+    """Available Moon Trek South Pole and Global WMTS map layers."""
+
+    portal_url: str
+    south_pole_layers: list[MapLayerResource] = Field(default_factory=list)
+    global_layer: MapLayerResource
 
 
 class EphemerisPoint(BaseModel):
@@ -49,6 +109,14 @@ class VisibilityMetrics(BaseModel):
     earth_visible_hours: Optional[float] = Field(default=None, ge=0.0)
 
 
+
+class OperationalWindow(BaseModel):
+    target: Literal["sunlight", "earth", "both"]
+    start_utc: str
+    end_utc: str
+    duration_hours: float
+
+
 class ConditionsResponse(BaseModel):
     """Standard scientific data format for site conditions (README Section 10)."""
 
@@ -62,6 +130,9 @@ class ConditionsResponse(BaseModel):
     horizon_model: str = "geometric"
     status: Literal["ok", "pending", "unavailable"] = "pending"
     source: str = "JPL Horizons"
+    windows: list[OperationalWindow] = Field(default_factory=list)
+    timeline: list[dict[str, Any]] = Field(default_factory=list)
+    power_modeling: Optional[dict[str, Any]] = None
 
 
 class ScenarioInput(BaseModel):
@@ -139,12 +210,6 @@ class VisibilityInterval(BaseModel):
     sun_elevation_deg: Optional[float] = None
     earth_elevation_deg: Optional[float] = None
 
-
-class OperationalWindow(BaseModel):
-    target: Literal["sunlight", "earth", "both"]
-    start_utc: str
-    end_utc: str
-    duration_hours: float
 
 
 class SettingTransition(BaseModel):

@@ -1,0 +1,87 @@
+.terrain-scene {
+  background: radial-gradient(ellipse at 71% 48%, #1b2533 0%, #09121e 44%, #040811 78%);
+}
+
+.terrain-stars {
+  background-image:
+    radial-gradient(circle at 11% 23%, #d1e3ff 0.65px, transparent 1.4px),
+    radial-gradient(circle at 71% 62%, #8197b2 0.75px, transparent 1.5px),
+    radial-gradient(circle at 45% 37%, #c3d1ec 0.6px, transparent 1.4px),
+    radial-gradient(circle at 20% 64%, #8997b1 0.55px, transparent 1.2px);
+  background-size: 167px 137px, 239px 181px, 127px 211px, 273px 219px;
+  opacity: 0.62;
+}
+
+.terrain-ridge {
+  background: linear-gradient(166deg, #526678 8%, #293746 47%, #151c27 73%, #080d16 100%);
+}
+
+.terrain-ridge::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(0deg, #02050da6, transparent 51%);
+}
+
+.terrain-ground-texture {
+  opacity: 0.25;
+  mix-blend-mode: luminosity;
+  filter: contrast(1.25);
+  transition: opacity 400ms ease;
+}
+
+.terrain-sun-position {
+  transform: translate(-50%, -50%);
+  transition: left 440ms ease, top 440ms ease;
+}
+
+.terrain-sun-disk {
+  display: block;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 40%, #fffaf0 24%, #ffe5a0 62%, #ffa73c);
+  box-shadow: 0 0 13px #ffba607a;
+}
+
+.terrain-sun-glow {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  box-shadow: 0 0 65px 20px #f58c314d;
+}
+
+.terrain-sun-disk, .terrain-sun-glow, .terrain-hidden-marker {
+  transition: opacity 350ms ease;
+}
+
+.terrain-scene[data-clear="true"] .terrain-hidden-marker,
+.terrain-scene[data-clear="false"] :is(.terrain-sun-disk, .terrain-sun-glow) {
+  opacity: 0;
+}
+
+.terrain-astronaut img {
+  animation: terrain-observer-enter 460ms ease-out both;
+  filter: drop-shadow(0 5px 8px #000b) brightness(0.87);
+  transition: filter 500ms ease;
+}
+
+.terrain-scene[data-clear="false"] .terrain-ground-texture {
+  opacity: 0.12;
+}
+
+.terrain-scene[data-clear="false"] .terrain-astronaut img {
+  filter: drop-shadow(0 5px 8px #000d) brightness(0.56) saturate(0.72);
+}
+
+@keyframes terrain-observer-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terrain-scene * {
+    animation: none;
+    transition: none;
+  }
+}
