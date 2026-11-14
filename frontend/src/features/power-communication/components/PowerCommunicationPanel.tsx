@@ -568,7 +568,7 @@ export function PowerCommunicationPanel({
                 <div className="mt-2.5 flex items-center justify-between text-xs text-slate-400">
                   <span>Geometric sun elevation &gt; 0°</span>
                   <span className="font-mono text-amber-300/90 font-medium">
-                    {totalGeneratedKwh.toFixed(1)} kWh est.
+                    {totalGeneratedKwh === null ? "N/A" : `${totalGeneratedKwh.toFixed(1)} kWh est.`}
                   </span>
                 </div>
               </div>
@@ -826,7 +826,7 @@ export function PowerCommunicationPanel({
                     <span>Total Energy Yield</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {totalGeneratedKwh.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">kWh</span>
+                    {totalGeneratedKwh === null ? "N/A" : totalGeneratedKwh.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{totalGeneratedKwh === null ? "" : "kWh est."}</span>
                   </div>
                   <div className="text-[10px] text-amber-400/80">Over mission window</div>
                 </div>
@@ -838,7 +838,7 @@ export function PowerCommunicationPanel({
                     <span>Max Shadow Stretch</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {longestDarknessHrs.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">hrs</span>
+                    {longestDarknessHrs === null ? "N/A" : longestDarknessHrs.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{longestDarknessHrs === null ? "" : "hrs"}</span>
                   </div>
                   <div className="text-[10px] text-slate-400">Battery duration needed</div>
                 </div>
@@ -850,7 +850,7 @@ export function PowerCommunicationPanel({
                     <span>Required Battery Pack</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {nominalCapacityKwh.toFixed(2)} <span className="text-[11px] font-normal text-slate-400">kWh</span>
+                    {nominalCapacityKwh === null ? "N/A" : nominalCapacityKwh.toFixed(2)} <span className="text-[11px] font-normal text-slate-400">{nominalCapacityKwh === null ? "" : "kWh est."}</span>
                   </div>
                   <div className="text-[10px] text-cyan-400/80">At 70% Max DoD (Li-ion)</div>
                 </div>
@@ -862,7 +862,7 @@ export function PowerCommunicationPanel({
                     <span>Est. Battery Mass</span>
                   </div>
                   <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
-                    {estimatedBatteryMassKg.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">kg</span>
+                    {estimatedBatteryMassKg === null ? "N/A" : estimatedBatteryMassKg.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{estimatedBatteryMassKg === null ? "" : "kg est."}</span>
                   </div>
                   <div className="text-[10px] text-indigo-400/80">@ 150 Wh/kg space cells</div>
                 </div>
