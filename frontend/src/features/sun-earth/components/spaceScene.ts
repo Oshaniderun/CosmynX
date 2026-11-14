@@ -17,6 +17,7 @@ export type SceneFrame =
       longitude: number;
       sites?: LandingSite[];
       selectedSiteId?: string;
+      focusSeq?: number;
     };
 
 export interface SpaceSceneCallbacks {
@@ -294,6 +295,7 @@ export function createSpaceScene(
   controls.maxZoom = mode === "site" ? 18 : 3.8;
   controls.autoRotateSpeed = 0.65;
   const reset = () => {
+    flyAnim = null;
     if (mode === "eclipse") camera.position.set(2.5, 4.2, 15);
     else camera.position.set(11.5, 4.2, 22);
     controls.target.set(mode === "eclipse" ? -0.4 : 0, mode === "eclipse" ? 0 : -0.55, 0);
@@ -757,7 +759,26 @@ export function createSpaceScene(
   let syncingTarget = false;
   let hasInitialOrientation = false;
   let settleRaf = 0;
+  let lastFocusSeq: number | undefined;
   const targetMoonQuat = moon.quaternion.clone();
+  interface FlyAnim {
+    startTime: number;
+    durationMs: number;
+    startQuat: typeof targetMoonQuat;
+    endQuat: typeof targetMoonQuat;
+    startZoom: number;
+    midZoom: number;
+    endZoom: number;
+  }
+  let flyAnim: FlyAnim | null = null;
+  const smoothstep = (x: number) => {
+    const c = Math.min(1, Math.max(0, x));
+    return c * c * (3 - 2 * c);
+  };
+
+  controls.addEventListener("start", () => {
+    flyAnim = null;
+  });
 
   function updatePinScales() {
     const zoomFactor = Math.max(0.22, 1 / Math.sqrt(Math.max(1, camera.zoom)));
@@ -780,10 +801,40 @@ export function createSpaceScene(
       settleRaf = 0;
       if (disposed) return;
       let needsMore = false;
-      if (mode === "site" && hasInitialOrientation) {
+      if (mode === "site" && flyAnim !== null) {
+        const u = Math.min(1, (performance.now() - flyAnim.startTime) / flyAnim.durationMs);
+        const rotT = smoothstep(u);
+        moon.quaternion.copy(flyAnim.startQuat).slerp(flyAnim.endQuat, rotT);
+        if (flyAnim.midZoom < flyAnim.startZoom - 0.05) {
+          const pivot = 0.38;
+          if (u <= pivot) {
+            const zOutT = smoothstep(u / pivot);
+            camera.zoom = flyAnim.startZoom + (flyAnim.midZoom - flyAnim.startZoom) * zOutT;
+          } else {
+            const zInT = smoothstep((u - pivot) / (1 - pivot));
+            camera.zoom = flyAnim.midZoom + (flyAnim.endZoom - flyAnim.midZoom) * zInT;
+          }
+        } else {
+          camera.zoom = flyAnim.startZoom + (flyAnim.endZoom - flyAnim.startZoom) * rotT;
+        }
+        if (u < 1) {
+          needsMore = true;
+        } else {
+          moon.quaternion.copy(flyAnim.endQuat);
+          camera.zoom = flyAnim.endZoom;
+          flyAnim = null;
+        }
+        const t = Math.min(1, Math.max(0, (camera.zoom - 1) / (3.0 - 1)));
+        syncingTarget = true;
+        controls.target.set(0, -0.5 * (1 - t), 0);
+        syncingTarget = false;
+        camera.updateProjectionMatrix();
+        updatePinScales();
+        callbacks?.onZoomChange?.(camera.zoom);
+      } else if (mode === "site" && hasInitialOrientation) {
         const dot = Math.abs(moon.quaternion.dot(targetMoonQuat));
         if (dot < 0.99999) {
-          moon.quaternion.slerp(targetMoonQuat, 0.12);
+          moon.quaternion.slerp(targetMoonQuat, 0.05);
           needsMore = true;
         } else {
           moon.quaternion.copy(targetMoonQuat);
@@ -853,12 +904,47 @@ export function createSpaceScene(
       moon.position.set(0, -siteMoonRadius, 0);
       moon.scale.setScalar(siteMoonRadius);
       targetMoonQuat.setFromRotationMatrix(lunarOrientation(frame.latitude, frame.longitude));
+      const siteChanged =
+        hasInitialOrientation &&
+        ((frame.selectedSiteId !== undefined && frame.selectedSiteId !== lastSelectedPinId) ||
+          (frame.focusSeq !== undefined && frame.focusSeq !== lastFocusSeq));
       if (!hasInitialOrientation) {
         moon.quaternion.copy(targetMoonQuat);
         hasInitialOrientation = true;
       } else {
+        if (siteChanged) {
+          const now = performance.now();
+          if (flyAnim && now - flyAnim.startTime < 250) {
+            flyAnim.endQuat.copy(targetMoonQuat);
+          } else {
+            const startQuat = moon.quaternion.clone();
+            const endQuat = targetMoonQuat.clone();
+            const dot = Math.min(1, Math.abs(startQuat.dot(endQuat)));
+            const angleRad = 2 * Math.acos(dot);
+            const startZoom = camera.zoom;
+            const endZoom = Math.max(startZoom, 6.2);
+            const midZoom =
+              startZoom > 2.2
+                ? angleRad > 0.35
+                  ? 1.5
+                  : Math.max(2.0, startZoom * 0.48)
+                : startZoom;
+            flyAnim = {
+              startTime: now,
+              durationMs: angleRad > 0.35 ? 2100 : 1650,
+              startQuat,
+              endQuat,
+              startZoom,
+              midZoom,
+              endZoom,
+            };
+          }
+        } else if (flyAnim) {
+          flyAnim.endQuat.copy(targetMoonQuat);
+        }
         scheduleSettle();
       }
+      lastFocusSeq = frame.focusSeq;
       lastSelectedPinId = frame.selectedSiteId;
       sun.scale.setScalar(2.75);
       earth.scale.setScalar(1.95);
