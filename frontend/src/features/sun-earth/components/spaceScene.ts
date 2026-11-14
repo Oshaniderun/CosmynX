@@ -893,9 +893,12 @@ export function createSpaceScene(
     endZoom: number;
   }
   let flyAnim: FlyAnim | null = null;
-  const smoothstep = (x: number) => {
+
+  // Ken Perlin's Smootherstep polynomial: zero 1st & 2nd derivatives at endpoints
+  // Produces realistic aerodynamic acceleration (speed up) and deceleration (slow down)
+  const smootherstep = (x: number) => {
     const c = Math.min(1, Math.max(0, x));
-    return c * c * (3 - 2 * c);
+    return c * c * c * (c * (c * 6 - 15) + 10);
   };
 
   controls.addEventListener("start", () => {
@@ -925,15 +928,15 @@ export function createSpaceScene(
       let needsMore = false;
       if (mode === "site" && flyAnim !== null) {
         const u = Math.min(1, (performance.now() - flyAnim.startTime) / flyAnim.durationMs);
-        const rotT = smoothstep(u);
+        const rotT = smootherstep(u);
         moon.quaternion.copy(flyAnim.startQuat).slerp(flyAnim.endQuat, rotT);
         if (flyAnim.midZoom < flyAnim.startZoom - 0.05) {
-          const pivot = 0.38;
+          const pivot = 0.42;
           if (u <= pivot) {
-            const zOutT = smoothstep(u / pivot);
+            const zOutT = smootherstep(u / pivot);
             camera.zoom = flyAnim.startZoom + (flyAnim.midZoom - flyAnim.startZoom) * zOutT;
           } else {
-            const zInT = smoothstep((u - pivot) / (1 - pivot));
+            const zInT = smootherstep((u - pivot) / (1 - pivot));
             camera.zoom = flyAnim.midZoom + (flyAnim.endZoom - flyAnim.midZoom) * zInT;
           }
         } else {
@@ -1044,16 +1047,18 @@ export function createSpaceScene(
             const dot = Math.min(1, Math.abs(startQuat.dot(endQuat)));
             const angleRad = 2 * Math.acos(dot);
             const startZoom = camera.zoom;
-            const endZoom = Math.max(startZoom, 6.2);
+            // Target zoom: close-up for Apollo landers (6.2x) or Artemis crater rims (6.8x)
+            const targetFocusZoom = frame.selectedSiteId?.startsWith("apollo_") ? 6.2 : 6.8;
+            const endZoom = Math.max(startZoom, targetFocusZoom);
             const midZoom =
               startZoom > 2.2
-                ? angleRad > 0.35
-                  ? 1.5
-                  : Math.max(2.0, startZoom * 0.48)
+                ? angleRad > 0.25
+                  ? 1.55
+                  : Math.max(1.8, startZoom * 0.45)
                 : startZoom;
             flyAnim = {
               startTime: now,
-              durationMs: angleRad > 0.35 ? 2100 : 1650,
+              durationMs: angleRad > 0.45 ? 2200 : angleRad > 0.15 ? 1800 : 1400,
               startQuat,
               endQuat,
               startZoom,

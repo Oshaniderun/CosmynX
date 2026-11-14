@@ -790,6 +790,7 @@ export function UnifiedLunarExplorer({
                       }}
                       onSelectSite={(site) => {
                         startTransition(() => {
+                          setFocusSeq((n) => n + 1);
                           setSelectedSite(site);
                           if (site.site_id.startsWith("apollo_")) {
                             setActiveTab("apollo");
