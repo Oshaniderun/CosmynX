@@ -201,6 +201,14 @@ def build_scientific_provenance(
             "Geometric horizon model: elevation > 0 deg does not model terrain shadow casting."
         )
 
+    if conditions.status == "ok" and (
+        conditions.metrics.sunlit_fraction is not None
+        or conditions.metrics.earth_visible_fraction is not None
+    ):
+        warnings.append(
+            "Visibility fractions and durations are sampled estimates; horizon crossings are linearly interpolated between ephemeris timestamps."
+        )
+
     is_synthetic = (
         "synthetic" in conditions.source.lower()
         or conditions.horizon_model == "synthetic"

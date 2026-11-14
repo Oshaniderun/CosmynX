@@ -108,9 +108,10 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   useEffect(() => { if (replayFinished) setPlaying(false); }, [replayFinished]);
 
   return (
-    <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-[#0a101b] shadow-lg md:col-span-2">
+    <section aria-labelledby="space-explorer-title" className="space-mission-panel min-w-0">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-4 py-4 sm:px-6">
         <div>
+          <p className="panel-eyebrow">Lunar observatory</p>
           <h2 id="space-explorer-title" className="text-lg font-semibold tracking-tight text-slate-100">Sun, Earth & Moon</h2>
         </div>
         <div className="flex flex-wrap gap-2" role="group" aria-label="View mode">

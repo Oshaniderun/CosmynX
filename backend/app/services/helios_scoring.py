@@ -147,39 +147,44 @@ def filter_mandatory_constraints(
     if not has_earth_data:
         violations.append("Earth visibility measurement is unavailable (missing ephemeris data).")
 
-    if not has_complete_data:
-        return ConstraintEvaluationResult(
-            passed_earth_visibility=False,
-            passed_sunlight=False,
-            has_complete_data=False,
-            passed_all=False,
-            violations=violations,
-        )
-
-    # Convert to percentage with rounding tolerance to avoid IEEE-754 precision issues
-    measured_sun_pct = round(metrics.sunlit_fraction * 100.0, 6)
-    measured_earth_pct = round(metrics.earth_visible_fraction * 100.0, 6)
+    # Evaluate every measurement that is present. A known mandatory failure is
+    # conclusive even when another measurement is missing.
     req_sun_pct = round(min_sunlight_pct, 6)
     req_earth_pct = round(min_earth_visibility_pct, 6)
+    measured_sun_pct = (
+        round(metrics.sunlit_fraction * 100.0, 6)
+        if metrics.sunlit_fraction is not None
+        else None
+    )
+    measured_earth_pct = (
+        round(metrics.earth_visible_fraction * 100.0, 6)
+        if metrics.earth_visible_fraction is not None
+        else None
+    )
+    passed_sunlight = (
+        measured_sun_pct >= req_sun_pct if measured_sun_pct is not None else False
+    )
+    passed_earth_visibility = (
+        measured_earth_pct >= req_earth_pct
+        if measured_earth_pct is not None
+        else False
+    )
 
-    passed_sunlight = measured_sun_pct >= req_sun_pct
-    passed_earth_visibility = measured_earth_pct >= req_earth_pct
-
-    if not passed_sunlight:
+    if measured_sun_pct is not None and not passed_sunlight:
         violations.append(
             f"Sunlight availability ({metrics.sunlit_fraction * 100.0:.1f}%) is below required minimum threshold ({min_sunlight_pct:.1f}%)."
         )
-    if not passed_earth_visibility:
+    if measured_earth_pct is not None and not passed_earth_visibility:
         violations.append(
             f"Earth visibility ({metrics.earth_visible_fraction * 100.0:.1f}%) is below required minimum threshold ({min_earth_visibility_pct:.1f}%)."
         )
 
-    passed_all = passed_sunlight and passed_earth_visibility
+    passed_all = has_complete_data and passed_sunlight and passed_earth_visibility
 
     return ConstraintEvaluationResult(
         passed_earth_visibility=passed_earth_visibility,
         passed_sunlight=passed_sunlight,
-        has_complete_data=True,
+        has_complete_data=has_complete_data,
         passed_all=passed_all,
         violations=violations,
     )
@@ -315,7 +320,15 @@ def generate_scientific_explanation(
     tradeoffs: list[str] = []
 
     # Case A: Insufficient scientific data
-    if not constraints.has_complete_data:
+    # Known failures take precedence over missing measurements for classification.
+    has_known_failure = (
+        (metrics.sunlit_fraction is not None and not constraints.passed_sunlight)
+        or (
+            metrics.earth_visible_fraction is not None
+            and not constraints.passed_earth_visibility
+        )
+    )
+    if not constraints.has_complete_data and not has_known_failure:
         explanation = (
             f"{site.name} ({site.site_id}) could not be evaluated due to missing scientific measurements. "
             f"Reasons: {'; '.join(constraints.violations)}."
@@ -323,13 +336,21 @@ def generate_scientific_explanation(
         tradeoffs.append("Incomplete ephemeris data: site cannot be ranked until measurement gaps are resolved.")
         return explanation, tradeoffs
 
-    # Case B: Disqualified candidate
-    sun_pct_str = f"{metrics.sunlit_fraction * 100.0:.1f}%"
-    earth_pct_str = f"{metrics.earth_visible_fraction * 100.0:.1f}%"
+    # Case B: A known constraint failure (measurements that are absent stay unknown).
+    sun_pct_str = (
+        f"{metrics.sunlit_fraction * 100.0:.1f}%"
+        if metrics.sunlit_fraction is not None
+        else "unknown"
+    )
+    earth_pct_str = (
+        f"{metrics.earth_visible_fraction * 100.0:.1f}%"
+        if metrics.earth_visible_fraction is not None
+        else "unknown"
+    )
     sun_hours_str = f" ({metrics.sunlit_hours:.1f} hours)" if metrics.sunlit_hours is not None else ""
     earth_hours_str = f" ({metrics.earth_visible_hours:.1f} hours)" if metrics.earth_visible_hours is not None else ""
 
-    if not constraints.passed_all:
+    if has_known_failure or not constraints.passed_all:
         explanation = (
             f"{site.name} is disqualified from the candidate shortlist. "
             f"Measured sunlight availability: {sun_pct_str}{sun_hours_str}; "
@@ -346,7 +367,7 @@ def generate_scientific_explanation(
 
     obj_descriptions = {
         HeliosObjective.MAXIMIZE_SUNLIGHT: "favoring solar illumination (75% weight) over Earth visibility (25% weight)",
-        HeliosObjective.MAXIMIZE_EARTH_VISIBILITY: "favoring direct-to-Earth communication visibility (75% weight) over sunlight (25% weight)",
+        HeliosObjective.MAXIMIZE_EARTH_VISIBILITY: "favoring geometric direct-to-Earth line-of-sight visibility (75% weight) over sunlight (25% weight)",
         HeliosObjective.BALANCED: "with equal balance between sunlight (50% weight) and Earth visibility (50% weight)",
     }
     obj_phrase = obj_descriptions.get(objective, "based on selected mission objective")
@@ -377,16 +398,16 @@ def generate_scientific_explanation(
         if duration_hours is not None:
             comm_gap_hours = duration_hours * comm_gap_fraction
             tradeoffs.append(
-                f"Communication blackout: {comm_gap_hours:.1f} hours ({comm_gap_pct:.1f}% of mission window) without direct-to-Earth line of sight."
+                f"No geometric Earth line of sight: {comm_gap_hours:.1f} hours ({comm_gap_pct:.1f}% of mission window)."
             )
         else:
             tradeoffs.append(
-                f"Communication blackout: {comm_gap_pct:.1f}% of the mission window without direct-to-Earth line of sight."
+                f"No geometric Earth line of sight: {comm_gap_pct:.1f}% of the mission window."
             )
 
     if metrics.sunlit_fraction == 1.0 and metrics.earth_visible_fraction == 1.0:
         tradeoffs.append(
-            "Continuous coverage: 100% solar illumination and 100% direct-to-Earth line of sight throughout the mission window."
+            "Sampled estimate: 100% solar illumination and 100% direct-to-Earth line of sight over the modeled mission window."
         )
 
     return explanation, tradeoffs
@@ -436,6 +457,43 @@ def generate_recommendation_results(
             duration_hours=float(requirements.mission_duration_hours),
         )
 
+        if conditions.status != "ok":
+            status_violation = (
+                f"Scientific data status is '{conditions.status}'; the candidate cannot be ranked until status is 'ok'."
+            )
+            missing_measurements = []
+            if conditions.metrics.sunlit_fraction is None:
+                missing_measurements.append("Sunlight availability measurement is missing.")
+            if conditions.metrics.earth_visible_fraction is None:
+                missing_measurements.append("Earth visibility measurement is missing.")
+            constraints = ConstraintEvaluationResult(
+                passed_earth_visibility=False,
+                passed_sunlight=False,
+                has_complete_data=False,
+                passed_all=False,
+                violations=[status_violation, *missing_measurements],
+            )
+            rec = EnrichedHeliosRecommendation(
+                rank=None,
+                site_id=site.site_id,
+                site_name=site.name,
+                latitude_deg=site.latitude_deg,
+                longitude_deg=site.longitude_deg,
+                score=None,
+                metrics=conditions.metrics,
+                provenance=provenance,
+                constraints=constraints,
+                score_breakdown=None,
+                explanation=(
+                    f"{site.name} ({site.site_id}) is not ranked because scientific data status "
+                    f"is '{conditions.status}'. Returned metric values are preserved but not used "
+                    "until the data status is 'ok'."
+                ),
+                tradeoffs=["Scientific measurements are pending or unavailable and cannot support a ranking."],
+            )
+            insufficient_list.append(rec)
+            continue
+
         constraints = filter_mandatory_constraints(
             metrics=conditions.metrics,
             min_sunlight_pct=requirements.minimum_sunlight_pct,
@@ -443,7 +501,43 @@ def generate_recommendation_results(
         )
 
         # Categorize
-        if not constraints.has_complete_data:
+        has_known_failure = (
+            (
+                conditions.metrics.sunlit_fraction is not None
+                and not constraints.passed_sunlight
+            )
+            or (
+                conditions.metrics.earth_visible_fraction is not None
+                and not constraints.passed_earth_visibility
+            )
+        )
+
+        if has_known_failure:
+            explanation, tradeoffs = generate_scientific_explanation(
+                site=site,
+                metrics=conditions.metrics,
+                constraints=constraints,
+                rank=None,
+                objective=requirements.objective,
+                duration_hours=float(requirements.mission_duration_hours),
+            )
+            rec = EnrichedHeliosRecommendation(
+                rank=None,
+                site_id=site.site_id,
+                site_name=site.name,
+                latitude_deg=site.latitude_deg,
+                longitude_deg=site.longitude_deg,
+                score=None,
+                metrics=conditions.metrics,
+                provenance=provenance,
+                constraints=constraints,
+                score_breakdown=None,
+                explanation=explanation,
+                tradeoffs=tradeoffs,
+            )
+            disqualified_list.append(rec)
+
+        elif not constraints.has_complete_data:
             explanation, tradeoffs = generate_scientific_explanation(
                 site=site,
                 metrics=conditions.metrics,

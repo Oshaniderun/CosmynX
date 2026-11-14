@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Sun } from "lucide-react";
 import { ModuleCard } from "../../../components/shared/ModuleCard";
 import type { ConditionsResponse } from "../../../types/helios";
 import { fetchConditions } from "../services/conditionsService";
@@ -16,10 +17,13 @@ export function PowerCommunicationPanel({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDemoData, setIsDemoData] = useState(!propConditions);
 
   useEffect(() => {
     if (propConditions) {
       setData(propConditions);
+      setIsDemoData(false);
+      setError(null);
       return;
     }
 
@@ -29,6 +33,7 @@ export function PowerCommunicationPanel({
       .then((res) => {
         if (isMounted) {
           setData(res);
+          setIsDemoData(false);
           setError(null);
         }
       })
@@ -37,6 +42,8 @@ export function PowerCommunicationPanel({
           // If backend endpoint is offline during development, fall back gracefully to demoConditions
           console.warn("Could not fetch conditions from /api/conditions, using demo data:", err);
           setData(demoConditions);
+          setIsDemoData(true);
+          setError("The scientific conditions service is unavailable. Local sample values are shown for demonstration only.");
         }
       })
       .finally(() => {
@@ -61,15 +68,15 @@ export function PowerCommunicationPanel({
 
   return (
     <ModuleCard
-      title="Solar Power & Communication Analysis"
-      owner="Member 4"
-      branch="feature/power-communication"
+      title="Solar Illumination & Earth Line of Sight"
+      eyebrow="Measured surface conditions"
+      icon={<Sun size={17} />}
     >
       <div className="space-y-4">
         {/* Header Metadata */}
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
           <div className="flex items-center gap-2">
-            <span>Source: <strong className="text-slate-200">{data.source}</strong></span>
+            <span>Source: <strong className="text-slate-200">{isDemoData ? "Local demo sample · not live NASA data" : data.source}</strong></span>
             <span>•</span>
             <span>Model: <span className="font-mono text-slate-300">{data.horizon_model}</span></span>
           </div>
@@ -89,7 +96,8 @@ export function PowerCommunicationPanel({
         </div>
 
         {error && (
-          <div className="rounded border border-rose-800 bg-rose-950/40 p-2 text-xs text-rose-300">
+          <div role={isDemoData ? "status" : "alert"} className={`rounded border p-2 text-xs ${isDemoData ? "border-amber-800/70 bg-amber-950/30 text-amber-200" : "border-rose-800 bg-rose-950/40 text-rose-300"}`}>
+            {isDemoData && <strong className="mr-2 font-bold tracking-wide">DEMO MODE</strong>}
             {error}
           </div>
         )}
@@ -140,7 +148,7 @@ export function PowerCommunicationPanel({
             <div className="rounded-lg border border-sky-500/20 bg-sky-950/10 p-3.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-sky-400">
-                  Direct-to-Earth Contact
+                  Geometric Earth visibility
                 </span>
                 <span className="text-xs text-slate-400">
                   {metrics.earth_visible_hours !== null
@@ -167,7 +175,7 @@ export function PowerCommunicationPanel({
                 />
               </div>
               <div className="mt-2 text-xs text-slate-400">
-                Direct Line-of-Sight &gt; 0°
+                Geometric elevation &gt; 0°
               </div>
             </div>
           </div>
