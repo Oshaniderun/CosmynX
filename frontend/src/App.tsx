@@ -32,10 +32,17 @@ function SectionHeading({
   return (
     <div className="section-heading">
       <div>
-        <p className="section-eyebrow font-mono text-xs text-sky-400"><span>{index}</span>{eyebrow}</p>
-        <h2 id={id} className="font-heading text-2xl sm:text-3xl font-semibold text-slate-100">{title}</h2>
+        <p className="section-eyebrow font-mono text-xs text-sky-400">
+          <span className="inline-flex items-center justify-center rounded bg-sky-950/70 border border-sky-400/30 px-1.5 py-0.5 text-[10px] text-sky-300 font-bold mr-1.5">
+            {index}
+          </span>
+          {eyebrow}
+        </p>
+        <h2 id={id} className="font-heading text-2xl sm:text-3xl font-semibold tracking-tight text-slate-100">
+          {title}
+        </h2>
       </div>
-      <p className="section-detail text-sm text-slate-300">{detail}</p>
+      <p className="section-detail text-sm text-slate-300 leading-relaxed">{detail}</p>
     </div>
   );
 }
@@ -57,10 +64,14 @@ export default function App() {
             <div className="mission-hero__stars" aria-hidden="true" />
             <div className="mission-hero__content">
               <div className="mission-hero__copy">
-                <p className="hero-kicker font-mono"><span /> LUNAR SURFACE OPERATIONS <span className="hero-kicker__slash">/</span> SOUTH POLE</p>
-                <h1 id="mission-title" className="font-heading">A clearer view<br />of the <em>Moon.</em></h1>
+                <p className="hero-kicker font-mono">
+                  <span /> PIONEERING THE NEXT ERA <span className="hero-kicker__slash">/</span> LUNAR EXPLORATION
+                </p>
+                <h1 id="mission-title" className="font-heading">
+                  A clearer view<br />of the <em>Moon.</em>
+                </h1>
                 <p className="mission-hero__lead">
-                  Explore the lunar environment, compare surface conditions, and plan a landing site with one connected mission workspace.
+                  Explore the lunar environment, compare surface conditions, and plan landing sites with one connected mission workspace.
                 </p>
                 <div className="mission-hero__actions">
                   <a className="button-primary" href="#environment">
@@ -72,12 +83,12 @@ export default function App() {
                 </div>
                 <div className="hero-caption">
                   <span className="hero-caption__line" />
-                  <span>Lunar horizon visual · supplied project reference</span>
+                  <span>NASA Artemis Campaign · High-fidelity geometric telemetry</span>
                 </div>
               </div>
               <aside className="hero-overview" aria-label="Mission workspace capabilities">
                 <div className="hero-overview__topline font-mono">
-                  <span>MISSION WORKSPACE</span>
+                  <span>KEY CAPABILITIES</span>
                   <Compass size={15} aria-hidden="true" />
                 </div>
                 <p className="hero-overview__title font-heading">One lunar environment.<br />Three ways to explore.</p>

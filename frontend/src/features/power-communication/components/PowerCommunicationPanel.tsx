@@ -454,7 +454,7 @@ export function PowerCommunicationPanel({
         )}
 
         {/* Site Selector & Controls Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
           <div className="flex items-center gap-2">
             <label htmlFor="site-select" className="text-xs font-medium text-slate-300">
               Candidate Site:
@@ -468,7 +468,7 @@ export function PowerCommunicationPanel({
                 const nextSite = sites.find((site) => site.site_id === nextId);
                 if (nextSite) setSelectedSite(nextSite);
               }}
-              className="rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-100 shadow-sm focus-visible:outline-2 focus-visible:outline-amber-400"
+              className="rounded-xl border border-white/[0.09] bg-[#070e1c] px-3 py-1.5 text-xs text-slate-100 shadow-sm focus-visible:outline-2 focus-visible:outline-amber-400 transition"
             >
               {sites.map((site) => (
                 <option key={site.site_id} value={site.site_id}>
@@ -483,7 +483,7 @@ export function PowerCommunicationPanel({
 
           <div className="flex items-center gap-2">
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${feasibilityBadge.style}`}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-xs font-semibold ${feasibilityBadge.style}`}
             >
               <FeasIcon className="h-3 w-3" />
               {feasibilityBadge.label}
@@ -492,7 +492,7 @@ export function PowerCommunicationPanel({
             <button
               type="button"
               onClick={handleExportCsv}
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 transition shadow-sm hover:border-slate-500"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-[#070e1c]/80 hover:bg-[#0c1626] px-3 py-1.5 text-xs font-medium text-slate-200 transition shadow-sm hover:border-sky-400/40"
               title="Export complete timeline and power telemetry to CSV"
             >
               <Download className="h-3 w-3 text-cyan-400" />
@@ -502,7 +502,7 @@ export function PowerCommunicationPanel({
             <button
               type="button"
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 transition shadow-sm hover:border-slate-500"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-[#070e1c]/80 hover:bg-[#0c1626] px-3 py-1.5 text-xs font-medium text-slate-200 transition shadow-sm hover:border-sky-400/40"
               title={isFullscreen ? "Exit Fullscreen (Esc)" : "Expand to Fullscreen"}
             >
               {isFullscreen ? (
@@ -525,13 +525,13 @@ export function PowerCommunicationPanel({
         </div>
 
         {error && (
-          <div className={`rounded border p-2.5 text-xs ${isDemoData ? "border-amber-800/70 bg-amber-950/30 text-amber-200" : "border-rose-800 bg-rose-950/40 text-rose-300"}`}>
+          <div className={`rounded-xl border p-3 text-xs ${isDemoData ? "border-amber-800/70 bg-amber-950/30 text-amber-200" : "border-rose-800 bg-rose-950/40 text-rose-300"}`}>
             {error}
           </div>
         )}
 
         {!isOk ? (
-          <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-4 text-center">
+          <div className="rounded-xl border border-white/[0.08] bg-[#070e1a]/60 p-5 text-center">
             <p className="text-sm text-slate-300">
               {data.status === "pending"
                 ? "Calculating solar illumination and Earth visibility metrics..."
@@ -544,30 +544,30 @@ export function PowerCommunicationPanel({
         ) : (
           <>
             {/* Top Metric Cards */}
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               {/* Solar Illumination Card */}
-              <div className="relative overflow-hidden rounded-lg border border-amber-500/20 bg-amber-950/10 p-4 shadow-sm">
+              <div className="relative overflow-hidden rounded-xl border border-amber-400/25 bg-gradient-to-br from-amber-950/20 via-[#0a111e]/75 to-[#040812]/95 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition duration-200 hover:border-amber-400/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs font-semibold text-amber-400">
                     <Sun className="h-4 w-4" />
                     <span>Solar Illumination</span>
                   </div>
-                  <span className="text-xs tabular-nums text-slate-300">
+                  <span className="text-xs font-mono tabular-nums text-slate-300">
                     {metrics.sunlit_hours !== null ? `${metrics.sunlit_hours} hrs` : "—"}
                   </span>
                 </div>
 
-                <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold tracking-tight text-slate-100">
+                <div className="mt-3.5 flex items-baseline gap-2">
+                  <span className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-100">
                     {sunlitPct !== null ? `${sunlitPct}%` : "—"}
                   </span>
                   <span className="text-xs text-slate-400">daylight availability</span>
                 </div>
 
                 {/* Progress bar */}
-                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                <div className="mt-3.5 h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500"
+                    className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500 shadow-[0_0_10px_rgba(251,191,36,0.4)]"
                     style={{
                       width: `${Math.min(
                         Math.max((metrics.sunlit_fraction ?? 0) * 100, 0),
@@ -577,39 +577,39 @@ export function PowerCommunicationPanel({
                   />
                 </div>
 
-                <div className="mt-2.5 flex items-center justify-between text-xs text-slate-400">
+                <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
                   <span>Geometric sun elevation &gt; 0°</span>
-                  <span className="font-mono text-amber-300/90 font-medium">
+                  <span className="font-mono text-amber-300 font-semibold">
                     {totalGeneratedKwh === null ? "N/A" : `${totalGeneratedKwh.toFixed(1)} kWh est.`}
                   </span>
                 </div>
               </div>
 
               {/* Direct-To-Earth Communication Card */}
-              <div className="relative overflow-hidden rounded-lg border border-sky-500/20 bg-sky-950/10 p-4 shadow-sm">
+              <div className="relative overflow-hidden rounded-xl border border-sky-400/25 bg-gradient-to-br from-sky-950/20 via-[#0a111e]/75 to-[#040812]/95 p-5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] transition duration-200 hover:border-sky-400/40">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs font-semibold text-sky-400">
                     <Radio className="h-4 w-4" />
                     <span>Direct-To-Earth (DTE)</span>
                   </div>
-                  <span className="text-xs tabular-nums text-slate-300">
+                  <span className="text-xs font-mono tabular-nums text-slate-300">
                     {metrics.earth_visible_hours !== null
                       ? `${metrics.earth_visible_hours} hrs`
                       : "—"}
                   </span>
                 </div>
 
-                <div className="mt-3 flex items-baseline gap-2">
-                  <span className="text-3xl font-extrabold tracking-tight text-slate-100">
+                <div className="mt-3.5 flex items-baseline gap-2">
+                  <span className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-100">
                     {earthVisiblePct !== null ? `${earthVisiblePct}%` : "—"}
                   </span>
                   <span className="text-xs text-slate-400">geometric line-of-sight visibility</span>
                 </div>
 
                 {/* Progress bar */}
-                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                <div className="mt-3.5 h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-500"
+                    className="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-500 shadow-[0_0_10px_rgba(56,189,248,0.4)]"
                     style={{
                       width: `${Math.min(
                         Math.max((metrics.earth_visible_fraction ?? 0) * 100, 0),
@@ -619,17 +619,17 @@ export function PowerCommunicationPanel({
                   />
                 </div>
 
-                <div className="mt-2.5 flex items-center justify-between text-xs text-slate-400">
+                <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
                   <span>Direct line-of-sight &gt; 0°</span>
-                  <span className="text-sky-300/80">Not RF reliability</span>
+                  <span className="text-sky-300/90 font-medium">Not RF reliability</span>
                 </div>
               </div>
             </div>
 
             {/* Next Visibility & Contact Transitions (README Section 7 Requirement) */}
             {derivedTransitions && (
-              <div className="rounded-lg border border-slate-800/90 bg-slate-900/40 p-3.5">
-                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+              <div className="rounded-xl border border-white/[0.08] bg-[#070e1a]/70 p-4 backdrop-blur-md">
+                <div className="flex items-center justify-between border-b border-white/[0.07] pb-3">
                   <div className="flex items-center gap-2">
                     <Timer className="h-4 w-4 text-cyan-400" />
                     <h3 className="text-xs font-semibold text-slate-200">
@@ -641,12 +641,12 @@ export function PowerCommunicationPanel({
                   </span>
                 </div>
 
-                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <div className="mt-3.5 grid gap-3.5 sm:grid-cols-2">
                   {/* Solar Transition Card */}
-                  <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
+                  <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-[#050b16]/80 p-3.5 transition hover:border-amber-400/30">
                     <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${derivedTransitions.solar.current_state === "sunlit"
-                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${derivedTransitions.solar.current_state === "sunlit"
+                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-[0_0_12px_rgba(251,191,36,0.2)]"
                         : "bg-indigo-950/40 text-indigo-400 border border-indigo-500/30"
                         }`}
                     >
@@ -654,12 +654,12 @@ export function PowerCommunicationPanel({
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider font-mono">
                           Solar Illumination
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${derivedTransitions.solar.current_state === "sunlit"
-                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${derivedTransitions.solar.current_state === "sunlit"
+                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
                             : "bg-slate-800 text-slate-300 border border-slate-700"
                             }`}
                         >
@@ -684,7 +684,7 @@ export function PowerCommunicationPanel({
                         )}
                       </div>
                       {derivedTransitions.solar.transition_utc && (
-                        <div className="mt-0.5 text-[11px] text-slate-400 font-mono">
+                        <div className="mt-1 text-[11px] text-slate-400 font-mono">
                           Target: {formatUtc(derivedTransitions.solar.transition_utc)} UTC
                         </div>
                       )}
@@ -692,10 +692,10 @@ export function PowerCommunicationPanel({
                   </div>
 
                   {/* Earth Direct-to-Earth Transition Card */}
-                  <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
+                  <div className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-[#050b16]/80 p-3.5 transition hover:border-sky-400/30">
                     <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${derivedTransitions.earth.current_state === "contact_active"
-                        ? "bg-sky-500/10 text-sky-400 border border-sky-500/30"
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${derivedTransitions.earth.current_state === "contact_active"
+                        ? "bg-sky-500/10 text-sky-400 border border-sky-500/30 shadow-[0_0_12px_rgba(56,189,248,0.2)]"
                         : "bg-rose-950/40 text-rose-400 border border-rose-500/30"
                         }`}
                     >
@@ -703,16 +703,16 @@ export function PowerCommunicationPanel({
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                        <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider font-mono">
                           Earth geometric line of sight
                         </span>
                         <span
-                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${derivedTransitions.earth.current_state === "contact_active"
-                            ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${derivedTransitions.earth.current_state === "contact_active"
+                            ? "bg-sky-500/20 text-sky-300 border border-sky-500/40"
                             : "bg-rose-900/30 text-rose-300 border border-rose-700/40"
                             }`}
                         >
-                          {derivedTransitions.earth.current_state === "contact_active" ? "Earth geometrically visible" : "Earth below geometric horizon"}
+                          {derivedTransitions.earth.current_state === "contact_active" ? "Earth visible" : "Below horizon"}
                         </span>
                       </div>
                       <div className="mt-1 text-sm font-bold text-slate-100">
@@ -733,7 +733,7 @@ export function PowerCommunicationPanel({
                         )}
                       </div>
                       {derivedTransitions.earth.transition_utc && (
-                        <div className="mt-0.5 text-[11px] text-slate-400 font-mono">
+                        <div className="mt-1 text-[11px] text-slate-400 font-mono">
                           Target: {formatUtc(derivedTransitions.earth.transition_utc)} UTC
                         </div>
                       )}
@@ -744,35 +744,35 @@ export function PowerCommunicationPanel({
             )}
 
             {/* Solar Array Power Modeling & Battery Sizing Calculator Section */}
-            <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div className="rounded-xl border border-white/[0.08] bg-[#070e1a]/70 p-4.5 backdrop-blur-md">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.07] pb-3">
                 <div className="flex items-center gap-2">
                   <Gauge className="h-4 w-4 text-amber-400" />
                   <h3 className="text-xs font-semibold text-slate-200">
-                    Solar Array Output & Battery Sizing Model
+                    Solar Array Output &amp; Battery Sizing Model
                   </h3>
                 </div>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-slate-400 font-mono">
                   Physics: Low-elevation horizon flux incidence
                 </span>
               </div>
 
               {/* Interactive Inputs */}
-              <div className="mt-3.5 grid gap-4 sm:grid-cols-3">
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
                 {/* Array Capacity */}
                 <div>
                   <label className="block text-[11px] font-medium text-slate-300">
-                    Array Rating: <span className="text-amber-400 font-bold">{ratedArrayKw} kW</span>
+                    Array Rating: <span className="text-amber-400 font-bold font-mono">{ratedArrayKw} kW</span>
                   </label>
-                  <div className="mt-1.5 flex gap-1.5">
+                  <div className="mt-2 flex gap-1.5">
                     {[0.5, 1.0, 2.5].map((kw) => (
                       <button
                         key={kw}
                         type="button"
                         onClick={() => setRatedArrayKw(kw)}
-                        className={`flex-1 rounded px-2 py-1 text-[11px] font-medium transition ${ratedArrayKw === kw
-                          ? "bg-amber-500 text-slate-950 font-semibold"
-                          : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        className={`flex-1 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition duration-200 ${ratedArrayKw === kw
+                          ? "border border-amber-400/50 bg-amber-500/20 text-amber-200 font-bold shadow-[0_0_12px_rgba(251,191,36,0.25)]"
+                          : "border border-white/[0.07] bg-[#070e1c] text-slate-300 hover:bg-[#0c1626]"
                           }`}
                       >
                         {kw} kW
@@ -789,7 +789,7 @@ export function PowerCommunicationPanel({
                   <select
                     value={arrayArch}
                     onChange={(e) => setArrayArch(e.target.value as ArrayArchitecture)}
-                    className="mt-1.5 w-full rounded border border-slate-700 bg-slate-950 px-2.5 py-1 text-[11px] text-slate-200 focus-visible:outline-amber-400"
+                    className="mt-2 w-full rounded-lg border border-white/[0.08] bg-[#070e1c] px-3 py-1.5 text-[11px] text-slate-200 focus-visible:outline-amber-400 transition"
                   >
                     <option value="vertical_polar">Vertical Polar Mast (Optimal for Moon South Pole)</option>
                     <option value="tracking">Sun-Tracking Gimbal (100% Normal)</option>
@@ -814,9 +814,9 @@ export function PowerCommunicationPanel({
                     step="25"
                     value={hotelLoadWatts}
                     onChange={(e) => setHotelLoadWatts(Number(e.target.value))}
-                    className="mt-2 w-full accent-cyan-400 cursor-pointer"
+                    className="mt-2.5 w-full accent-cyan-400 cursor-pointer"
                   />
-                  <div className="flex justify-between text-[10px] text-slate-500">
+                  <div className="flex justify-between text-[10px] text-slate-500 font-mono">
                     <span>25W (Beacon)</span>
                     <span>100W (Avionics)</span>
                     <span>250W (Active)</span>
@@ -825,53 +825,53 @@ export function PowerCommunicationPanel({
               </div>
 
               {/* Output Sizing Badges */}
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 border-t border-slate-800/80 pt-3 text-xs">
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 border-t border-white/[0.07] pt-3.5 text-xs">
                 {/* Total Energy */}
-                <div className="rounded-md bg-slate-950/60 p-2.5">
+                <div className="rounded-xl border border-white/[0.06] bg-[#050b16]/70 p-3">
                   <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                    <Zap className="h-3 w-3 text-amber-400" />
+                    <Zap className="h-3.5 w-3.5 text-amber-400" />
                     <span>Total Energy Yield</span>
                   </div>
-                  <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
+                  <div className="mt-1 font-heading text-lg font-bold text-slate-100 tabular-nums">
                     {totalGeneratedKwh === null ? "N/A" : totalGeneratedKwh.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{totalGeneratedKwh === null ? "" : "kWh est."}</span>
                   </div>
-                  <div className="text-[10px] text-amber-400/80">Over mission window</div>
+                  <div className="text-[10px] text-amber-400/80 font-mono">Over mission window</div>
                 </div>
 
                 {/* Longest Darkness Stretch */}
-                <div className="rounded-md bg-slate-950/60 p-2.5">
+                <div className="rounded-xl border border-white/[0.06] bg-[#050b16]/70 p-3">
                   <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                    <Clock className="h-3 w-3 text-slate-400" />
+                    <Clock className="h-3.5 w-3.5 text-slate-400" />
                     <span>Max Shadow Stretch</span>
                   </div>
-                  <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
+                  <div className="mt-1 font-heading text-lg font-bold text-slate-100 tabular-nums">
                     {longestDarknessHrs === null ? "N/A" : longestDarknessHrs.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{longestDarknessHrs === null ? "" : "hrs"}</span>
                   </div>
-                  <div className="text-[10px] text-slate-400">Battery duration needed</div>
+                  <div className="text-[10px] text-slate-400 font-mono">Battery duration needed</div>
                 </div>
 
                 {/* Battery Pack Sizing */}
-                <div className="rounded-md bg-slate-950/60 p-2.5">
+                <div className="rounded-xl border border-white/[0.06] bg-[#050b16]/70 p-3">
                   <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                    <Battery className="h-3 w-3 text-cyan-400" />
+                    <Battery className="h-3.5 w-3.5 text-cyan-400" />
                     <span>Required Battery Pack</span>
                   </div>
-                  <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
+                  <div className="mt-1 font-heading text-lg font-bold text-slate-100 tabular-nums">
                     {nominalCapacityKwh === null ? "N/A" : nominalCapacityKwh.toFixed(2)} <span className="text-[11px] font-normal text-slate-400">{nominalCapacityKwh === null ? "" : "kWh est."}</span>
                   </div>
-                  <div className="text-[10px] text-cyan-400/80">At 70% Max DoD (Li-ion)</div>
+                  <div className="text-[10px] text-cyan-400/80 font-mono">At 70% Max DoD (Li-ion)</div>
                 </div>
 
                 {/* Flight Battery Mass */}
-                <div className="rounded-md bg-slate-950/60 p-2.5">
+                <div className="rounded-xl border border-white/[0.06] bg-[#050b16]/70 p-3">
                   <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-                    <Sliders className="h-3 w-3 text-indigo-400" />
+                    <Sliders className="h-3.5 w-3.5 text-indigo-400" />
                     <span>Est. Battery Mass</span>
                   </div>
-                  <div className="mt-1 text-base font-bold text-slate-100 tabular-nums">
+                  <div className="mt-1 font-heading text-lg font-bold text-slate-100 tabular-nums">
                     {estimatedBatteryMassKg === null ? "N/A" : estimatedBatteryMassKg.toFixed(1)} <span className="text-[11px] font-normal text-slate-400">{estimatedBatteryMassKg === null ? "" : "kg est."}</span>
                   </div>
-                  <div className="text-[10px] text-indigo-400/80">@ 150 Wh/kg space cells</div>
+                  <div className="text-[10px] text-indigo-400/80 font-mono">@ 150 Wh/kg space cells</div>
                 </div>
               </div>
             </div>
@@ -945,9 +945,11 @@ export function PowerCommunicationPanel({
                         />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#020617",
-                            borderColor: "#334155",
-                            borderRadius: "0.375rem",
+                            backgroundColor: "rgba(6, 12, 24, 0.92)",
+                            borderColor: "rgba(56, 189, 248, 0.3)",
+                            borderRadius: "0.75rem",
+                            boxShadow: "0 12px 32px rgba(0, 0, 0, 0.8)",
+                            backdropFilter: "blur(16px)",
                             fontSize: "11px",
                             color: "#f8fafc",
                           }}
@@ -988,9 +990,11 @@ export function PowerCommunicationPanel({
                         <ReferenceLine y={0} stroke="#64748b" strokeDasharray="4 3" />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "#020617",
-                            borderColor: "#334155",
-                            borderRadius: "0.375rem",
+                            backgroundColor: "rgba(6, 12, 24, 0.92)",
+                            borderColor: "rgba(56, 189, 248, 0.3)",
+                            borderRadius: "0.75rem",
+                            boxShadow: "0 12px 32px rgba(0, 0, 0, 0.8)",
+                            backdropFilter: "blur(16px)",
                             fontSize: "11px",
                             color: "#f8fafc",
                           }}

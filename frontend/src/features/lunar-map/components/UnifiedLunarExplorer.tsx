@@ -116,10 +116,10 @@ function parseUtcInput(value: string) {
 }
 
 const controlClass =
-  "rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-100 hover:border-slate-400 focus-visible:outline-2 focus-visible:outline-sky-400";
+  "rounded-xl border border-white/[0.09] bg-[#070e1c]/80 px-3.5 py-2 text-xs font-medium text-slate-200 backdrop-blur-md transition-all duration-200 hover:border-sky-400/40 hover:bg-sky-950/30 hover:text-white focus-visible:outline-2 focus-visible:outline-sky-400 shadow-sm";
 const modeClass =
   controlClass +
-  " inline-flex items-center gap-2 aria-pressed:border-sky-400/70 aria-pressed:bg-sky-400/10 aria-pressed:text-sky-200";
+  " inline-flex items-center gap-2 aria-pressed:border-sky-400/60 aria-pressed:bg-sky-500/15 aria-pressed:text-sky-100 aria-pressed:shadow-[0_0_16px_rgba(56,189,248,0.2)]";
 
 export function UnifiedLunarExplorer({
   ephemeris,
@@ -457,20 +457,20 @@ export function UnifiedLunarExplorer({
   return (
     <section
       aria-labelledby="unified-explorer-title"
-      className="col-span-full overflow-hidden rounded-xl border border-slate-800 bg-slate-900/75 shadow-lg shadow-slate-950/50"
+      className="glass-panel col-span-full overflow-hidden rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.7)]"
     >
       {/* Top Header & View Mode Controls */}
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-4 py-4 sm:px-6">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] bg-[#060c18]/90 px-4 py-4 sm:px-6 backdrop-blur-xl">
         <div className="flex flex-wrap items-center gap-3">
           <div>
             <div className="flex items-center gap-2">
               <h2
                 id="unified-explorer-title"
-                className="text-lg font-semibold tracking-tight text-slate-100"
+                className="font-heading text-lg font-semibold tracking-tight text-slate-100"
               >
                 3D Lunar Explorer &amp; Site Selection
               </h2>
-              <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-300">
+              <span className="rounded-full border border-cyan-400/30 bg-cyan-500/10 px-2.5 py-0.5 text-[10px] font-mono font-medium text-cyan-300 shadow-[0_0_10px_rgba(56,189,248,0.15)]">
                 3D → Surface
               </span>
             </div>
@@ -512,15 +512,15 @@ export function UnifiedLunarExplorer({
       </header>
 
       {/* Top Mission Status Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-950/70 px-4 py-2.5 text-xs sm:px-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] bg-[#040814]/85 px-4 py-2.5 text-xs sm:px-6 backdrop-blur-md">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="flex h-2 w-2 rounded-full bg-cyan-400 ring-2 ring-cyan-400/30" />
+          <span className="flex h-2 w-2 rounded-full bg-cyan-400 ring-2 ring-cyan-400/40 shadow-[0_0_8px_#38bdf8]" />
           <span className="text-slate-400">Selected Site:</span>
           <span className="font-semibold text-cyan-300">
             {selectedSite ? selectedSite.name : "None (Select on Globe, Map, or List)"}
           </span>
           {selectedSite && (
-            <span className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-[11px] text-slate-300">
+            <span className="rounded-md border border-white/[0.08] bg-[#0A1424] px-2 py-0.5 font-mono text-[11px] text-slate-300">
               {selectedSite.latitude_deg >= 0
                 ? `${selectedSite.latitude_deg.toFixed(2)}°N`
                 : `${Math.abs(selectedSite.latitude_deg).toFixed(2)}°S`},{" "}
@@ -871,14 +871,14 @@ export function UnifiedLunarExplorer({
 
           {/* Right 4 Cols: Site Selector, Custom Coordinates & LOLA Location Details */}
           <div className="flex flex-col gap-3 lg:col-span-4">
-            <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-1">
+            <div className="flex rounded-xl border border-white/[0.08] bg-[#040814]/90 p-1 backdrop-blur-md shadow-sm">
               <button
                 type="button"
                 onClick={() => setActiveTab("candidates")}
-                className={`flex-1 rounded-md py-1.5 text-xs font-medium transition ${
+                className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition ${
                   activeTab === "candidates"
-                    ? "bg-slate-800 text-cyan-300 shadow"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "border border-cyan-400/40 bg-cyan-500/15 text-cyan-200 shadow-[0_0_12px_rgba(56,189,248,0.2)] font-semibold"
+                    : "text-slate-400 hover:text-slate-200 border border-transparent"
                 }`}
               >
                 Artemis Regions ({sites.length})
@@ -896,10 +896,10 @@ export function UnifiedLunarExplorer({
                     }
                   }
                 }}
-                className={`flex-1 rounded-md py-1.5 text-xs font-medium transition ${
+                className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition ${
                   activeTab === "apollo"
-                    ? "bg-slate-800 text-sky-300 shadow"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "border border-sky-400/40 bg-sky-500/15 text-sky-200 shadow-[0_0_12px_rgba(56,189,248,0.2)] font-semibold"
+                    : "text-slate-400 hover:text-slate-200 border border-transparent"
                 }`}
               >
                 Apollo Sites ({Object.keys(APOLLO_DOSSIERS).length})
@@ -907,10 +907,10 @@ export function UnifiedLunarExplorer({
               <button
                 type="button"
                 onClick={() => setActiveTab("custom")}
-                className={`flex-1 rounded-md py-1.5 text-xs font-medium transition ${
+                className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition ${
                   activeTab === "custom"
-                    ? "bg-slate-800 text-purple-300 shadow"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "border border-purple-400/40 bg-purple-500/15 text-purple-200 shadow-[0_0_12px_rgba(168,85,247,0.2)] font-semibold"
+                    : "text-slate-400 hover:text-slate-200 border border-transparent"
                 }`}
               >
                 Custom Coordinates
@@ -918,14 +918,14 @@ export function UnifiedLunarExplorer({
             </div>
 
             {sitesLoading && (
-              <div className="flex items-center justify-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 p-6 text-sm text-slate-400">
+              <div className="flex items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-[#040814]/70 p-6 text-sm text-slate-400">
                 <RefreshCw className="h-4 w-4 animate-spin text-cyan-400" />
                 <span>Fetching NASA candidate sites...</span>
               </div>
             )}
 
             {sitesError && (
-              <div className="flex items-start gap-2 rounded-lg border border-rose-900/50 bg-rose-950/30 p-3 text-xs text-rose-300">
+              <div className="flex items-start gap-2 rounded-xl border border-rose-500/30 bg-rose-950/30 p-3 text-xs text-rose-300">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
                 <div className="flex-1">
                   <p className="font-medium">Failed to load sites</p>
@@ -959,10 +959,10 @@ export function UnifiedLunarExplorer({
                             setSelectedSite(site);
                           });
                         }}
-                        className={`flex w-full items-center justify-between rounded-lg border p-2.5 text-left text-xs transition ${
+                        className={`flex w-full items-center justify-between rounded-xl border p-2.5 text-left text-xs transition duration-200 ${
                           isSelected
-                            ? "border-cyan-500/60 bg-cyan-950/30 text-cyan-100 shadow-sm"
-                            : "border-slate-800/80 bg-slate-950/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/50"
+                            ? "border-cyan-400/50 bg-gradient-to-r from-cyan-950/40 to-slate-950/60 text-cyan-100 shadow-[0_0_16px_rgba(56,189,248,0.2)] font-medium"
+                            : "border-white/[0.07] bg-[#070e1a]/60 text-slate-300 hover:border-cyan-500/30 hover:bg-[#0c1626]/70"
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -981,7 +981,7 @@ export function UnifiedLunarExplorer({
                             </p>
                           </div>
                         </div>
-                        <span className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                        <span className="rounded-md border border-white/[0.08] bg-[#0A1424] px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
                           {site.site_id}
                         </span>
                       </button>
@@ -1009,10 +1009,10 @@ export function UnifiedLunarExplorer({
                             setSelectedSite(apolloDossierToLandingSite(dossier));
                           });
                         }}
-                        className={`flex w-full items-center justify-between rounded-lg border p-2 text-left text-xs transition ${
+                        className={`flex w-full items-center justify-between rounded-xl border p-2 text-left text-xs transition duration-200 ${
                           isSelected
-                            ? "border-sky-500/60 bg-sky-950/40 text-sky-100 shadow-sm"
-                            : "border-slate-800/80 bg-slate-950/40 text-slate-300 hover:border-slate-700 hover:bg-slate-800/50"
+                            ? "border-sky-400/50 bg-gradient-to-r from-sky-950/40 to-slate-950/60 text-sky-100 shadow-[0_0_16px_rgba(56,189,248,0.2)] font-medium"
+                            : "border-white/[0.07] bg-[#070e1a]/60 text-slate-300 hover:border-sky-500/30 hover:bg-[#0c1626]/70"
                         }`}
                       >
                         <div className="flex items-center gap-2">
@@ -1028,7 +1028,7 @@ export function UnifiedLunarExplorer({
                             </p>
                           </div>
                         </div>
-                        <span className="rounded bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-sky-300">
+                        <span className="rounded-md border border-white/[0.08] bg-[#0A1424] px-1.5 py-0.5 font-mono text-[10px] text-sky-300">
                           {dossier.latitudeDeg >= 0
                             ? `${dossier.latitudeDeg.toFixed(2)}°N`
                             : `${Math.abs(dossier.latitudeDeg).toFixed(2)}°S`},{" "}
@@ -1046,29 +1046,29 @@ export function UnifiedLunarExplorer({
                   const dossier = getApolloDossier(selectedSite.site_id);
                   if (!dossier) return null;
                   return (
-                    <div className="flex flex-col gap-2.5 rounded-lg border border-sky-800/60 bg-gradient-to-b from-sky-950/30 to-slate-950/70 p-3 shadow-inner">
-                      <div className="flex items-start justify-between gap-2 border-b border-sky-900/40 pb-2">
+                    <div className="flex flex-col gap-2.5 rounded-xl border border-sky-400/30 bg-gradient-to-b from-[#081324]/85 to-[#040915]/95 p-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+                      <div className="flex items-start justify-between gap-2 border-b border-sky-400/20 pb-2.5">
                         <div>
                           <div className="flex items-center gap-1.5">
-                            <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-sky-300 border border-sky-400/30">
+                            <span className="rounded-full bg-sky-500/20 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-sky-300 border border-sky-400/40 shadow-[0_0_8px_rgba(56,189,248,0.2)]">
                               NASA Apollo
                             </span>
-                            <span className="text-[10px] text-slate-400">{dossier.date}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">{dossier.date}</span>
                           </div>
-                          <h3 className="mt-1 font-bold text-slate-100">{dossier.siteName}</h3>
+                          <h3 className="mt-1 font-heading text-sm font-bold text-slate-100">{dossier.siteName}</h3>
                         </div>
-                        <span className="rounded-full border border-sky-700/60 bg-sky-950/80 px-2 py-0.5 font-mono text-[10px] text-sky-300">
+                        <span className="rounded-md border border-sky-400/30 bg-sky-950/80 px-2 py-0.5 font-mono text-[10px] text-sky-300">
                           {dossier.id}
                         </span>
                       </div>
 
                       {/* Quick Stats Grid */}
                       <div className="grid grid-cols-2 gap-2 text-[11px]">
-                        <div className="rounded bg-slate-900/80 p-2">
-                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                        <div className="rounded-lg border border-white/[0.06] bg-[#070e1a]/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-400 flex items-center gap-1 font-medium font-mono">
                             <Users className="h-3 w-3 text-sky-400" /> Crew
                           </span>
-                          <p className="mt-0.5 text-slate-200 font-medium leading-tight">
+                          <p className="mt-0.5 text-slate-200 font-semibold leading-tight">
                             {dossier.crew.commander}
                           </p>
                           <p className="text-[10px] text-slate-400">
@@ -1076,11 +1076,11 @@ export function UnifiedLunarExplorer({
                           </p>
                         </div>
 
-                        <div className="rounded bg-slate-900/80 p-2">
-                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                        <div className="rounded-lg border border-white/[0.06] bg-[#070e1a]/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-400 flex items-center gap-1 font-medium font-mono">
                             <Rocket className="h-3 w-3 text-cyan-400" /> Spacecraft
                           </span>
-                          <p className="mt-0.5 text-slate-200 font-medium leading-tight truncate" title={dossier.spacecraft.lunarModule}>
+                          <p className="mt-0.5 text-slate-200 font-semibold leading-tight truncate" title={dossier.spacecraft.lunarModule}>
                             {dossier.spacecraft.lunarModule}
                           </p>
                           <p className="text-[10px] text-slate-400 truncate" title={dossier.spacecraft.commandServiceModule}>
@@ -1088,11 +1088,11 @@ export function UnifiedLunarExplorer({
                           </p>
                         </div>
 
-                        <div className="rounded bg-slate-900/80 p-2">
-                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                        <div className="rounded-lg border border-white/[0.06] bg-[#070e1a]/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-400 flex items-center gap-1 font-medium font-mono">
                             <Clock className="h-3 w-3 text-amber-400" /> Surface EVA
                           </span>
-                          <p className="mt-0.5 text-slate-200 font-medium">
+                          <p className="mt-0.5 text-slate-200 font-semibold font-mono">
                             {dossier.stats.totalEvaDuration}
                           </p>
                           <p className="text-[10px] text-slate-400">
@@ -1100,11 +1100,11 @@ export function UnifiedLunarExplorer({
                           </p>
                         </div>
 
-                        <div className="rounded bg-slate-900/80 p-2">
-                          <span className="text-[10px] uppercase text-slate-500 flex items-center gap-1 font-medium">
+                        <div className="rounded-lg border border-white/[0.06] bg-[#070e1a]/80 p-2">
+                          <span className="text-[10px] uppercase text-slate-400 flex items-center gap-1 font-medium font-mono">
                             <Scale className="h-3 w-3 text-emerald-400" /> Sample Return
                           </span>
-                          <p className="mt-0.5 text-emerald-300 font-medium font-mono">
+                          <p className="mt-0.5 text-emerald-300 font-semibold font-mono">
                             {dossier.stats.sampleMassKg} kg
                           </p>
                           <p className="text-[10px] text-slate-400">
@@ -1118,8 +1118,8 @@ export function UnifiedLunarExplorer({
                       </div>
 
                       {/* Official NASA / LRO Narrative */}
-                      <div className="rounded border border-sky-500/25 bg-slate-900/90 p-2.5 text-xs">
-                        <div className="flex items-center gap-1.5 mb-1 text-[10px] uppercase tracking-wider font-semibold text-sky-400">
+                      <div className="rounded-lg border border-sky-400/25 bg-[#050b16]/90 p-2.5 text-xs">
+                        <div className="flex items-center gap-1.5 mb-1.5 text-[10px] uppercase tracking-wider font-semibold text-sky-400 font-mono">
                           <FileText className="h-3 w-3" />
                           <span>NASA LRO Surface Reconnaissance Dossier</span>
                         </div>
@@ -1146,9 +1146,9 @@ export function UnifiedLunarExplorer({
             )}
 
             {activeTab === "custom" && (
-              <div className="flex flex-col gap-2.5 rounded-lg border border-purple-900/40 bg-purple-950/20 p-3">
+              <div className="flex flex-col gap-2.5 rounded-xl border border-purple-500/30 bg-purple-950/20 p-3.5 backdrop-blur-md">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-purple-200">
+                  <span className="text-xs font-semibold text-purple-200">
                     Target Coordinate Entry
                   </span>
                   <span className="font-mono text-[10px] text-purple-400">
@@ -1163,7 +1163,7 @@ export function UnifiedLunarExplorer({
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
                     placeholder="e.g. South Pole Ridge Point"
-                    className="mt-1 w-full rounded border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs text-slate-200 focus:border-purple-500 focus:outline-none"
+                    className="mt-1 w-full rounded-lg border border-white/[0.08] bg-[#070e1a] px-3 py-1.5 text-xs text-slate-200 focus:border-purple-400 focus:outline-none transition"
                   />
                 </div>
 
@@ -1177,7 +1177,7 @@ export function UnifiedLunarExplorer({
                       max="-80.0"
                       value={customLat}
                       onChange={(e) => setCustomLat(e.target.value)}
-                      className="mt-1 w-full rounded border border-slate-700 bg-slate-900 px-2.5 py-1 font-mono text-xs text-slate-200 focus:border-purple-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-white/[0.08] bg-[#070e1a] px-3 py-1.5 font-mono text-xs text-slate-200 focus:border-purple-400 focus:outline-none transition"
                     />
                   </div>
                   <div>
@@ -1189,7 +1189,7 @@ export function UnifiedLunarExplorer({
                       max="360.0"
                       value={customLon}
                       onChange={(e) => setCustomLon(e.target.value)}
-                      className="mt-1 w-full rounded border border-slate-700 bg-slate-900 px-2.5 py-1 font-mono text-xs text-slate-200 focus:border-purple-500 focus:outline-none"
+                      className="mt-1 w-full rounded-lg border border-white/[0.08] bg-[#070e1a] px-3 py-1.5 font-mono text-xs text-slate-200 focus:border-purple-400 focus:outline-none transition"
                     />
                   </div>
                 </div>
@@ -1198,7 +1198,7 @@ export function UnifiedLunarExplorer({
                   <button
                     type="button"
                     onClick={() => handlePlotCustomSite()}
-                    className="flex flex-1 items-center justify-center gap-1 rounded bg-purple-600 py-1.5 text-xs font-semibold text-white transition hover:bg-purple-500"
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-purple-400/40 bg-purple-600/80 py-2 text-xs font-semibold text-white transition hover:bg-purple-600 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
                   >
                     <PlusCircle className="h-3.5 w-3.5" />
                     Plot Custom Target
@@ -1210,7 +1210,7 @@ export function UnifiedLunarExplorer({
                         setCustomCoordinates(null);
                         if (sites.length > 0) setSelectedSite(sites[0]);
                       }}
-                      className="rounded border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-xs text-slate-400 hover:text-slate-200"
+                      className="rounded-lg border border-white/[0.08] bg-[#070e1a] px-3 py-2 text-xs text-slate-400 hover:text-slate-200 transition"
                     >
                       Clear
                     </button>
@@ -1221,46 +1221,46 @@ export function UnifiedLunarExplorer({
 
             {/* Selected Location Details & LOLA Terrain Safety Card */}
             {selectedSite && activeTab !== "apollo" && (
-              <div className="flex flex-col gap-2.5 rounded-lg border border-slate-800 bg-slate-950/60 p-3 shadow-inner">
-                <div className="flex items-start justify-between gap-2 border-b border-slate-800 pb-2">
+              <div className="flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-gradient-to-b from-[#081324]/75 to-[#040915]/90 p-3.5 shadow-inner">
+                <div className="flex items-start justify-between gap-2 border-b border-white/[0.07] pb-2.5">
                   <div>
-                    <h3 className="font-semibold text-slate-100">{selectedSite.name}</h3>
+                    <h3 className="font-heading font-semibold text-slate-100">{selectedSite.name}</h3>
                     <p className="text-[11px] text-slate-400">{selectedSite.region}</p>
                   </div>
-                  <span className="rounded-full border border-cyan-800/60 bg-cyan-950/60 px-2 py-0.5 font-mono text-[10px] text-cyan-300">
+                  <span className="rounded-md border border-cyan-400/30 bg-cyan-950/70 px-2 py-0.5 font-mono text-[10px] text-cyan-300">
                     {selectedSite.site_id}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="rounded bg-slate-900/90 p-2">
-                    <span className="text-[10px] uppercase text-slate-500">Latitude</span>
+                  <div className="rounded-lg border border-white/[0.06] bg-[#070e1a]/80 p-2">
+                    <span className="text-[10px] uppercase text-slate-400 font-mono">Latitude</span>
                     <p className="font-mono font-medium text-slate-200">
                       {selectedSite.latitude_deg >= 0
                         ? `${selectedSite.latitude_deg.toFixed(3)}°N`
                         : `${Math.abs(selectedSite.latitude_deg).toFixed(3)}°S`}
                     </p>
                   </div>
-                  <div className="rounded bg-slate-900/90 p-2">
-                    <span className="text-[10px] uppercase text-slate-500">Longitude</span>
+                  <div className="rounded-lg border border-white/[0.06] bg-[#070e1a]/80 p-2">
+                    <span className="text-[10px] uppercase text-slate-400 font-mono">Longitude</span>
                     <p className="font-mono font-medium text-slate-200">
                       {selectedSite.longitude_deg >= 0
                         ? `${selectedSite.longitude_deg.toFixed(3)}°E`
                         : `${Math.abs(selectedSite.longitude_deg).toFixed(3)}°W`}
                     </p>
                   </div>
-                  <div className="col-span-2 flex items-center justify-between rounded bg-slate-900/90 px-2.5 py-1.5 text-[11px]">
-                    <span className="flex items-center gap-1 text-slate-400">
-                      <Mountain className="h-3.5 w-3.5 text-slate-400" />
+                  <div className="col-span-2 flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#070e1a]/80 px-3 py-2 text-[11px]">
+                    <span className="flex items-center gap-1.5 text-slate-400">
+                      <Mountain className="h-3.5 w-3.5 text-amber-400" />
                       Elevation:
                     </span>
                     {terrainMetrics?.elevation_m != null ? (
-                      <span className="font-mono text-amber-300">
+                      <span className="font-mono font-semibold text-amber-300">
                         {terrainMetrics.elevation_m >= 0 ? "+" : ""}
                         {terrainMetrics.elevation_m.toFixed(0)} m (LOLA)
                       </span>
                     ) : selectedSite.elevation_m != null ? (
-                      <span className="font-mono text-amber-300">
+                      <span className="font-mono font-semibold text-amber-300">
                         {selectedSite.elevation_m >= 0 ? "+" : ""}
                         {selectedSite.elevation_m.toFixed(0)} m (approx)
                       </span>
@@ -1274,10 +1274,10 @@ export function UnifiedLunarExplorer({
 
                 {/* LOLA Terrain Safety Metrics */}
                 {terrainMetrics && (
-                  <div className="rounded-md border border-slate-800 bg-slate-900/60 p-2.5 text-[11px]">
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-2.5 text-[11px]">
                     <div className="mb-1.5 flex items-center justify-between">
                       <span className="font-semibold text-slate-200">LOLA Terrain Safety</span>
-                      <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[10px] text-emerald-300">
+                      <span className="rounded-full border border-emerald-400/30 bg-emerald-500/20 px-2 py-0.5 font-mono text-[10px] text-emerald-300 font-semibold shadow-[0_0_8px_rgba(74,222,128,0.2)]">
                         {terrainMetrics.safety_rating} ({terrainMetrics.terrain_safety_score}/100)
                       </span>
                     </div>
@@ -1319,7 +1319,7 @@ export function UnifiedLunarExplorer({
                 )}
 
                 {selectedSite.description && (
-                  <p className="rounded border border-slate-800/60 bg-slate-900/40 p-2 text-xs leading-relaxed text-slate-300">
+                  <p className="rounded-lg border border-white/[0.06] bg-[#050b16]/60 p-2.5 text-xs leading-relaxed text-slate-300">
                     {selectedSite.description}
                   </p>
                 )}
@@ -1331,7 +1331,7 @@ export function UnifiedLunarExplorer({
                   >
                     Source: {selectedSite.source || "NASA Artemis III / LRO"}
                   </span>
-                  <span className="rounded bg-slate-800 px-1 py-0.5 text-[9px] uppercase text-slate-400">
+                  <span className="rounded-md border border-white/[0.08] bg-[#0A1424] px-1.5 py-0.5 text-[9px] uppercase text-slate-400 font-mono">
                     {selectedSite.coordinate_type?.replace(/_/g, " ") || "centroid"}
                   </span>
                 </div>
