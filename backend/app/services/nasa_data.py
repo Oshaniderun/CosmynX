@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import hashlib
 import json
+import ssl
 from pathlib import Path
 from typing import Any
 
@@ -105,9 +106,15 @@ def _query_horizons_target(
         "STEP_SIZE": f"'{step_minutes}m'",
         "QUANTITIES": "'4'",
         "CSV_FORMAT": "YES",
+        "APPARENT": "AIRLESS",
+        "TIME_TYPE": "UT",
+        "ELEV_CUT": "'-90'",
     }
 
-    response = httpx.get(HORIZONS_API_URL, params=params, timeout=timeout_seconds)
+    response = httpx.get(
+        HORIZONS_API_URL, params=params, timeout=timeout_seconds,
+        verify=ssl.create_default_context(),
+    )
     response.raise_for_status()
     payload = response.json()
     result_text = payload.get("result", "")
@@ -120,16 +127,46 @@ def _cache_path(
     start_utc: str,
     end_utc: str,
     step_minutes: int,
+    legacy: bool = False,
 ) -> Path:
     """Build a deterministic cache file path in data/processed/."""
+    precision = 4 if legacy else 6
     key_raw = (
-        f"{latitude_deg:.4f}_{longitude_deg:.4f}_"
+        f"{latitude_deg:.{precision}f}_{longitude_deg:.{precision}f}_"
         f"{_parse_utc_iso(start_utc).strftime('%Y%m%dT%H%MZ')}_"
         f"{_parse_utc_iso(end_utc).strftime('%Y%m%dT%H%MZ')}_"
         f"{step_minutes}m"
     )
     digest = hashlib.sha256(key_raw.encode("utf-8")).hexdigest()[:12]
     return PROCESSED_DATA_DIR / f"ephemeris_{digest}.json"
+
+
+def _matching_cache(path: Path, latitude: float, longitude: float, start: str, end: str, step: int):
+    """Validate metadata before trusting even an older, lower-precision cache key."""
+    try:
+        cached = json.loads(path.read_text(encoding="utf-8"))
+        if (isinstance(cached, dict) and cached.get("source") == "JPL Horizons"
+                and cached.get("body") == "Moon (301)"
+                and cached.get("longitude_convention") == "East-positive (-180 to 180 deg)"
+                and cached.get("latitude_deg") == latitude and cached.get("longitude_deg") == longitude
+                and isinstance(cached.get("start_utc"), str) and isinstance(cached.get("end_utc"), str)
+                and _parse_utc_iso(cached["start_utc"]) == _parse_utc_iso(start)
+                and _parse_utc_iso(cached["end_utc"]) == _parse_utc_iso(end)
+                and cached.get("step_minutes") == step and isinstance(cached.get("points"), list)):
+            return cached
+    except (OSError, ValueError, KeyError, TypeError):
+        pass
+    return None
+
+
+def get_cached_ephemeris_metadata(latitude_deg: float, longitude_deg: float, start_utc: str,
+                                  end_utc: str, step_minutes: int) -> dict[str, Any]:
+    for legacy in (False, True):
+        path = _cache_path(latitude_deg, longitude_deg, start_utc, end_utc, step_minutes, legacy=legacy)
+        cached = _matching_cache(path, latitude_deg, longitude_deg, start_utc, end_utc, step_minutes)
+        if cached is not None:
+            return {"retrieved_utc": cached.get("retrieved_utc"), "request_fingerprint": path.stem}
+    return {}
 
 
 def fetch_jpl_horizons_ephemeris(
@@ -154,13 +191,11 @@ def fetch_jpl_horizons_ephemeris(
         step_minutes=step_minutes,
     )
 
-    if use_cache and cache_file.exists():
-        try:
-            cached = json.loads(cache_file.read_text(encoding="utf-8"))
-            if isinstance(cached, dict) and isinstance(cached.get("points"), list):
+    if use_cache:
+        for path in (cache_file, _cache_path(latitude_deg, longitude_deg, start_utc, end_utc, step_minutes, legacy=True)):
+            cached = _matching_cache(path, latitude_deg, longitude_deg, start_utc, end_utc, step_minutes)
+            if cached is not None:
                 return cached["points"]
-        except (OSError, json.JSONDecodeError):
-            pass
 
     try:
         sun_series = _query_horizons_target(
@@ -211,6 +246,9 @@ def fetch_jpl_horizons_ephemeris(
             "start_utc": _parse_utc_iso(start_utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "end_utc": _parse_utc_iso(end_utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "step_minutes": step_minutes,
+            "retrieved_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "observer_altitude_km": 0,
+            "apparent": "AIRLESS",
             "points": points,
         }
         cache_file.write_text(json.dumps(cache_payload, indent=2), encoding="utf-8")
