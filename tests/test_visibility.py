@@ -1,14 +1,6 @@
 """Unit tests for Member 4 — Solar Power & Communication Analysis."""
 
-from pathlib import Path
-import sys
 from unittest.mock import patch
-
-# Ensure backend directory is in sys.path for test runners, IDEs, and direct script execution
-backend_path = Path(__file__).resolve().parent.parent / "backend"
-if str(backend_path) not in sys.path:
-    sys.path.insert(0, str(backend_path))
-
 from app.services.visibility import analyze_site_conditions
 
 

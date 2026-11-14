@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from app.api import comparison, conditions, ephemeris, helios, sites, terrain
+from app.api import comparison, conditions, ephemeris, helios, sites
 
 load_dotenv()
 
@@ -13,17 +13,13 @@ app = FastAPI(
     version="0.1.0",
 )
 
-raw_allowed_origins = os.getenv("ALLOWED_ORIGINS", "").strip()
-allowed_origins = (
-    [origin.strip() for origin in raw_allowed_origins.split(",") if origin.strip()]
-    if raw_allowed_origins
-    else ["http://localhost:5173", "http://127.0.0.1:5173"]
-)
+allowed_origins = os.getenv(
+    "ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173"
+).split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_origin_regex=None if raw_allowed_origins else r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origins=[origin.strip() for origin in allowed_origins if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,7 +33,6 @@ def health_check() -> dict[str, str]:
 
 
 app.include_router(sites.router, prefix="/api", tags=["Sites"])
-app.include_router(terrain.router, prefix="/api", tags=["Terrain"])
 app.include_router(ephemeris.router, prefix="/api", tags=["Ephemeris"])
 app.include_router(conditions.router, prefix="/api", tags=["Conditions"])
 app.include_router(comparison.router, prefix="/api", tags=["Comparison"])
