@@ -1,7 +1,8 @@
 """Member 5 regression checks; run from backend: python -m unittest discover -s ../tests -v."""
 
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
+from pathlib import Path
 from unittest.mock import patch
 
 from fastapi import HTTPException
@@ -38,6 +39,26 @@ def ephemeris(**params):
         EphemerisPoint(timestamp_utc="2026-11-20T00:00:00Z", sun_elevation_deg=2, earth_elevation_deg=0),
         EphemerisPoint(timestamp_utc="2026-11-20T02:00:00Z", sun_elevation_deg=-1, earth_elevation_deg=1),
     ])
+
+
+def complete_ephemeris(**params):
+    start = datetime.fromisoformat(params["start_utc"].replace("Z", "+00:00"))
+    end = datetime.fromisoformat(params["end_utc"].replace("Z", "+00:00"))
+    step_minutes = params["step_minutes"]
+    points = []
+    instant = start
+    while instant <= end:
+        points.append(EphemerisPoint(
+            timestamp_utc=instant.isoformat().replace("+00:00", "Z"),
+            sun_elevation_deg=1.0,
+            earth_elevation_deg=1.0,
+        ))
+        instant += timedelta(minutes=step_minutes)
+    if points[-1].timestamp_utc != params["end_utc"]:
+        points.append(EphemerisPoint(
+            timestamp_utc=params["end_utc"], sun_elevation_deg=1.0, earth_elevation_deg=1.0,
+        ))
+    return EphemerisResponse(**params, status="ok", points=points)
 
 
 class ValidationTests(unittest.TestCase):
@@ -231,9 +252,10 @@ class FinalizedComparisonTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             compare_scenarios(request("demo", [scenario("custom", latitude_deg=-88, longitude_deg=0), scenario()]))
 
+    @patch("app.services.comparison.get_ephemeris_for_site", side_effect=complete_ephemeris)
     @patch("app.services.comparison.analyze_site_conditions", side_effect=lambda **params: ConditionsResponse(**params))
-    def test_real_cached_nasa_example_has_complete_metrics(self, _):
-        # Uses committed 6-hour NASA Horizons ephemeris fixtures at (-89.54, 0.0) and (-89.45, -137.0)
+    def test_complete_mocked_ephemeris_produces_complete_window_metrics(self, *_):
+        # Controlled response prevents this regression test from making any network request.
         scenarios = [
             dict(site_id="custom", scenario_id="cached_001", latitude_deg=-89.54, longitude_deg=0.0,
                  start_utc="2026-11-20T00:00:00Z", end_utc="2026-11-20T06:00:00Z"),
@@ -307,6 +329,56 @@ class FinalizedComparisonTests(unittest.TestCase):
             result = compare_scenarios(request(scenarios=entries))
         self.assertTrue(all(s.conditions.metrics.sunlit_hours <= 6 for s in result.scenarios))
         self.assertEqual(result.scenarios[0].summary_method, "comparison_intervals")
+
+    @patch("app.services.comparison.get_ephemeris_for_site", side_effect=ephemeris)
+    @patch("app.services.comparison.analyze_site_conditions", side_effect=conditions)
+    def test_custom_coordinates_and_independent_windows_reach_services(self, analyze, _):
+        custom = dict(
+            site_id="custom", scenario_id="custom-pin", latitude_deg=-88.125,
+            longitude_deg=145.25, start_utc="2026-11-20T01:00:00Z",
+            end_utc="2026-11-21T07:00:00Z", step_minutes=30,
+        )
+        catalog = dict(
+            site_id="candidate_002", scenario_id="catalog-site", latitude_deg=None,
+            longitude_deg=None, start_utc="2026-11-22T00:00:00Z",
+            end_utc="2026-11-22T06:00:00Z", step_minutes=60,
+        )
+        compare_scenarios(request(scenarios=[custom, catalog]))
+        self.assertEqual(analyze.call_args_list[0].kwargs["latitude_deg"], -88.125)
+        self.assertEqual(analyze.call_args_list[0].kwargs["longitude_deg"], 145.25)
+        self.assertEqual(analyze.call_args_list[0].kwargs["start_utc"], custom["start_utc"])
+        self.assertEqual(analyze.call_args_list[0].kwargs["end_utc"], custom["end_utc"])
+        self.assertEqual(analyze.call_args_list[1].kwargs["start_utc"], catalog["start_utc"])
+        self.assertEqual(analyze.call_args_list[1].kwargs["end_utc"], catalog["end_utc"])
+
+
+class FrontendComparisonRegressionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.panel_source = (
+            Path(__file__).resolve().parents[1]
+            / "frontend/src/features/comparison/components/ComparisonPanel.tsx"
+        ).read_text(encoding="utf-8")
+
+    def test_custom_map_site_is_normalized_and_coordinates_are_forwarded(self):
+        self.assertIn('selectedSite.site_id.startsWith("custom_")', self.panel_source)
+        self.assertIn('siteId: isCustomSite ? "custom" : selectedSite.site_id', self.panel_source)
+        self.assertIn('latitude_deg: Number(draft.latitude)', self.panel_source)
+        self.assertIn('longitude_deg: Number(draft.longitude)', self.panel_source)
+
+    def test_each_scenario_uses_its_own_mission_window(self):
+        self.assertIn('const start = utc(draft.start);', self.panel_source)
+        self.assertIn('const end = utc(draft.end);', self.panel_source)
+        self.assertIn('start_utc: start,', self.panel_source)
+        self.assertIn('end_utc: end,', self.panel_source)
+
+    def test_baseline_promotion_keeps_context_update_outside_state_updater(self):
+        start = self.panel_source.index("function promoteBaseline(id: string)")
+        end = self.panel_source.index("function addScenario()", start)
+        promotion = self.panel_source[start:end]
+        updater_start = promotion.index("setDrafts((current) =>")
+        self.assertIn("setSelectedSite(", promotion[:updater_start])
+        self.assertNotIn("setSelectedSite(", promotion[updater_start:])
 
 
 if __name__ == "__main__":

@@ -224,6 +224,65 @@ def _power_model(samples: list[Sample], sun_intervals: list[Optional[list[Segmen
     }
 
 
+def calculate_visibility_transitions(
+    timeline: list[dict], start: datetime, end: datetime
+) -> Optional[dict]:
+    """Estimate sampled horizon transitions only for complete, known boundary coverage."""
+    if not timeline:
+        return None
+    try:
+        start = _parse_utc_timestamp(start.isoformat())
+        end = _parse_utc_timestamp(end.isoformat())
+        timestamps = [
+            _parse_utc_timestamp(point["timestamp_utc"])
+            for point in timeline
+        ]
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return None
+    if (end <= start or timestamps[0] != start or timestamps[-1] != end
+            or any(previous >= current for previous, current in zip(timestamps, timestamps[1:]))):
+        return None
+    if any(
+        not isinstance(point.get("is_sunlit"), bool)
+        or not isinstance(point.get("is_earth_visible"), bool)
+        for point in timeline
+    ):
+        return None
+
+    transitions = {}
+    for target, state_key, positive_event, negative_event, positive_label, negative_label in (
+        ("solar", "is_sunlit", "sunset", "sunrise", "sunlit", "shadow"),
+        ("earth", "is_earth_visible", "earthset", "earthrise", "contact_active", "blackout"),
+    ):
+        initial = timeline[0][state_key]
+        event = "none"
+        event_time = None
+        hours_until = None
+        for point, timestamp in zip(timeline[1:], timestamps[1:]):
+            if point[state_key] != initial:
+                event_time = timestamp
+                event = positive_event if initial else negative_event
+                hours_until = round((event_time - start).total_seconds() / 3600.0, 2)
+                break
+        initial_label = positive_label if initial else negative_label
+        if target == "earth":
+            state_description = "Earth geometrically above the horizon" if initial else "Earth below the geometric horizon"
+        else:
+            state_description = "Sun above the geometric horizon" if initial else "Sun below the geometric horizon"
+        if event == "none":
+            description = f"{state_description} throughout sampled window"
+        else:
+            description = f"{event.capitalize()} in {hours_until:.2f} hours (sampled geometric transition)"
+        transitions[target] = {
+            "current_state": initial_label,
+            "next_event": event,
+            "transition_utc": event_time.isoformat().replace("+00:00", "Z") if event_time else None,
+            "hours_until": hours_until,
+            "description": description,
+        }
+    return transitions
+
+
 def analyze_site_conditions(
     site_id: str,
     latitude_deg: float,
@@ -284,10 +343,12 @@ def analyze_site_conditions(
     )
 
     raw_times = []
+    all_source_timestamps_valid = True
     for point in points:
         try:
             timestamp = _parse_utc_timestamp(point.get("timestamp_utc"))
         except (AttributeError, TypeError, ValueError):
+            all_source_timestamps_valid = False
             continue
         if start is not None and end is not None and start <= timestamp <= end:
             raw_times.append((timestamp, point))
@@ -352,4 +413,6 @@ def analyze_site_conditions(
         windows=windows,
         timeline=timeline,
         power_modeling=power_modeling,
+        transitions=(calculate_visibility_transitions(timeline, start, end)
+                     if start is not None and end is not None and all_source_timestamps_valid else None),
     )
