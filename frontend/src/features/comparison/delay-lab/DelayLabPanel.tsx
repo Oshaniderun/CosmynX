@@ -4,24 +4,21 @@ import {
   ArrowRight,
   Check,
   ChevronRight,
-  Clock3,
   Download,
   FlaskConical,
-  Layers3,
   Pause,
   Play,
   Plus,
   Radio,
-  RefreshCw,
   RotateCcw,
   ShieldCheck,
   Sparkles,
+  SlidersHorizontal,
   X,
 } from "lucide-react";
 import { useMission } from "../../../context/MissionContext";
 import type { LandingSite } from "../../../types/helios";
 import { fetchCandidateSites } from "../../lunar-map/services/sitesService";
-import { ComparisonPanel } from "../components/ComparisonPanel";
 import { DecisionBrief } from "./DecisionBrief";
 import { DelayMatrix } from "./DelayMatrix";
 import { ScenarioInspector } from "./ScenarioInspector";
@@ -60,7 +57,7 @@ const sceneLabels = [
   "Compare an alternative",
 ];
 
-export function DelayLabPanel() {
+export function DelayLabPanel({ visible = true }: { visible?: boolean }) {
   const mission = useMission();
   const prefersReduced = useReducedMotion();
   const [manualReduced, setManualReduced] = useState(false);
@@ -77,6 +74,7 @@ export function DelayLabPanel() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [cursor, setCursor] = useState(0);
@@ -234,8 +232,8 @@ export function DelayLabPanel() {
       });
     }
   }
-  async function analyze(event: FormEvent) {
-    event.preventDefault();
+  async function analyze(event?: FormEvent, input = profile) {
+    event?.preventDefault();
     resetResults();
     setBusy(true);
     const version = ++requestVersion.current;
@@ -243,7 +241,7 @@ export function DelayLabPanel() {
     controller.current = request;
     const timeout = window.setTimeout(() => request.abort(), 240000);
     try {
-      const result = await createStudy(profile, request.signal);
+      const result = await createStudy(input, request.signal);
       if (version !== requestVersion.current) return;
       setRun(result);
       setActiveId(
@@ -258,6 +256,7 @@ export function DelayLabPanel() {
       );
       setCursor(0);
       setScene(0);
+      setSetupOpen(false);
     } catch (reason) {
       if (version === requestVersion.current)
         setError(
@@ -355,12 +354,12 @@ export function DelayLabPanel() {
     return () => window.clearInterval(timer);
   }, [sweeping, reduced, run, active?.site_key]);
   useEffect(() => {
-    if (reduced) {
+    if (reduced || !visible) {
       setTimePlaying(false);
       setSweeping(false);
       setReplayPlaying(false);
     }
-  }, [reduced]);
+  }, [reduced, visible]);
 
   function selectCell(id: string) {
     setActiveId(id);
@@ -498,352 +497,369 @@ export function DelayLabPanel() {
         className={`delay-lab${reduced ? " dl-reduced" : ""}`}
         aria-labelledby="delay-lab-title"
       >
-        <header className="dl-hero">
-          <div className="dl-orbit" aria-hidden="true">
-            <i />
-            <i />
-            <b />
-          </div>
-          <div className="dl-hero-copy">
-            <p className="dl-eyebrow">
-              <FlaskConical size={13} /> HELIOS · MEMBER 5 / MISSION REHEARSAL
-            </p>
-            <h2 id="delay-lab-title">
-              A delay changes <em>everything.</em>
-              <br />
-              See what changes first.
-            </h2>
+        <header className="dl-compact-header">
+          <div>
+            <p className="dl-eyebrow">DEPARTURE STRESS TEST</p>
+            <h2 id="delay-lab-title">What changes if departure slips?</h2>
             <p>
-              Turn real lunar ephemerides into a site-and-departure trade study.
-              Test the requirements. Inspect the evidence. Explain the next
-              move.
+              Compare sites across a range of delays using the same
+              requirements.
             </p>
-            <div className="dl-badges">
-              <span>
-                <ShieldCheck size={13} /> NASA/JPL ephemerides
-              </span>
-              <span>
-                <Layers3 size={13} /> Sampled geometric model
-              </span>
-              <span>
-                <Clock3 size={13} /> UTC throughout
-              </span>
-              <label className="dl-motion-toggle">
-                <input
-                  type="checkbox"
-                  checked={reduced}
-                  disabled={prefersReduced}
-                  onChange={(event) => setManualReduced(event.target.checked)}
-                />
-                Reduce animation
-              </label>
-            </div>
+          </div>
+          <div className="dl-compact-actions">
+            <button
+              className="dl-button"
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                const preset = structuredClone(TRAINING_PROFILE);
+                setProfile(preset);
+                void analyze(undefined, preset);
+              }}
+            >
+              <Sparkles size={14} />
+              Run delay example
+            </button>
+            <button
+              className="dl-primary"
+              type="submit"
+              form="delay-study-form"
+              disabled={busy || !profile.sites.length}
+              onClick={(event) => {
+                const form = event.currentTarget.form;
+                if (form && !form.checkValidity()) {
+                  event.preventDefault();
+                  setSetupOpen(true);
+                  requestAnimationFrame(() => form.reportValidity());
+                }
+              }}
+            >
+              {busy ? "Comparing…" : "Compare delays"}
+              <ArrowRight size={15} />
+            </button>
           </div>
         </header>
-        <div className="dl-scope">
-          <strong>
-            Built for junior mission analysts and university payload teams.
-          </strong>{" "}
-          This is geometric screening, not flight validation. Terrain, real
-          battery endurance, and radio-link performance require additional
-          models.
+        <div className="dl-quick-profile">
+          <div>
+            <strong>
+              {profile.sites.map((site) => nameOf(site)).join(" / ") ||
+                "Loading sites…"}
+            </strong>
+            <span>
+              {profile.mission_duration_hours} h mission ·{" "}
+              {profile.nominal_start_utc.slice(0, 10)} UTC · delays +0–
+              {profile.max_delay_hours} h
+            </span>
+            <small className="dl-requirement-summary">
+              {(Object.keys(requirementLabels) as (keyof StudyConstraints)[])
+                .filter((key) => profile.constraints[key] !== null)
+                .map(
+                  (key) =>
+                    `${key === "maximum_darkness_hours" ? "Darkness ≤" : key === "maximum_earth_outage_hours" ? "Earth outage ≤" : "Joint view ≥"}${hour(profile.constraints[key])}`,
+                )
+                .join(" · ") || "No requirements enabled"}
+            </small>
+          </div>
+          <button
+            type="button"
+            className="dl-button dl-small"
+            aria-expanded={setupOpen}
+            aria-controls="delay-study-settings"
+            disabled={busy}
+            onClick={() => setSetupOpen((current) => !current)}
+          >
+            <SlidersHorizontal size={14} />
+            {setupOpen ? "Close settings" : "Edit study"}
+          </button>
         </div>
-        <form className="dl-profile" onSubmit={analyze}>
-          <fieldset disabled={busy}>
-            <div className="dl-section-heading">
-              <div>
-                <p className="dl-eyebrow">01 / DEFINE THE STUDY</p>
-                <h3>What must the mission preserve?</h3>
-              </div>
-              <button
-                className="dl-button dl-story-button"
-                type="button"
-                onClick={() => {
-                  resetResults();
-                  setProfile(structuredClone(TRAINING_PROFILE));
-                }}
-              >
-                <Sparkles size={15} /> Load verified delay story
-              </button>
-            </div>
-            <p className="dl-caption">
-              The story uses explicit Shackleton/Malapert reference coordinates,
-              not changing catalog IDs. Its requirements are illustrative
-              training assumptions.
-            </p>
-            {catalogError && <p className="dl-note">{catalogError}</p>}
-            <div className="dl-profile-grid">
-              <label>
-                Study title
-                <input
-                  required
-                  maxLength={100}
-                  value={profile.title}
-                  onChange={(event) => update({ title: event.target.value })}
-                />
-              </label>
-              <label>
-                Nominal departure (UTC)
-                <input
-                  required
-                  type="datetime-local"
-                  value={profile.nominal_start_utc.slice(0, 16)}
-                  onChange={(event) =>
-                    update({
-                      nominal_start_utc: event.target.value
-                        ? `${event.target.value}:00Z`
-                        : "",
-                    })
-                  }
-                />
-              </label>
-            </div>
-            <div className="dl-site-list">
-              {profile.sites.map((site) => (
-                <div className="dl-site-chip" key={site.key}>
-                  <div>
-                    <span>
-                      {site.key === profile.baseline_site_key
-                        ? "REFERENCE"
-                        : "ALLOWED ALTERNATIVE"}
-                    </span>
-                    <strong>{nameOf(site)}</strong>
-                    {site.latitude_deg != null && (
-                      <small>
-                        {site.latitude_deg}°, {site.longitude_deg}° E · custom
-                        reference
-                      </small>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    aria-label={`Remove ${nameOf(site)}`}
-                    onClick={() => removeReference(site.key)}
-                  >
-                    <X size={16} />
-                  </button>
+        <div id="delay-study-settings" hidden={!setupOpen}>
+          <form id="delay-study-form" className="dl-profile" onSubmit={analyze}>
+            <fieldset disabled={busy}>
+              <div className="dl-section-heading">
+                <div>
+                  <h3>Study settings</h3>
                 </div>
-              ))}
-            </div>
-            <div className="dl-add-sites">
-              <select
-                aria-label="Catalog site to add"
-                value={addCatalog}
-                disabled={profile.sites.length >= 3}
-                onChange={(event) => setAddCatalog(event.target.value)}
-              >
-                <option value="">Choose a catalog region…</option>
-                {catalog
-                  .filter(
-                    (site) =>
-                      !profile.sites.some(
-                        (entry) => entry.site_id === site.site_id,
-                      ),
-                  )
-                  .map((site) => (
-                    <option key={site.site_id} value={site.site_id}>
-                      {site.name}
-                    </option>
-                  ))}
-              </select>
-              <button
-                type="button"
-                className="dl-button"
-                disabled={!addCatalog || profile.sites.length >= 3}
-                onClick={() => {
-                  addReference({ key: addCatalog, site_id: addCatalog });
-                  setAddCatalog("");
-                }}
-              >
-                <Plus size={14} /> Add site
-              </button>
-              <button
-                type="button"
-                className="dl-button"
-                disabled={!mission.selectedSite || profile.sites.length >= 3}
-                onClick={useMapPoint}
-              >
-                Use map selection
-              </button>
-            </div>
-            <details className="dl-custom">
-              <summary>Add an explicit reference point</summary>
-              <div className="dl-custom-grid">
-                <label>
-                  Name
-                  <input
-                    maxLength={80}
-                    value={custom.name}
-                    onChange={(event) =>
-                      setCustom({ ...custom, name: event.target.value })
-                    }
-                  />
-                </label>
-                <label>
-                  Latitude (°)
-                  <input
-                    type="number"
-                    step="0.000001"
-                    min="-90"
-                    max="90"
-                    value={custom.latitude}
-                    onChange={(event) =>
-                      setCustom({ ...custom, latitude: event.target.value })
-                    }
-                  />
-                </label>
-                <label>
-                  East longitude (°)
-                  <input
-                    type="number"
-                    step="0.000001"
-                    min="-180"
-                    max="180"
-                    value={custom.longitude}
-                    onChange={(event) =>
-                      setCustom({ ...custom, longitude: event.target.value })
-                    }
-                  />
-                </label>
-                <button
-                  type="button"
-                  className="dl-button"
-                  disabled={profile.sites.length >= 3}
-                  onClick={addCustom}
-                >
-                  Add point
-                </button>
               </div>
-            </details>
-            <div className="dl-settings-grid">
-              <label>
-                Original reference site
-                <select
-                  required
-                  value={profile.baseline_site_key}
-                  onChange={(event) =>
-                    update({ baseline_site_key: event.target.value })
-                  }
-                >
-                  <option value="" disabled>
-                    Select a site
-                  </option>
-                  {profile.sites.map((site) => (
-                    <option key={site.key} value={site.key}>
-                      {nameOf(site)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              {(
-                [
-                  ["mission_duration_hours", "Mission duration (h)", 1, 168],
-                  ["max_delay_hours", "Test delays through (h)", 0, 168],
-                  ["departure_step_hours", "Departure spacing (h)", 1, 24],
-                ] as const
-              ).map(([key, label, min, max]) => (
-                <label key={key}>
-                  {label}
+              <p className="dl-caption">
+                Define sites, mission windows and visibility requirements.
+                Default limits are illustrative training assumptions.
+              </p>
+              {catalogError && <p className="dl-note">{catalogError}</p>}
+              <div className="dl-profile-grid">
+                <label>
+                  Study title
                   <input
                     required
-                    type="number"
-                    min={min}
-                    max={max}
-                    step="1"
-                    value={Number.isFinite(profile[key]) ? profile[key] : ""}
+                    maxLength={100}
+                    value={profile.title}
+                    onChange={(event) => update({ title: event.target.value })}
+                  />
+                </label>
+                <label>
+                  Nominal departure (UTC)
+                  <input
+                    required
+                    type="datetime-local"
+                    value={profile.nominal_start_utc.slice(0, 16)}
                     onChange={(event) =>
                       update({
-                        [key]:
-                          event.target.value === ""
-                            ? NaN
-                            : Number(event.target.value),
+                        nominal_start_utc: event.target.value
+                          ? `${event.target.value}:00Z`
+                          : "",
                       })
                     }
                   />
                 </label>
-              ))}
-              <label>
-                Scientific sample step
+              </div>
+              <div className="dl-site-list">
+                {profile.sites.map((site) => (
+                  <div className="dl-site-chip" key={site.key}>
+                    <div>
+                      <span>
+                        {site.key === profile.baseline_site_key
+                          ? "REFERENCE"
+                          : "ALLOWED ALTERNATIVE"}
+                      </span>
+                      <strong>{nameOf(site)}</strong>
+                      {site.latitude_deg != null && (
+                        <small>
+                          {site.latitude_deg}°, {site.longitude_deg}° E · custom
+                          reference
+                        </small>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${nameOf(site)}`}
+                      onClick={() => removeReference(site.key)}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="dl-add-sites">
                 <select
-                  value={profile.sample_step_minutes}
-                  onChange={(event) =>
-                    update({ sample_step_minutes: Number(event.target.value) })
-                  }
+                  aria-label="Catalog site to add"
+                  value={addCatalog}
+                  disabled={profile.sites.length >= 3}
+                  onChange={(event) => setAddCatalog(event.target.value)}
                 >
-                  {[5, 15, 30, 60].map((step) => (
-                    <option key={step} value={step}>
-                      {step} minutes
-                    </option>
-                  ))}
+                  <option value="">Choose a catalog region…</option>
+                  {catalog
+                    .filter(
+                      (site) =>
+                        !profile.sites.some(
+                          (entry) => entry.site_id === site.site_id,
+                        ),
+                    )
+                    .map((site) => (
+                      <option key={site.site_id} value={site.site_id}>
+                        {site.name}
+                      </option>
+                    ))}
                 </select>
-              </label>
-            </div>
-            <div className="dl-thresholds">
-              {(
-                Object.keys(requirementLabels) as (keyof StudyConstraints)[]
-              ).map((key) => (
-                <div key={key}>
-                  <label className="dl-toggle">
+                <button
+                  type="button"
+                  className="dl-button"
+                  disabled={!addCatalog || profile.sites.length >= 3}
+                  onClick={() => {
+                    addReference({ key: addCatalog, site_id: addCatalog });
+                    setAddCatalog("");
+                  }}
+                >
+                  <Plus size={14} /> Add site
+                </button>
+                <button
+                  type="button"
+                  className="dl-button"
+                  disabled={!mission.selectedSite || profile.sites.length >= 3}
+                  onClick={useMapPoint}
+                >
+                  Use map selection
+                </button>
+              </div>
+              <details className="dl-custom">
+                <summary>Add an explicit reference point</summary>
+                <div className="dl-custom-grid">
+                  <label>
+                    Name
                     <input
-                      type="checkbox"
-                      checked={profile.constraints[key] !== null}
+                      maxLength={80}
+                      value={custom.name}
                       onChange={(event) =>
-                        update({
-                          constraints: {
-                            ...profile.constraints,
-                            [key]: event.target.checked
-                              ? DEFAULT_PROFILE.constraints[key]
-                              : null,
-                          },
-                        })
+                        setCustom({ ...custom, name: event.target.value })
                       }
                     />
-                    {requirementLabels[key]}
                   </label>
-                  <label className="dl-threshold-number">
+                  <label>
+                    Latitude (°)
                     <input
-                      aria-label={`${requirementLabels[key]} hours`}
                       type="number"
-                      min="0"
-                      max="168"
-                      step="0.25"
-                      disabled={profile.constraints[key] === null}
-                      value={profile.constraints[key] ?? ""}
+                      step="0.000001"
+                      min="-90"
+                      max="90"
+                      value={custom.latitude}
+                      onChange={(event) =>
+                        setCustom({ ...custom, latitude: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label>
+                    East longitude (°)
+                    <input
+                      type="number"
+                      step="0.000001"
+                      min="-180"
+                      max="180"
+                      value={custom.longitude}
+                      onChange={(event) =>
+                        setCustom({ ...custom, longitude: event.target.value })
+                      }
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className="dl-button"
+                    disabled={profile.sites.length >= 3}
+                    onClick={addCustom}
+                  >
+                    Add point
+                  </button>
+                </div>
+              </details>
+              <div className="dl-settings-grid">
+                <label>
+                  Original reference site
+                  <select
+                    required
+                    value={profile.baseline_site_key}
+                    onChange={(event) =>
+                      update({ baseline_site_key: event.target.value })
+                    }
+                  >
+                    <option value="" disabled>
+                      Select a site
+                    </option>
+                    {profile.sites.map((site) => (
+                      <option key={site.key} value={site.key}>
+                        {nameOf(site)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {(
+                  [
+                    ["mission_duration_hours", "Mission duration (h)", 1, 168],
+                    ["max_delay_hours", "Test delays through (h)", 0, 168],
+                    ["departure_step_hours", "Departure spacing (h)", 1, 24],
+                  ] as const
+                ).map(([key, label, min, max]) => (
+                  <label key={key}>
+                    {label}
+                    <input
+                      required
+                      type="number"
+                      min={min}
+                      max={max}
+                      step="1"
+                      value={Number.isFinite(profile[key]) ? profile[key] : ""}
                       onChange={(event) =>
                         update({
-                          constraints: {
-                            ...profile.constraints,
-                            [key]:
-                              event.target.value === ""
-                                ? null
-                                : Number(event.target.value),
-                          },
+                          [key]:
+                            event.target.value === ""
+                              ? NaN
+                              : Number(event.target.value),
                         })
                       }
                     />
-                    <span>hours</span>
                   </label>
-                </div>
-              ))}
-            </div>
-            <div className="dl-submit">
-              <p>
-                Up to 3 sites · 25 departure columns · 2,000 source intervals
-                per site.
-                <br />
-                Disabled requirements are not evaluated; zero is a real limit.
-              </p>
-              <button
-                className="dl-primary"
-                type="submit"
-                disabled={!profile.sites.length || !profile.nominal_start_utc}
-              >
-                {busy ? "Evaluating NASA data…" : "Run delay stress test"}
-                <ArrowRight size={17} />
-              </button>
-            </div>
-          </fieldset>
-        </form>
+                ))}
+                <label>
+                  Scientific sample step
+                  <select
+                    value={profile.sample_step_minutes}
+                    onChange={(event) =>
+                      update({
+                        sample_step_minutes: Number(event.target.value),
+                      })
+                    }
+                  >
+                    {[5, 15, 30, 60].map((step) => (
+                      <option key={step} value={step}>
+                        {step} minutes
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="dl-thresholds">
+                {(
+                  Object.keys(requirementLabels) as (keyof StudyConstraints)[]
+                ).map((key) => (
+                  <div key={key}>
+                    <label className="dl-toggle">
+                      <input
+                        type="checkbox"
+                        checked={profile.constraints[key] !== null}
+                        onChange={(event) =>
+                          update({
+                            constraints: {
+                              ...profile.constraints,
+                              [key]: event.target.checked
+                                ? DEFAULT_PROFILE.constraints[key]
+                                : null,
+                            },
+                          })
+                        }
+                      />
+                      {requirementLabels[key]}
+                    </label>
+                    <label className="dl-threshold-number">
+                      <input
+                        aria-label={`${requirementLabels[key]} hours`}
+                        type="number"
+                        min="0"
+                        max="168"
+                        step="0.25"
+                        disabled={profile.constraints[key] === null}
+                        value={profile.constraints[key] ?? ""}
+                        onChange={(event) =>
+                          update({
+                            constraints: {
+                              ...profile.constraints,
+                              [key]:
+                                event.target.value === ""
+                                  ? null
+                                  : Number(event.target.value),
+                            },
+                          })
+                        }
+                      />
+                      <span>hours</span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+              <div className="dl-submit">
+                <p>
+                  Up to 3 sites · 25 departure columns · 2,000 source intervals
+                  per site.
+                  <br />
+                  Disabled requirements are not evaluated; zero is a real limit.
+                </p>
+                <button
+                  className="dl-primary"
+                  type="submit"
+                  disabled={!profile.sites.length || !profile.nominal_start_utc}
+                >
+                  {busy ? "Evaluating NASA data…" : "Run delay stress test"}
+                  <ArrowRight size={17} />
+                </button>
+              </div>
+            </fieldset>
+          </form>
+        </div>
         {busy && (
           <div className="dl-loading" role="status">
             <div className="dl-scanner" aria-hidden="true" />
@@ -877,10 +893,10 @@ export function DelayLabPanel() {
           <div className="dl-welcome">
             <Radio size={25} />
             <div>
-              <h3>Your first question: what breaks after a delay?</h3>
+              <h3>Your delay comparison is ready.</h3>
               <p>
-                Load the verified reference story, then run it. Compare the same
-                requirements at different sites and departure dates.
+                Choose Compare delays, or run the cached delay example in one
+                click.
               </p>
             </div>
             <ChevronRight size={20} />
@@ -912,54 +928,6 @@ export function DelayLabPanel() {
                   Decision brief
                 </button>
               </div>
-            </div>
-            <div className="dl-replay">
-              <div className="dl-section-heading">
-                <div>
-                  <p className="dl-eyebrow">02 / REHEARSE THE CHANGE</p>
-                  <h3>One plan. Four moments.</h3>
-                </div>
-                <button
-                  type="button"
-                  className="dl-button"
-                  disabled={reduced}
-                  onClick={() => {
-                    setSweeping(false);
-                    if (replayPlaying) setReplayPlaying(false);
-                    else {
-                      applyScene(0);
-                      setReplayPlaying(true);
-                    }
-                  }}
-                >
-                  {replayPlaying ? <Pause size={14} /> : <Play size={14} />}{" "}
-                  {replayPlaying ? "Pause replay" : "Play decision story"}
-                </button>
-              </div>
-              <div className="dl-scenes">
-                {sceneLabels.map((label, index) => (
-                  <button
-                    type="button"
-                    key={label}
-                    aria-pressed={scene === index}
-                    onClick={() => {
-                      setReplayPlaying(false);
-                      applyScene(index);
-                    }}
-                  >
-                    <span>0{index + 1}</span>
-                    {label}
-                    <i
-                      style={{
-                        transform: `scaleX(${scene > index ? 1 : scene === index ? 0.55 : 0})`,
-                      }}
-                    />
-                  </button>
-                ))}
-              </div>
-              <p className="dl-scene-copy" key={scene}>
-                {sceneText}
-              </p>
             </div>
             <div className="dl-departure-controls">
               <label>
@@ -1127,6 +1095,65 @@ export function DelayLabPanel() {
                 onSync={syncDashboard}
               />
             </div>
+            <details
+              className="dl-story-details"
+              onToggle={(event) => {
+                if (!event.currentTarget.open) setReplayPlaying(false);
+              }}
+            >
+              <summary>
+                <Play size={13} />
+                Decision replay
+              </summary>{" "}
+              <div className="dl-replay">
+                <div className="dl-section-heading">
+                  <div>
+                    <p className="dl-eyebrow">02 / REHEARSE THE CHANGE</p>
+                    <h3>One plan. Four moments.</h3>
+                  </div>
+                  <button
+                    type="button"
+                    className="dl-button"
+                    disabled={reduced}
+                    onClick={() => {
+                      setSweeping(false);
+                      if (replayPlaying) setReplayPlaying(false);
+                      else {
+                        applyScene(0);
+                        setReplayPlaying(true);
+                      }
+                    }}
+                  >
+                    {replayPlaying ? <Pause size={14} /> : <Play size={14} />}{" "}
+                    {replayPlaying ? "Pause replay" : "Play decision story"}
+                  </button>
+                </div>
+                <div className="dl-scenes">
+                  {sceneLabels.map((label, index) => (
+                    <button
+                      type="button"
+                      key={label}
+                      aria-pressed={scene === index}
+                      onClick={() => {
+                        setReplayPlaying(false);
+                        applyScene(index);
+                      }}
+                    >
+                      <span>0{index + 1}</span>
+                      {label}
+                      <i
+                        style={{
+                          transform: `scaleX(${scene > index ? 1 : scene === index ? 0.55 : 0})`,
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <p className="dl-scene-copy" key={scene}>
+                  {sceneText}
+                </p>
+              </div>
+            </details>
             <details className="dl-run-provenance">
               <summary>
                 Recorded datasets, model assumptions & Member 6 handoff
@@ -1171,9 +1198,18 @@ export function DelayLabPanel() {
           </div>
         )}
         <footer className="dl-footer">
+          <label className="dl-motion-toggle">
+            <input
+              type="checkbox"
+              checked={reduced}
+              disabled={prefersReduced}
+              onChange={(event) => setManualReduced(event.target.checked)}
+            />
+            Reduce animation
+          </label>
           <FlaskConical size={14} />
           <span>
-            Evidence before explanation. Sampled estimates before decisions.
+            Geometric screening · terrain and hardware effects excluded.
           </span>
           <button
             type="button"
@@ -1190,12 +1226,6 @@ export function DelayLabPanel() {
           </button>
         </footer>
       </section>
-      <details className="dl-legacy">
-        <summary>
-          <RefreshCw size={15} /> Advanced side-by-side comparison
-        </summary>
-        <ComparisonPanel />
-      </details>
       {brief && run && active && (
         <DecisionBrief
           run={run}

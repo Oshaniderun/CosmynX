@@ -7,6 +7,9 @@ import {
   Globe2,
   Plus,
   Sun,
+  SlidersHorizontal,
+  Sparkles,
+  ChevronDown,
   Trash2,
 } from "lucide-react";
 import type { LandingSite } from "../../../types/helios";
@@ -117,9 +120,11 @@ export function ComparisonPanel({
   const [siteStatus, setSiteStatus] = useState("Loading candidate sites…");
   const [siteAttempt, setSiteAttempt] = useState(0);
   const [mode, setMode] = useState<"live" | "demo">("live");
-  const [resultView, setResultView] = useState<"summary" | "timelines">(
-    "summary",
-  );
+  const [resultView, setResultView] = useState<
+    "overview" | "summary" | "timelines"
+  >("overview");
+  const [setupOpen, setSetupOpen] = useState(true);
+  const [linkedDates, setLinkedDates] = useState(true);
   const [delay, setDelay] = useState(24);
   const [result, setResult] = useState<CompareResponse | null>(null);
   const [busy, setBusy] = useState(false);
@@ -132,6 +137,8 @@ export function ComparisonPanel({
   // Synchronize baseline draft when user selects a site from the Lunar Map
   useEffect(() => {
     if (!selectedSite) return;
+    setResult(null);
+    setSetupOpen(true);
     setDrafts((current) => {
       if (current.length === 0) return current;
       const baseline = current[0];
@@ -217,12 +224,10 @@ export function ComparisonPanel({
   }
   function promoteBaseline(id: string) {
     clearResults();
+    const match = drafts.find((draft) => draft.id === id);
+    const siteMatch = sites.find((site) => site.site_id === match?.siteId);
+    if (siteMatch) setSelectedSite(siteMatch);
     setDrafts((current) => {
-      const match = current.find((draft) => draft.id === id);
-      if (match) {
-        const siteMatch = sites.find((s) => s.site_id === match.siteId);
-        if (siteMatch) setSelectedSite(siteMatch);
-      }
       return [
         current.find((draft) => draft.id === id)!,
         ...current.filter((draft) => draft.id !== id),
@@ -254,6 +259,7 @@ export function ComparisonPanel({
         end: shift(base.end),
         step: base.step,
       });
+      setLinkedDates(false);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Enter valid mission dates first.",
@@ -262,11 +268,14 @@ export function ComparisonPanel({
   }
   async function runComparison(event: FormEvent) {
     event.preventDefault();
+    await compare();
+  }
+  async function compare(inputDrafts = drafts, dataMode = mode) {
     setError("");
     setResult(null);
     let inputs: ScenarioInput[];
     try {
-      inputs = toInputs(drafts);
+      inputs = toInputs(inputDrafts);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Enter valid UTC dates.");
       return;
@@ -277,14 +286,15 @@ export function ComparisonPanel({
     requestController.current = controller;
     const timeout = window.setTimeout(() => controller.abort(), 240000);
     try {
-      const data = await compareScenarios(inputs, mode, controller.signal);
+      const data = await compareScenarios(inputs, dataMode, controller.signal);
       if (request !== activeRequest.current) return;
       if (!Array.isArray(data.scenarios) || !Array.isArray(data.deltas))
         throw new Error(
           "The comparison service returned an incomplete response. Update and restart the backend, then retry.",
         );
       setResult(data);
-      setResultView("summary");
+      setResultView("overview");
+      setSetupOpen(false);
       const max = Math.max(...data.scenarios.map((s) => s.duration_hours));
       setView({ from: 0, to: max, cursor: 0 });
       onComparison?.(data);
@@ -362,339 +372,439 @@ export function ComparisonPanel({
 
   return (
     <section
-      className="comparison-panel md:col-span-2"
+      className="comparison-panel cw-comparison md:col-span-2"
       aria-labelledby="comparison-title"
+      aria-busy={busy}
     >
-      <header className="cmp-header">
+      <header className="cmp-header cw-comparison-header">
         <div>
-          <p className="cmp-eyebrow">HELIOS / SCENARIO LAB</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 id="comparison-title">
-              <ArrowRightLeft size={22} aria-hidden="true" /> Compare landing
-              scenarios
-            </h2>
-            {selectedSite && (
-              <div className="flex items-center gap-2 rounded bg-slate-950/80 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                <span>Primary Target: {selectedSite.name} ({selectedSite.site_id})</span>
-              </div>
-            )}
-          </div>
-          <p>
-            One view for landing sites, launch delays, and visibility
-            trade-offs.
-          </p>
+          <p className="cmp-eyebrow">SCENARIO COMPARISON</p>
+          <h2 id="comparison-title">Compare landing scenarios</h2>
+          <p>Compare sites, dates and mission visibility in one view.</p>
         </div>
-        <span className="cmp-badge cmp-model-badge">
-          Geometric horizon model
-        </span>
-      </header>
-      <form onSubmit={runComparison}>
-        <fieldset disabled={busy}>
-          <div className="cmp-toolbar">
-            <label className="cmp-mode">
-              Data source
-              <select
-                aria-label="Comparison data source"
-                value={mode}
-                onChange={(e) => {
-                  clearResults();
-                  setMode(e.target.value as "live" | "demo");
-                  if (e.target.value === "demo")
-                    setDrafts((current) =>
-                      current.map((d) =>
-                        d.siteId === "custom"
-                          ? {
-                              ...d,
-                              siteId: sites[0]?.site_id ?? "candidate_001",
-                            }
-                          : d,
-                      ),
-                    );
-                }}
-              >
-                <option value="live">Scientific services</option>
-                <option value="demo">Synthetic demo preview</option>
-              </select>
-            </label>
-            <p>
-              All dates and times are UTC. Longitude is east-positive. The first
-              scenario is your baseline.
-            </p>
-          </div>
-          <p className="cmp-notice">
-            Geometric visibility only: terrain can block the Sun or Earth.
-            Sunlight is not generated power, and Earth line of sight is not a
-            guaranteed communication link.
-          </p>
+        <div className="cw-header-actions">
           <button
             type="button"
             className="cmp-secondary"
+            disabled={busy}
             onClick={() => {
-              clearResults();
-              setMode("live");
-              setDrafts(
-                initialDrafts.map((draft) => ({
-                  ...draft,
+              const example: Draft[] = [
+                {
+                  id: "baseline",
+                  siteId: "custom",
+                  latitude: "-89.54",
+                  longitude: "0",
+                  start: "2026-11-20T00:00",
                   end: "2026-11-20T06:00",
-                })),
-              );
+                  step: 60,
+                },
+                {
+                  id: "alternative-1",
+                  siteId: "custom",
+                  latitude: "-86",
+                  longitude: "2",
+                  start: "2026-11-20T00:00",
+                  end: "2026-11-20T06:00",
+                  step: 60,
+                },
+              ];
+              setMode("live");
+              setLinkedDates(true);
+              setDrafts(example);
+              void compare(example, "live");
             }}
           >
-            Load cached NASA example · 6 hours
+            <Sparkles size={14} />
+            Run NASA example
           </button>
-          {mode === "demo" && (
-            <p className="cmp-notice" role="status">
-              <strong>DEMO — synthetic data, not NASA measurements.</strong>{" "}
-              Preview coverage: 20 Nov–4 Dec 2026 UTC. Values are for interface
-              testing only.
-            </p>
+          {setupOpen ? (
+            <button
+              key="compare"
+              type="submit"
+              form="scenario-comparison-form"
+              className="cmp-primary"
+              disabled={busy || !sites.length}
+            >
+              {busy ? "Comparing…" : "Compare scenarios"}
+              <ArrowRightLeft size={15} />
+            </button>
+          ) : (
+            <button
+              key="edit"
+              type="button"
+              className="cmp-primary"
+              onClick={(event) => {
+                event.preventDefault();
+                setSetupOpen(true);
+              }}
+              disabled={busy}
+            >
+              <SlidersHorizontal size={15} />
+              Edit scenarios
+            </button>
           )}
-          {siteStatus && (
-            <div className="cmp-notice" role="status">
-              {siteStatus}{" "}
+        </div>
+      </header>
+      {!setupOpen && result && (
+        <div className="cw-study-summary">
+          {result.scenarios.map((scenario, index) => (
+            <span key={scenario.scenario_id}>
+              <b>{String.fromCharCode(65 + index)}</b>
+              <strong>{scenario.site_name}</strong>
+              <small>
+                {scenario.duration_hours} h ·{" "}
+                {dateLabel(scenario.conditions.start_utc)}
+              </small>
+            </span>
+          ))}
+        </div>
+      )}
+      <div hidden={!setupOpen}>
+        <form id="scenario-comparison-form" onSubmit={runComparison}>
+          <fieldset disabled={busy}>
+            {siteStatus && (
+              <div className="cmp-notice" role="status">
+                {siteStatus}
+                <button
+                  type="button"
+                  className="cmp-link"
+                  onClick={() => setSiteAttempt((n) => n + 1)}
+                >
+                  Retry sites
+                </button>
+              </div>
+            )}
+            {mode === "demo" && (
+              <p className="cmp-notice" role="status">
+                <strong>Synthetic preview — not NASA measurements.</strong>{" "}
+                Coverage: 20 Nov–4 Dec 2026 UTC.
+              </p>
+            )}
+            <div className="cw-shared-dates">
+              <label className="cw-link-dates">
+                <input
+                  type="checkbox"
+                  checked={linkedDates}
+                  onChange={(event) => {
+                    setLinkedDates(event.target.checked);
+                    if (event.target.checked) {
+                      clearResults();
+                      setDrafts((current) =>
+                        current.map((draft) => ({
+                          ...draft,
+                          start: current[0].start,
+                          end: current[0].end,
+                        })),
+                      );
+                    }
+                  }}
+                />
+                <span>
+                  Same mission dates
+                  <small>Use a shared window to compare sites</small>
+                </span>
+              </label>
+              {linkedDates && (
+                <div className="cmp-date-grid">
+                  <label>
+                    Start (UTC)
+                    <input
+                      required
+                      type="datetime-local"
+                      value={drafts[0].start}
+                      onChange={(event) => {
+                        clearResults();
+                        const start = event.target.value;
+                        setDrafts((current) =>
+                          current.map((draft) => ({ ...draft, start })),
+                        );
+                      }}
+                    />
+                  </label>
+                  <label>
+                    End (UTC)
+                    <input
+                      required
+                      type="datetime-local"
+                      value={drafts[0].end}
+                      onChange={(event) => {
+                        clearResults();
+                        const end = event.target.value;
+                        setDrafts((current) =>
+                          current.map((draft) => ({ ...draft, end })),
+                        );
+                      }}
+                    />
+                  </label>
+                </div>
+              )}
+            </div>
+            <div className="cmp-draft-grid">
+              {drafts.map((draft, index) => (
+                <article
+                  key={draft.id}
+                  className="cmp-draft"
+                  aria-label={`Scenario ${String.fromCharCode(65 + index)}`}
+                >
+                  <div className="cmp-draft-title">
+                    <span>
+                      <b className="cw-scenario-letter">
+                        {String.fromCharCode(65 + index)}
+                      </b>
+                      {index === 0 ? "REFERENCE SCENARIO" : "COMPARE WITH"}
+                    </span>
+                    {index >= 2 && (
+                      <button
+                        type="button"
+                        className="cmp-icon"
+                        aria-label={`Remove scenario ${index + 1}`}
+                        onClick={() => {
+                          clearResults();
+                          setDrafts((current) =>
+                            current.filter((d) => d.id !== draft.id),
+                          );
+                        }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
+                  <label>
+                    Landing site
+                    <select
+                      required
+                      disabled={!sites.length}
+                      value={draft.siteId}
+                      onChange={(event) => {
+                        update(draft.id, { siteId: event.target.value });
+                        if (index === 0) {
+                          const match = sites.find(
+                            (site) => site.site_id === event.target.value,
+                          );
+                          if (match) setSelectedSite(match);
+                        }
+                      }}
+                    >
+                      {!sites.length && (
+                        <option value={draft.siteId}>
+                          Loading landing sites…
+                        </option>
+                      )}
+                      {mode === "live" && (
+                        <option value="custom">Custom lunar coordinates</option>
+                      )}
+                      {sites.map((site) => (
+                        <option key={site.site_id} value={site.site_id}>
+                          {site.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {draft.siteId === "custom" ? (
+                    <div className="cmp-date-grid">
+                      <label>
+                        Latitude (°)
+                        <input
+                          required
+                          type="number"
+                          step="0.000001"
+                          min="-90"
+                          max="90"
+                          value={draft.latitude ?? ""}
+                          onChange={(event) =>
+                            update(draft.id, { latitude: event.target.value })
+                          }
+                        />
+                      </label>
+                      <label>
+                        Longitude (° east)
+                        <input
+                          required
+                          type="number"
+                          step="0.000001"
+                          min="-180"
+                          max="180"
+                          value={draft.longitude ?? ""}
+                          onChange={(event) =>
+                            update(draft.id, { longitude: event.target.value })
+                          }
+                        />
+                      </label>
+                    </div>
+                  ) : (
+                    <p className="cmp-caption cw-coordinate">
+                      {
+                        sites.find((site) => site.site_id === draft.siteId)
+                          ?.latitude_deg
+                      }
+                      ° latitude ·{" "}
+                      {
+                        sites.find((site) => site.site_id === draft.siteId)
+                          ?.longitude_deg
+                      }
+                      ° east longitude
+                    </p>
+                  )}
+                  {!linkedDates && (
+                    <div className="cmp-date-grid">
+                      <label>
+                        Start (UTC)
+                        <input
+                          required
+                          type="datetime-local"
+                          value={draft.start}
+                          onChange={(event) =>
+                            update(draft.id, { start: event.target.value })
+                          }
+                        />
+                      </label>
+                      <label>
+                        End (UTC)
+                        <input
+                          required
+                          type="datetime-local"
+                          value={draft.end}
+                          onChange={(event) =>
+                            update(draft.id, { end: event.target.value })
+                          }
+                        />
+                      </label>
+                    </div>
+                  )}
+                  <details className="cw-scenario-options">
+                    <summary>
+                      Scenario options
+                      <ChevronDown size={12} />
+                    </summary>
+                    <div className="cw-options-body">
+                      <label>
+                        Sample every
+                        <select
+                          value={draft.step}
+                          onChange={(event) =>
+                            update(draft.id, {
+                              step: Number(event.target.value),
+                            })
+                          }
+                        >
+                          {[5, 15, 30, 60, 180, 360, 1440].map((step) => (
+                            <option key={step} value={step}>
+                              {step < 60
+                                ? `${step} minutes`
+                                : `${step / 60} hour${step === 60 ? "" : "s"}`}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <div>
+                        {index > 0 && (
+                          <button
+                            type="button"
+                            className="cmp-secondary"
+                            onClick={() => promoteBaseline(draft.id)}
+                          >
+                            Make reference
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="cmp-secondary"
+                          disabled={drafts.length >= 4}
+                          onClick={() => duplicateScenario(draft)}
+                        >
+                          Duplicate
+                        </button>
+                      </div>
+                    </div>
+                  </details>
+                </article>
+              ))}
+            </div>
+            <div className="cw-setup-footer">
               <button
                 type="button"
                 className="cmp-link"
-                onClick={() => setSiteAttempt((n) => n + 1)}
+                disabled={drafts.length >= 4}
+                onClick={addScenario}
               >
-                Retry sites
+                <Plus size={14} />
+                Add scenario
               </button>
+              <span>
+                Keep dates equal to compare sites. Keep a site equal to compare
+                dates.
+              </span>
             </div>
-          )}
-          <div className="cmp-step-title">
-            <span>01</span>
-            <div>
-              <h3>Build your scenarios</h3>
-              <p>
-                Keep dates equal to compare sites, or keep a site equal to
-                compare dates.
-              </p>
-            </div>
-          </div>
-          <div className="cmp-draft-grid">
-            {drafts.map((draft, index) => (
-              <div key={draft.id} className="cmp-draft">
-                <div className="cmp-draft-title">
-                  <span>
-                    {index === 0
-                      ? "A · BASELINE"
-                      : `${String.fromCharCode(65 + index)} · ALTERNATIVE`}
-                  </span>
-                  {index >= 2 && (
-                    <button
-                      type="button"
-                      aria-label={`Remove scenario ${index + 1}`}
-                      className="cmp-icon"
-                      onClick={() => {
-                        clearResults();
-                        setDrafts((current) =>
-                          current.filter((d) => d.id !== draft.id),
-                        );
-                      }}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  )}
-                </div>
-                <div className="cmp-scenario-tools">
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      className="cmp-link"
-                      onClick={() => promoteBaseline(draft.id)}
-                    >
-                      Make baseline
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="cmp-link"
-                    disabled={drafts.length >= 4}
-                    onClick={() => duplicateScenario(draft)}
-                  >
-                    Duplicate scenario
-                  </button>
-                </div>
+            <details className="cw-advanced">
+              <summary>
+                <SlidersHorizontal size={13} />
+                Schedule shift & data settings
+                <ChevronDown size={12} />
+              </summary>
+              <div className="cw-advanced-body">
                 <label>
-                  Landing site
+                  Data source
                   <select
-                    required
-                    disabled={!sites.length}
-                    value={draft.siteId}
-                    onChange={(e) => {
-                      update(draft.id, { siteId: e.target.value });
-                      if (index === 0) {
-                        const match = sites.find((s) => s.site_id === e.target.value);
-                        if (match) setSelectedSite(match);
-                      }
+                    aria-label="Comparison data source"
+                    value={mode}
+                    onChange={(event) => {
+                      clearResults();
+                      const next = event.target.value as "live" | "demo";
+                      setMode(next);
+                      if (next === "demo")
+                        setDrafts((current) =>
+                          current.map((draft) =>
+                            draft.siteId === "custom"
+                              ? {
+                                  ...draft,
+                                  siteId: sites[0]?.site_id ?? "candidate_001",
+                                }
+                              : draft,
+                          ),
+                        );
                     }}
                   >
-                    {!sites.length && (
-                      <option value={draft.siteId}>
-                        Waiting for candidate sites
-                      </option>
-                    )}
-                    {mode === "live" && (
-                      <option value="custom">Custom lunar coordinates</option>
-                    )}
-                    {sites.map((site) => (
-                      <option key={site.site_id} value={site.site_id}>
-                        {site.name}
-                      </option>
-                    ))}
+                    <option value="live">Scientific services</option>
+                    <option value="demo">Synthetic demo preview</option>
                   </select>
                 </label>
-                {draft.siteId !== "custom" && (
-                  <p className="cmp-caption">
-                    {
-                      sites.find((site) => site.site_id === draft.siteId)
-                        ?.latitude_deg
-                    }
-                    ° latitude ·{" "}
-                    {
-                      sites.find((site) => site.site_id === draft.siteId)
-                        ?.longitude_deg
-                    }
-                    ° east longitude
-                  </p>
-                )}
-                {draft.siteId === "custom" && (
-                  <div className="cmp-date-grid">
-                    <label>
-                      Latitude (°)
-                      <input
-                        required
-                        type="number"
-                        step="0.000001"
-                        min="-90"
-                        max="90"
-                        value={draft.latitude ?? ""}
-                        onChange={(e) =>
-                          update(draft.id, { latitude: e.target.value })
-                        }
-                      />
-                    </label>
-                    <label>
-                      Longitude (° east)
-                      <input
-                        required
-                        type="number"
-                        step="0.000001"
-                        min="-180"
-                        max="180"
-                        value={draft.longitude ?? ""}
-                        onChange={(e) =>
-                          update(draft.id, { longitude: e.target.value })
-                        }
-                      />
-                    </label>
-                  </div>
-                )}
-                <div className="cmp-date-grid">
+                <div className="cmp-delay">
+                  <Clock3 size={16} />
                   <label>
-                    Mission start (UTC)
+                    Shift reference by
                     <input
-                      required
-                      type="datetime-local"
-                      value={draft.start}
-                      onChange={(e) =>
-                        update(draft.id, { start: e.target.value })
+                      aria-label="Mission delay in hours"
+                      type="number"
+                      min="0"
+                      max="336"
+                      step="1"
+                      value={Number.isNaN(delay) ? "" : delay}
+                      onChange={(event) =>
+                        setDelay(
+                          event.target.value === ""
+                            ? NaN
+                            : Number(event.target.value),
+                        )
                       }
                     />
+                    hours
                   </label>
-                  <label>
-                    Mission end (UTC)
-                    <input
-                      required
-                      type="datetime-local"
-                      value={draft.end}
-                      onChange={(e) =>
-                        update(draft.id, { end: e.target.value })
-                      }
-                    />
-                  </label>
-                </div>
-                <label>
-                  Sample every
-                  <select
-                    value={draft.step}
-                    onChange={(e) =>
-                      update(draft.id, { step: Number(e.target.value) })
-                    }
+                  <button
+                    type="button"
+                    className="cmp-secondary"
+                    onClick={applyDelay}
                   >
-                    {[5, 15, 30, 60, 180, 360, 1440].map((step) => (
-                      <option key={step} value={step}>
-                        {step < 60
-                          ? `${step} minutes`
-                          : `${step / 60} hour${step === 60 ? "" : "s"}`}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    Apply to B
+                  </button>
+                  <small>
+                    Copies the reference site, duration and sampling step.
+                  </small>
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="cmp-step-title">
-            <span>02</span>
-            <div>
-              <h3>Explore a schedule change</h3>
-              <p>
-                Shift the baseline window while preserving its location and
-                mission duration.
-              </p>
-            </div>
-          </div>
-          <div className="cmp-actions">
-            <button
-              type="button"
-              className="cmp-secondary"
-              disabled={drafts.length >= 4}
-              onClick={addScenario}
-            >
-              <Plus size={15} /> Add scenario
-            </button>
-            <div className="cmp-delay">
-              <Clock3 size={16} aria-hidden="true" />
-              <label>
-                Delay baseline by{" "}
-                <input
-                  aria-label="Mission delay in hours"
-                  type="number"
-                  min="0"
-                  max="336"
-                  step="1"
-                  value={Number.isNaN(delay) ? "" : delay}
-                  onChange={(e) =>
-                    setDelay(
-                      e.target.value === "" ? NaN : Number(e.target.value),
-                    )
-                  }
-                />{" "}
-                hours
-              </label>
-              <button
-                type="button"
-                className="cmp-secondary"
-                onClick={applyDelay}
-              >
-                Apply to B
-              </button>
-            </div>
-          </div>
-          <div className="cmp-submit-row">
-            <p>Delay analysis keeps the baseline site and mission duration.</p>
-            <button
-              type="submit"
-              className="cmp-primary"
-              disabled={!sites.length}
-            >
-              {busy ? "Analyzing scenarios…" : "Compare scenarios"}
-              <ArrowRightLeft size={16} />
-            </button>
-          </div>
-        </fieldset>
-      </form>
+            </details>
+          </fieldset>
+        </form>
+      </div>
       {busy && (
         <div className="cmp-empty" role="status">
           Loading conditions and visibility timelines…
@@ -716,9 +826,12 @@ export function ComparisonPanel({
         <div className="cmp-empty">
           <Globe2 size={20} aria-hidden="true" />
           <p>
-            Set up at least two scenarios, then compare.
+            Your scenarios are ready to compare.
             <br />
-            <span>Missing scientific data will always appear as unknown.</span>
+            <span>
+              Choose Compare scenarios, or run the cached NASA example in one
+              click.
+            </span>
           </p>
         </div>
       )}
@@ -755,12 +868,18 @@ export function ComparisonPanel({
               preview to explore the interface.
             </p>
           )}
-          <ComparisonOverview result={result} />
           <div
             className="cmp-result-tabs"
             role="group"
             aria-label="Comparison result view"
           >
+            <button
+              type="button"
+              aria-pressed={resultView === "overview"}
+              onClick={() => setResultView("overview")}
+            >
+              Overview
+            </button>
             <button
               type="button"
               aria-pressed={resultView === "summary"}
@@ -776,6 +895,7 @@ export function ComparisonPanel({
               Timelines & operational windows
             </button>
           </div>
+          {resultView === "overview" && <ComparisonOverview result={result} />}
           <div className="cmp-summary-grid" hidden={resultView !== "summary"}>
             {result.scenarios.map((scenario, index) => {
               const conditions = scenario.conditions;
@@ -875,112 +995,118 @@ export function ComparisonPanel({
               );
             })}
           </div>
-          <div hidden={resultView !== "timelines"}>
-            <div className="cmp-timeline-header">
-              <h3>Visibility over the mission</h3>
-              <p>
-                Aligned by elapsed hours so different mission dates can be
-                compared.
-              </p>
+          {resultView === "timelines" && (
+            <div>
+              <div className="cmp-timeline-header">
+                <h3>Visibility over the mission</h3>
+                <p>
+                  Aligned by elapsed hours so different mission dates can be
+                  compared.
+                </p>
+              </div>
+              <div className="cmp-range-controls">
+                <label>
+                  View from: {view.from.toFixed(2)} h
+                  <input
+                    type="range"
+                    min="0"
+                    max={maxHours}
+                    step="0.25"
+                    value={view.from}
+                    onChange={(e) => {
+                      const from = Math.min(
+                        Number(e.target.value),
+                        view.to - Math.min(0.25, maxHours),
+                      );
+                      setView({
+                        ...view,
+                        from,
+                        cursor: Math.max(from, view.cursor),
+                      });
+                    }}
+                  />
+                </label>
+                <label>
+                  View to: {view.to.toFixed(2)} h
+                  <input
+                    type="range"
+                    min="0"
+                    max={maxHours}
+                    step="0.25"
+                    value={view.to}
+                    onChange={(e) => {
+                      const to = Math.max(
+                        Number(e.target.value),
+                        view.from + Math.min(0.25, maxHours),
+                      );
+                      setView({
+                        ...view,
+                        to,
+                        cursor: Math.min(to, view.cursor),
+                      });
+                    }}
+                  />
+                </label>
+                <label>
+                  Inspect: {view.cursor.toFixed(2)} h
+                  <input
+                    type="range"
+                    min={view.from}
+                    max={view.to}
+                    step="0.25"
+                    value={view.cursor}
+                    onChange={(e) =>
+                      setView({ ...view, cursor: Number(e.target.value) })
+                    }
+                  />
+                </label>
+              </div>
+              <div className="cmp-summary-grid">
+                {result.scenarios.map((scenario) => {
+                  const instant =
+                    Date.parse(scenario.conditions.start_utc) +
+                    view.cursor * 3600000;
+                  const point = scenario.timeline.find(
+                    (p) =>
+                      Date.parse(p.start_utc) <= instant &&
+                      Date.parse(p.end_utc) > instant,
+                  );
+                  const state = (value: boolean | null | undefined) =>
+                    value === true
+                      ? "Visible"
+                      : value === false
+                        ? "Below horizon"
+                        : "Unknown";
+                  return (
+                    <article className="cmp-summary" key={scenario.scenario_id}>
+                      <h4>{scenario.site_name}</h4>
+                      <p className="cmp-caption">
+                        {dateLabel(new Date(instant).toISOString())}
+                      </p>
+                      <p className="cmp-inspect">
+                        Sun: {state(point?.sunlit)} · Earth:{" "}
+                        {state(point?.earth_visible)}
+                      </p>
+                      <OperationalDetails
+                        scenario={scenario}
+                        cursor={view.cursor}
+                      />
+                      <VisibilityTimeline
+                        scenario={scenario}
+                        from={view.from}
+                        to={view.to}
+                        cursor={view.cursor}
+                      />
+                      <p className="cmp-caption">
+                        Timeline: {scenario.timeline_source} ·{" "}
+                        {scenario.timeline_status}
+                      </p>
+                    </article>
+                  );
+                })}
+              </div>
             </div>
-            <div className="cmp-range-controls">
-              <label>
-                View from: {view.from.toFixed(2)} h
-                <input
-                  type="range"
-                  min="0"
-                  max={maxHours}
-                  step="0.25"
-                  value={view.from}
-                  onChange={(e) => {
-                    const from = Math.min(
-                      Number(e.target.value),
-                      view.to - Math.min(0.25, maxHours),
-                    );
-                    setView({
-                      ...view,
-                      from,
-                      cursor: Math.max(from, view.cursor),
-                    });
-                  }}
-                />
-              </label>
-              <label>
-                View to: {view.to.toFixed(2)} h
-                <input
-                  type="range"
-                  min="0"
-                  max={maxHours}
-                  step="0.25"
-                  value={view.to}
-                  onChange={(e) => {
-                    const to = Math.max(
-                      Number(e.target.value),
-                      view.from + Math.min(0.25, maxHours),
-                    );
-                    setView({ ...view, to, cursor: Math.min(to, view.cursor) });
-                  }}
-                />
-              </label>
-              <label>
-                Inspect: {view.cursor.toFixed(2)} h
-                <input
-                  type="range"
-                  min={view.from}
-                  max={view.to}
-                  step="0.25"
-                  value={view.cursor}
-                  onChange={(e) =>
-                    setView({ ...view, cursor: Number(e.target.value) })
-                  }
-                />
-              </label>
-            </div>
-            <div className="cmp-summary-grid">
-              {result.scenarios.map((scenario) => {
-                const instant =
-                  Date.parse(scenario.conditions.start_utc) +
-                  view.cursor * 3600000;
-                const point = scenario.timeline.find(
-                  (p) =>
-                    Date.parse(p.start_utc) <= instant &&
-                    Date.parse(p.end_utc) > instant,
-                );
-                const state = (value: boolean | null | undefined) =>
-                  value === true
-                    ? "Visible"
-                    : value === false
-                      ? "Below horizon"
-                      : "Unknown";
-                return (
-                  <article className="cmp-summary" key={scenario.scenario_id}>
-                    <h4>{scenario.site_name}</h4>
-                    <p className="cmp-caption">
-                      {dateLabel(new Date(instant).toISOString())}
-                    </p>
-                    <p className="cmp-inspect">
-                      Sun: {state(point?.sunlit)} · Earth:{" "}
-                      {state(point?.earth_visible)}
-                    </p>
-                    <OperationalDetails
-                      scenario={scenario}
-                      cursor={view.cursor}
-                    />
-                    <VisibilityTimeline
-                      scenario={scenario}
-                      from={view.from}
-                      to={view.to}
-                      cursor={view.cursor}
-                    />
-                    <p className="cmp-caption">
-                      Timeline: {scenario.timeline_source} ·{" "}
-                      {scenario.timeline_status}
-                    </p>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
+          )}
           <details className="cmp-assumptions">
             <summary>Sources, assumptions & integration notes</summary>
             <p>

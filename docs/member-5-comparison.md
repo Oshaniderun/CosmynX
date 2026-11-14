@@ -1,23 +1,23 @@
 # Member 5 — Scenario Comparison & Timelines
 
-The main Member 5 interface is now the **[HELIOS Delay Lab](member-5-delay-lab.md)** with a site/departure stress matrix, animated inspection and reproducible decision brief. The original panel described below is retained under **Advanced side-by-side comparison**.
+The app opens directly to **Compare → Sites & dates**. The **[HELIOS Delay Lab](member-5-delay-lab.md)** is available in the adjacent **Delay analysis** view. Explorer, power and advisor tools have their own workspace navigation instead of preceding comparison in a long page.
 
 Owner: Ravindu. Branch: `feature/scenario-comparison` (renamed from `Ravindu`). Integrated `Dev` commit `51c22f6`, including NASA retrieval, Member 3 visualizations, and Member 4 analysis, on 14 November 2026. No other members’ feature branches were merged separately.
 
 ## Run and try it
 
-Use the frontend and backend setup in the main README. The comparison panel is already mounted in `App.tsx`; no application-shell changes are required.
+Use the frontend and backend setup in the main README. Comparison is the default workspace.
 
 1. Start the backend: from `backend`, run `python -m uvicorn app.main:app --reload`.
 2. Start the frontend: from `frontend`, run `npm install`, then `npm run dev`.
-3. Scroll to **Compare your next move**. Choose two to four sites/date windows and press **Compare scenarios**.
-4. For a working interface preview, explicitly choose **Synthetic demo preview**. Its invented values are not NASA measurements. Default demo dates are 20–23 November 2026 UTC; coverage ends at 4 December 2026 00:00 UTC (exclusive).
-5. Set a delay in hours and press **Apply to B**. B copies A's site, duration, and sampling resolution, then shifts both UTC endpoints. Press **Compare scenarios** again.
-6. Use timeline range controls and the shared inspection cursor. JSON export contains the complete structured result and provenance.
+3. Two catalog sites are prefilled. Press the visible **Compare scenarios** button to evaluate them, or **Run NASA example** to load and evaluate explicit cached reference coordinates in one action.
+4. **Same mission dates** shares one UTC start/end pair across all scenarios. Turn it off for independent windows. Choose sites directly; **Add scenario** supports up to four. Sampling, duplication and reference promotion remain under each card's **Scenario options**.
+5. **Schedule shift & data settings** contains the optional delay-to-B helper and synthetic preview mode. Applying a delay unlinks the shared dates and copies A's coordinates, duration and sampling step to B before shifting its UTC endpoints. Synthetic measurements remain explicitly labeled.
+6. Successful comparisons collapse the editor and open **Overview**, showing the comparison table once. **Edit scenarios** reopens the saved inputs. **Scenario details** and **Timelines & operational windows** provide deeper inspection; CSV/JSON exports remain available. Returning between comparison modes preserves their state. Changing the shared map selection clears old site-comparison results before updating its reference input.
 
 Scientific services are the default. Member 2’s real Horizons retrieval and Member 3’s updated visualizations are integrated from Dev. Member 4’s conditions service is now integrated from Dev. Member 5 validates its returned metrics and derives comparison-only duration-weighted summaries from complete real ephemeris intervals when those metrics are unavailable, pending, incomplete, or inconsistent with mission duration. This also prevents an inclusive endpoint sample from being counted as an extra duration bin. The Member 4 implementation is preserved as merged from Dev. Each result identifies `summary_method`. Incomplete intervals never produce full-mission fallback metrics, and live requests never switch to synthetic values.
 
-Press **Load cached NASA example · 6 hours**, then **Compare scenarios** to use the committed real Horizons data for 20 November 2026, 00:00–06:00 UTC. This does not require a fresh NASA request. New locations/dates require the upstream service and network. The frontend can cancel a request and enforces a four-minute timeout; validation errors from the API are displayed directly.
+Press **Run NASA example** to use the committed real Horizons data for explicit reference points (−89.54°, 0° east; −86°, 2° east) on 20 November 2026, 00:00–06:00 UTC. This does not require a fresh NASA request and does not rely on changing catalog IDs. New locations/dates require the upstream service and network. The frontend can cancel a request and enforces a four-minute timeout; validation errors from the API are displayed directly.
 
 For custom comparisons, select **Custom lunar coordinates** in scientific mode. Enter latitude in [-90, 90] and east-positive longitude in [-180, 180]. Delay-to-B preserves custom coordinates. Synthetic mode supports only the three catalog sites.
 

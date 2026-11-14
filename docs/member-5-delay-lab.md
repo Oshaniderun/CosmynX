@@ -4,13 +4,13 @@ Owner: Ravindu. Branch: `feature/scenario-comparison`. Implements the Member 5 c
 
 ## Audience and workflow
 
-For junior mission analysts and university lunar-payload teams rehearsing a departure delay. Define visibility requirements, test a site/departure grid, inspect its limiting constraint, compare eligible tested alternatives, and explain the evidence in a printable decision brief. The old comparison panel remains under **Advanced side-by-side comparison**.
+For junior mission analysts and university lunar-payload teams rehearsing a departure delay. Define visibility requirements, test a site/departure grid, inspect its limiting constraint, compare eligible tested alternatives, and explain the evidence in a printable decision brief. The app defaults to **Compare → Sites & dates**; the Delay Lab is directly available in **Delay analysis**.
 
 1. Start the backend and frontend using the README. Open `http://127.0.0.1:5173`.
-2. Scroll to **A delay changes everything. See what changes first.**
-3. Press **Load verified delay story**, then **Run delay stress test**.
+2. Select **Delay analysis** beside **Sites & dates**.
+3. Press **Run delay example** to load and evaluate the recorded reference profile in one action. **Compare delays** evaluates the currently selected profile. **Edit study** reveals sites, dates, sampling and requirements; the compact summary always shows the active sites, window and limits.
 4. Inspect Shackleton at +24 h, then Malapert at +24 h. All three constraints remain the same.
-5. Use **Play decision story** for a four-scene presentation, **Animate delay sweep** to inspect successive departure columns, or **Play time** to move through sampled Sun/Earth elevations. Each stops at its end and can be paused. Manual selection stops competing playback. Opening the brief stops all playback.
+5. Open **Decision replay** and use **Play decision story** for a four-scene presentation, **Animate delay sweep** to inspect successive departure columns, or **Play time** to move through sampled Sun/Earth elevations. Each stops at its end and can be paused. Manual selection stops competing playback. Opening the brief or leaving Delay analysis stops playback.
 6. Use arrow keys in the matrix, the mission sample slider, or the scene buttons. **Reduce animation** disables autoplay and transitions; operating-system reduced-motion preferences always take precedence. Manual controls remain available.
 7. Export **Evidence JSON**, or open **Decision brief** and **Print / Save PDF**. The brief includes original, delayed and inspected metrics, declared requirements, margins, coordinates, source provenance, dataset hash and limitations.
 

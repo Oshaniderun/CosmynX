@@ -15,7 +15,7 @@ export function Navbar() {
             </p>
           </div>
         </div>
-        <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-300">
+        <span className="hidden sm:inline-flex whitespace-nowrap rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-300">
           NASA Space Apps 2026
         </span>
       </div>
