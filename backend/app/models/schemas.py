@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
@@ -49,6 +49,14 @@ class VisibilityMetrics(BaseModel):
     earth_visible_hours: Optional[float] = Field(default=None, ge=0.0)
 
 
+
+class OperationalWindow(BaseModel):
+    target: Literal["sunlight", "earth", "both"]
+    start_utc: str
+    end_utc: str
+    duration_hours: float
+
+
 class ConditionsResponse(BaseModel):
     """Standard scientific data format for site conditions (README Section 10)."""
 
@@ -62,6 +70,8 @@ class ConditionsResponse(BaseModel):
     horizon_model: str = "geometric"
     status: Literal["ok", "pending", "unavailable"] = "pending"
     source: str = "JPL Horizons"
+    windows: list[OperationalWindow] = Field(default_factory=list)
+    timeline: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ScenarioInput(BaseModel):
@@ -139,12 +149,6 @@ class VisibilityInterval(BaseModel):
     sun_elevation_deg: Optional[float] = None
     earth_elevation_deg: Optional[float] = None
 
-
-class OperationalWindow(BaseModel):
-    target: Literal["sunlight", "earth", "both"]
-    start_utc: str
-    end_utc: str
-    duration_hours: float
 
 
 class SettingTransition(BaseModel):

@@ -14,6 +14,21 @@ export interface VisibilityMetrics {
   earth_visible_hours: number | null;
 }
 
+export interface OperationalWindow {
+  target: "sunlight" | "earth" | "both";
+  start_utc: string;
+  end_utc: string;
+  duration_hours: number;
+}
+
+export interface ConditionTimelinePoint {
+  timestamp_utc: string;
+  sun_elevation_deg: number | null;
+  earth_elevation_deg: number | null;
+  is_sunlit: boolean;
+  is_earth_visible: boolean;
+}
+
 export interface ConditionsResponse {
   site_id: string;
   latitude_deg: number;
@@ -25,6 +40,8 @@ export interface ConditionsResponse {
   horizon_model: string;
   status: "ok" | "pending" | "unavailable";
   source: string;
+  windows?: OperationalWindow[];
+  timeline?: ConditionTimelinePoint[];
 }
 
 export interface EphemerisPoint {

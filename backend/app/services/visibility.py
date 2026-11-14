@@ -4,7 +4,7 @@ Calculates geometric sunlight availability and Earth visibility metrics
 from ephemeris elevation angles provided by NASA JPL Horizons.
 """
 
-from app.models.schemas import ConditionsResponse, VisibilityMetrics
+from app.models.schemas import ConditionsResponse, OperationalWindow, VisibilityMetrics
 from app.services.nasa_data import fetch_jpl_horizons_ephemeris
 
 
@@ -77,6 +77,63 @@ def analyze_site_conditions(
         earth_visible_hours=earth_visible_hours,
     )
 
+    # Build timeline points and continuous operational windows
+    timeline = []
+    windows: list[OperationalWindow] = []
+    current_earth_window: OperationalWindow | None = None
+    current_sun_window: OperationalWindow | None = None
+    step_hours = round(step_minutes / 60.0, 2)
+
+    for pt in points:
+        sun_el = pt.get("sun_elevation_deg")
+        earth_el = pt.get("earth_elevation_deg")
+        ts = pt.get("timestamp_utc", "")
+
+        is_sun = bool(sun_el is not None and sun_el > 0)
+        is_earth = bool(earth_el is not None and earth_el > 0)
+
+        timeline.append({
+            "timestamp_utc": ts,
+            "sun_elevation_deg": sun_el,
+            "earth_elevation_deg": earth_el,
+            "is_sunlit": is_sun,
+            "is_earth_visible": is_earth,
+        })
+
+        if is_earth:
+            if current_earth_window is None:
+                current_earth_window = OperationalWindow(
+                    target="earth",
+                    start_utc=ts,
+                    end_utc=ts,
+                    duration_hours=step_hours,
+                )
+                windows.append(current_earth_window)
+            else:
+                current_earth_window.end_utc = ts
+                current_earth_window.duration_hours = round(
+                    current_earth_window.duration_hours + step_hours, 2
+                )
+        else:
+            current_earth_window = None
+
+        if is_sun:
+            if current_sun_window is None:
+                current_sun_window = OperationalWindow(
+                    target="sunlight",
+                    start_utc=ts,
+                    end_utc=ts,
+                    duration_hours=step_hours,
+                )
+                windows.append(current_sun_window)
+            else:
+                current_sun_window.end_utc = ts
+                current_sun_window.duration_hours = round(
+                    current_sun_window.duration_hours + step_hours, 2
+                )
+        else:
+            current_sun_window = None
+
     return ConditionsResponse(
         site_id=site_id,
         latitude_deg=latitude_deg,
@@ -88,4 +145,6 @@ def analyze_site_conditions(
         horizon_model="geometric",
         status="ok",
         source="JPL Horizons",
+        windows=windows,
+        timeline=timeline,
     )
