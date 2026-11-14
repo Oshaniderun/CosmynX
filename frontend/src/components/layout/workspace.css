@@ -143,3 +143,9 @@
     transition: none;
   }
 }
+
+/* The workspace navigation owns sticky positioning on this branch. */
+.app-shell--workspace > .mission-nav {
+  position: relative;
+  top: auto;
+}

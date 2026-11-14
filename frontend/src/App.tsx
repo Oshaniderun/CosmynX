@@ -2,8 +2,7 @@ import { useState } from "react";
 import { ArrowRightLeft, Globe2, Radio, Sparkles } from "lucide-react";
 import { MissionProvider } from "./context/MissionContext";
 import { Navbar } from "./components/layout/Navbar";
-import { LunarMapPanel } from "./features/lunar-map/components/LunarMapPanel";
-import { SunEarthPanel } from "./features/sun-earth/components/SunEarthPanel";
+import { UnifiedLunarExplorer } from "./features/lunar-map/components/UnifiedLunarExplorer";
 import { PowerCommunicationPanel } from "./features/power-communication/components/PowerCommunicationPanel";
 import { ComparisonWorkspace } from "./features/comparison/components/ComparisonWorkspace";
 import { HeliosAdvisorPanel } from "./features/helios-ai/components/HeliosAdvisorPanel";
@@ -19,10 +18,15 @@ const sections = [
 export default function App() {
   const [section, setSection] = useState<string>("compare");
   const [visited, setVisited] = useState(() => new Set(["compare"]));
+  function navigate(id: string) {
+    setSection(id);
+    setVisited((current) => new Set([...current, id]));
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
   return (
     <MissionProvider>
-      <div className="min-h-screen bg-slate-950 text-slate-100">
-        <Navbar />
+      <div className="app-shell app-shell--workspace min-h-screen text-slate-100">
+        <Navbar onNavigate={navigate} />
         <nav className="helios-workspace-nav" aria-label="Mission workspace">
           <div>
             {sections.map(({ id, label, icon: Icon }) => (
@@ -31,11 +35,7 @@ export default function App() {
                 type="button"
                 aria-current={section === id ? "page" : undefined}
                 aria-controls={`workspace-${id}`}
-                onClick={() => {
-                  setSection(id);
-                  setVisited((current) => new Set([...current, id]));
-                  window.scrollTo({ top: 0, behavior: "instant" });
-                }}
+                onClick={() => navigate(id)}
               >
                 <Icon size={16} />
                 {label}
@@ -59,12 +59,7 @@ export default function App() {
             id="workspace-explore"
             hidden={section !== "explore"}
           >
-            {visited.has("explore") && (
-              <>
-                <LunarMapPanel />
-                <SunEarthPanel />
-              </>
-            )}
+            {visited.has("explore") && <UnifiedLunarExplorer />}
           </div>
           <div
             className="helios-panel"

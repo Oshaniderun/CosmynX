@@ -6,15 +6,49 @@ import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+import httpx
 
 from pydantic import ValidationError
 
-from app.models.schemas import ScenarioInput, VisibilityInterval
+from app.models.schemas import CompareRequest, ScenarioInput, VisibilityInterval
+from app.models.stress_test import StressTestRequest
 from app.services import nasa_data
 from app.services.comparison_analysis import continuity_metrics
+from app.services.comparison import compare_scenarios
+from app.services.stress_test import create_study
 
 
 class DataIntegrityTests(unittest.TestCase):
+    @patch('app.services.nasa_data._query_horizons_moon_physical', return_value={})
+    @patch('app.services.nasa_data._query_horizons_target', side_effect=httpx.ConnectError('offline'))
+    @patch('app.services.nasa_data.compute_analytical_lunar_ephemeris')
+    def test_scientific_comparison_never_uses_dev_offline_fallback(self, analytical, _targets, _moon):
+        with tempfile.TemporaryDirectory() as directory, patch.object(nasa_data, 'PROCESSED_DATA_DIR', Path(directory)):
+            request = CompareRequest(scenarios=[ScenarioInput(site_id='custom', latitude_deg=latitude,
+                longitude_deg=0, start_utc='2026-11-20T00:00:00Z', end_utc='2026-11-20T01:00:00Z')
+                for latitude in (-89.54, -86)])
+            result = compare_scenarios(request)
+            self.assertEqual(result.status, 'unavailable')
+            self.assertTrue(all(s.conditions.metrics.sunlit_hours is None for s in result.scenarios))
+            self.assertTrue(all(s.timeline_status == 'unavailable' for s in result.scenarios))
+            analytical.assert_not_called()
+
+    @patch('app.services.nasa_data._query_horizons_moon_physical', return_value={})
+    @patch('app.services.nasa_data._query_horizons_target', side_effect=httpx.ConnectError('offline'))
+    @patch('app.services.nasa_data.compute_analytical_lunar_ephemeris')
+    def test_delay_lab_never_uses_dev_offline_fallback(self, analytical, _targets, _moon):
+        with tempfile.TemporaryDirectory() as directory, patch.object(nasa_data, 'PROCESSED_DATA_DIR', Path(directory)), \
+                patch('app.services.stress_test.RUN_DIRECTORY', Path(directory) / 'runs'):
+            request = StressTestRequest(baseline_site_key='reference', mission_duration_hours=1,
+                max_delay_hours=1, departure_step_hours=1, sample_step_minutes=60,
+                sites=[dict(key='reference', name='Reference', latitude_deg=-89.54, longitude_deg=0)],
+                constraints=dict(minimum_joint_visibility_hours=1))
+            result = create_study(request)
+            self.assertTrue(all(cell.status == 'unknown' for cell in result.cells))
+            self.assertTrue(all(cell.metrics.longest_darkness_hours is None for cell in result.cells))
+            self.assertEqual(result.datasets[0].sample_count, 0)
+            analytical.assert_not_called()
+
     def test_nearby_sites_do_not_share_new_cache_key(self):
         args = (0, '2026-11-20T00:00:00Z', '2026-11-20T06:00:00Z', 60)
         self.assertNotEqual(nasa_data._cache_path(-89.540001, *args), nasa_data._cache_path(-89.540002, *args))

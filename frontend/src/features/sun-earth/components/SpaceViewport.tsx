@@ -4,24 +4,46 @@ import earthMap from "../assets/earth.webp";
 import moonMap from "../assets/moon.webp";
 import sunMap from "../assets/sun.webp";
 import { createSpaceScene, type SceneFrame } from "./spaceScene";
+import type { LandingSite } from "../../../types/helios";
 
-export default function SpaceViewport({ frame }: { frame: SceneFrame }) {
+export default function SpaceViewport({
+  frame,
+  onSelectSite,
+  onZoomChange,
+}: {
+  frame: SceneFrame;
+  onSelectSite?: (site: LandingSite) => void;
+  onZoomChange?: (zoom: number) => void;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const sunLabel = useRef<HTMLSpanElement>(null);
   const earthLabel = useRef<HTMLSpanElement>(null);
   const moonLabel = useRef<HTMLSpanElement>(null);
   const scene = useRef<ReturnType<typeof createSpaceScene>>();
   const currentFrame = useRef(frame);
+  const onSelectSiteRef = useRef(onSelectSite);
+  const onZoomChangeRef = useRef(onZoomChange);
   const [unavailable, setUnavailable] = useState(false);
   const [rotating, setRotating] = useState(false);
   const mode = frame.mode;
+
+  onSelectSiteRef.current = onSelectSite;
+  onZoomChangeRef.current = onZoomChange;
 
   useEffect(() => { currentFrame.current = frame; scene.current?.update(frame); }, [frame]);
   useEffect(() => {
     if (!host.current || !sunLabel.current || !earthLabel.current || !moonLabel.current) return;
     let viewport: ReturnType<typeof createSpaceScene>;
     try {
-      viewport = createSpaceScene(host.current, [sunLabel.current, earthLabel.current, moonLabel.current], mode);
+      viewport = createSpaceScene(
+        host.current,
+        [sunLabel.current, earthLabel.current, moonLabel.current],
+        mode,
+        {
+          onSelectSite: (site) => onSelectSiteRef.current?.(site),
+          onZoomChange: (zoom) => onZoomChangeRef.current?.(zoom),
+        }
+      );
     } catch (error) {
       console.warn("Unable to initialize the 3D viewport", error);
       setUnavailable(true);

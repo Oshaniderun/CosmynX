@@ -106,7 +106,8 @@ def create_study(profile: StressTestRequest) -> StressTestRun:
     cells, metadata, datasets, rows = [], [], {}, []
     for site in sites:
         params = dict(site_id=site.site_id, latitude_deg=site.latitude_deg, longitude_deg=site.longitude_deg,
-                      start_utc=stamp(start), end_utc=stamp(end), step_minutes=profile.sample_step_minutes)
+                      start_utc=stamp(start), end_utc=stamp(end), step_minutes=profile.sample_step_minutes,
+                      scientific_only=True)
         warnings = []
         try:
             data = get_ephemeris_for_site(**params)

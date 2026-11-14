@@ -2,6 +2,8 @@
 
 The app opens directly to **Compare → Sites & dates**. The **[HELIOS Delay Lab](member-5-delay-lab.md)** is available in the adjacent **Delay analysis** view. Explorer, power and advisor tools have their own workspace navigation instead of preceding comparison in a long page.
 
+Integration update, 15 November 2026: merged `origin/Dev` at `476c6de`, including the unified lunar explorer, updated advisor, power analysis, NASA datasets and CosmynX branding. The branch keeps its direct comparison navigation. Dev's custom-reference promotion fix is retained. Member 5 opts into `scientific_only=True` for positions and conditions so upstream failure remains unknown instead of using Dev's analytical fallback; the fallback remains enabled by default for other consumers. The combined regression suite passes 199 tests and 17 subtests.
+
 Owner: Ravindu. Branch: `feature/scenario-comparison` (renamed from `Ravindu`). Integrated `Dev` commit `51c22f6`, including NASA retrieval, Member 3 visualizations, and Member 4 analysis, on 14 November 2026. No other members’ feature branches were merged separately.
 
 ## Run and try it

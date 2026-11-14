@@ -1,23 +1,66 @@
-import { Moon } from "lucide-react";
+import { ArrowUpRight, Orbit } from "lucide-react";
 
-export function Navbar() {
+const navigation = [
+  { href: "#environment", label: "Environment" },
+  { href: "#site-workspace", label: "Site workspace" },
+  { href: "#helios-advisor", label: "HELIOS advisor" },
+];
+
+export function Navbar({
+  onNavigate,
+}: {
+  onNavigate?: (section: string) => void;
+}) {
   return (
-    <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
-          <Moon className="h-6 w-6 text-amber-400" />
-          <div>
-            <h1 className="text-lg font-semibold tracking-wide text-slate-100">
-              HELIOS
-            </h1>
-            <p className="text-xs text-slate-400">
-              AI-Powered Lunar Landing Site Navigator
-            </p>
-          </div>
-        </div>
-        <span className="hidden sm:inline-flex whitespace-nowrap rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-300">
-          NASA Space Apps 2026
-        </span>
+    <header className="mission-nav">
+      <div className="mission-nav__inner">
+        <a
+          className="mission-brand"
+          href={onNavigate ? "#workspace-compare" : "#mission"}
+          onClick={
+            onNavigate
+              ? (event) => {
+                  event.preventDefault();
+                  onNavigate("compare");
+                }
+              : undefined
+          }
+          aria-label="CosmynX mission control home"
+        >
+          <span className="brand-mark">
+            <Orbit size={17} aria-hidden="true" />
+          </span>
+          <span className="mission-brand__name">
+            Cosmyn<span>X</span>
+          </span>
+          <span className="mission-brand__divider" />
+          <span className="mission-brand__descriptor">
+            LUNAR MISSION CONTROL
+          </span>
+        </a>
+        {!onNavigate && (
+          <nav className="mission-nav__links" aria-label="Main navigation">
+            {navigation.map(({ href, label }) => (
+              <a key={href} href={href}>
+                {label}
+              </a>
+            ))}
+          </nav>
+        )}
+        <a
+          className="mission-nav__cta"
+          href={onNavigate ? "#workspace-advisor" : "#helios-advisor"}
+          onClick={
+            onNavigate
+              ? (event) => {
+                  event.preventDefault();
+                  onNavigate("advisor");
+                }
+              : undefined
+          }
+        >
+          Plan a mission <ArrowUpRight size={15} aria-hidden="true" />
+        </a>
       </div>
     </header>
   );

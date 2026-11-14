@@ -6,6 +6,7 @@ and provides official NASA Moon Trek and LROC QuickMap resource metadata.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -15,10 +16,15 @@ from typing import Any
 
 import httpx
 
+from app.services.lunar_ephemeris import compute_analytical_lunar_ephemeris
+
 HORIZONS_API_URL = "https://ssd.jpl.nasa.gov/api/horizons.api"
 SUN_COMMAND = "'10'"
 EARTH_COMMAND = "'399'"
+MOON_COMMAND = "'301'"
 MOON_CENTER = "'coord@301'"
+EARTH_CENTER = "'500@399'"
+AU_KM = 149_597_870.7
 
 # Resolve <repo-root>/data/processed regardless of working directory
 PROCESSED_DATA_DIR = Path(__file__).resolve().parents[3] / "data" / "processed"
@@ -89,7 +95,7 @@ def _query_horizons_target(
     start_utc: str,
     end_utc: str,
     step_minutes: int,
-    timeout_seconds: float = 25.0,
+    timeout_seconds: float = 8.0,
 ) -> dict[str, tuple[float, float]]:
     """Query JPL Horizons for a single target body observed from a lunar coordinate."""
     params = {
@@ -119,6 +125,78 @@ def _query_horizons_target(
     payload = response.json()
     result_text = payload.get("result", "")
     return _parse_horizons_csv(result_text)
+
+
+def _parse_horizons_moon_physical_csv(result_text: str) -> dict[str, dict[str, float]]:
+    """Extract lunar illumination, libration, and Sun/Earth distances from Horizons CSV."""
+    start_marker = "$$SOE"
+    end_marker = "$$EOE"
+    start_idx = result_text.find(start_marker)
+    end_idx = result_text.find(end_marker)
+    if start_idx == -1 or end_idx == -1 or end_idx <= start_idx:
+        return {}
+
+    block = result_text[start_idx + len(start_marker) : end_idx].strip()
+    parsed: dict[str, dict[str, float]] = {}
+
+    for line in block.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = [p.strip() for p in line.split(",")]
+        # Expected columns for QUANTITIES='10,14,15,19,20':
+        # 0:Date, 1:solar_flag, 2:lunar_flag, 3:Illu%, 4:ObsSub-LON, 5:ObsSub-LAT,
+        # 6:SunSub-LON, 7:SunSub-LAT, 8:r(AU), 9:rdot, 10:delta(AU), 11:deldot
+        if len(parts) < 11:
+            continue
+        try:
+            ts_iso = _parse_horizons_timestamp(parts[0])
+            parsed[ts_iso] = {
+                "moon_illumination_pct": round(float(parts[3]), 3),
+                "sub_earth_lon_deg": round(float(parts[4]), 4),
+                "sub_earth_lat_deg": round(float(parts[5]), 4),
+                "sub_solar_lon_deg": round(float(parts[6]), 4),
+                "sub_solar_lat_deg": round(float(parts[7]), 4),
+                "sun_distance_au": round(float(parts[8]), 6),
+                "earth_distance_km": round(float(parts[10]) * AU_KM, 1),
+            }
+        except (ValueError, IndexError):
+            continue
+
+    return parsed
+
+
+def _query_horizons_moon_physical(
+    start_utc: str,
+    end_utc: str,
+    step_minutes: int,
+    timeout_seconds: float = 8.0,
+) -> dict[str, dict[str, float]]:
+    """Query JPL Horizons for Moon physical/orbital telemetry (illumination, libration, distances)."""
+    params = {
+        "format": "json",
+        "COMMAND": MOON_COMMAND,
+        "OBJ_DATA": "NO",
+        "MAKE_EPHEM": "YES",
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": EARTH_CENTER,
+        "START_TIME": f"'{_format_horizons_time(start_utc)}'",
+        "STOP_TIME": f"'{_format_horizons_time(end_utc)}'",
+        "STEP_SIZE": f"'{step_minutes} m'",
+        "QUANTITIES": "'10,14,15,19,20'",
+        "CSV_FORMAT": "YES",
+        "TIME_TYPE": "UT",
+    }
+
+    response = httpx.get(
+        HORIZONS_API_URL,
+        params=params,
+        timeout=timeout_seconds,
+        verify=ssl.create_default_context(),
+    )
+    response.raise_for_status()
+    payload = response.json()
+    return _parse_horizons_moon_physical_csv(payload.get("result", ""))
 
 
 def _cache_path(
@@ -176,12 +254,14 @@ def fetch_jpl_horizons_ephemeris(
     end_utc: str,
     step_minutes: int = 60,
     use_cache: bool = True,
+    allow_analytical_fallback: bool = True,
 ) -> list[dict[str, Any]]:
     """Fetch, normalize, and cache Sun/Earth ephemeris from NASA JPL Horizons.
 
     Coordinates use East-positive longitude (-180 to 180 deg) and geodetic
     latitude (-90 to 90 deg) on the Moon (body 301). Timestamps are UTC ISO 8601.
-    Returns an empty list if upstream data is unavailable (never invents values).
+    When allowed, upstream failures return the offline analytical model.
+    Scientific comparisons disable that fallback and retain unknown data.
     """
     cache_file = _cache_path(
         latitude_deg=latitude_deg,
@@ -198,24 +278,47 @@ def fetch_jpl_horizons_ephemeris(
                 return cached["points"]
 
     try:
-        sun_series = _query_horizons_target(
-            target_command=SUN_COMMAND,
-            latitude_deg=latitude_deg,
-            longitude_deg=longitude_deg,
-            start_utc=start_utc,
-            end_utc=end_utc,
-            step_minutes=step_minutes,
-        )
-        earth_series = _query_horizons_target(
-            target_command=EARTH_COMMAND,
-            latitude_deg=latitude_deg,
-            longitude_deg=longitude_deg,
-            start_utc=start_utc,
-            end_utc=end_utc,
-            step_minutes=step_minutes,
-        )
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            sun_future = executor.submit(
+                _query_horizons_target,
+                target_command=SUN_COMMAND,
+                latitude_deg=latitude_deg,
+                longitude_deg=longitude_deg,
+                start_utc=start_utc,
+                end_utc=end_utc,
+                step_minutes=step_minutes,
+            )
+            earth_future = executor.submit(
+                _query_horizons_target,
+                target_command=EARTH_COMMAND,
+                latitude_deg=latitude_deg,
+                longitude_deg=longitude_deg,
+                start_utc=start_utc,
+                end_utc=end_utc,
+                step_minutes=step_minutes,
+            )
+            moon_phys_future = executor.submit(
+                _query_horizons_moon_physical,
+                start_utc=start_utc,
+                end_utc=end_utc,
+                step_minutes=step_minutes,
+            )
+            sun_series = sun_future.result()
+            earth_series = earth_future.result()
+            try:
+                moon_phys_series = moon_phys_future.result()
+            except (httpx.HTTPError, ValueError):
+                moon_phys_series = {}
     except (httpx.HTTPError, ValueError):
-        return []
+        if not allow_analytical_fallback:
+            return []
+        return compute_analytical_lunar_ephemeris(
+            latitude_deg=latitude_deg,
+            longitude_deg=longitude_deg,
+            start_utc=start_utc,
+            end_utc=end_utc,
+            step_minutes=step_minutes,
+        )
 
     timestamps = sorted(set(sun_series.keys()) | set(earth_series.keys()))
     if not timestamps:
@@ -225,15 +328,16 @@ def fetch_jpl_horizons_ephemeris(
     for ts in timestamps:
         sun_az, sun_el = sun_series.get(ts, (None, None))
         earth_az, earth_el = earth_series.get(ts, (None, None))
-        points.append(
-            {
-                "timestamp_utc": ts,
-                "sun_azimuth_deg": sun_az,
-                "sun_elevation_deg": sun_el,
-                "earth_azimuth_deg": earth_az,
-                "earth_elevation_deg": earth_el,
-            }
-        )
+        point: dict[str, Any] = {
+            "timestamp_utc": ts,
+            "sun_azimuth_deg": sun_az,
+            "sun_elevation_deg": sun_el,
+            "earth_azimuth_deg": earth_az,
+            "earth_elevation_deg": earth_el,
+        }
+        if ts in moon_phys_series:
+            point.update(moon_phys_series[ts])
+        points.append(point)
 
     if use_cache:
         PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)

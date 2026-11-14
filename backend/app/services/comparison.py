@@ -104,6 +104,7 @@ def compare_scenarios(request: CompareRequest) -> CompareResponse:
             params = dict(
                 site_id=site.site_id, latitude_deg=site.latitude_deg, longitude_deg=site.longitude_deg,
                 start_utc=scenario.start_utc, end_utc=scenario.end_utc, step_minutes=scenario.step_minutes,
+                scientific_only=True,
             )
             try:
                 conditions = analyze_site_conditions(**params)

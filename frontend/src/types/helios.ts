@@ -68,11 +68,11 @@ export interface ConditionTimelinePoint {
   timestamp_utc: string;
   sun_elevation_deg: number | null;
   earth_elevation_deg: number | null;
-  is_sunlit: boolean;
-  is_earth_visible: boolean;
-  power_watts_vertical?: number;
-  power_watts_horizontal?: number;
-  power_watts_tracking?: number;
+  is_sunlit: boolean | null;
+  is_earth_visible: boolean | null;
+  power_watts_vertical?: number | null;
+  power_watts_horizontal?: number | null;
+  power_watts_tracking?: number | null;
 }
 
 export interface BatterySizingInfo {
@@ -93,6 +93,20 @@ export interface PowerModelingInfo {
     horizontal: number;
   };
   battery_sizing: BatterySizingInfo;
+  model_assumptions?: string[];
+}
+
+export interface VisibilityTransitionDetail {
+  current_state: "sunlit" | "shadow" | "contact_active" | "blackout";
+  next_event: "sunset" | "sunrise" | "earthset" | "earthrise" | "none";
+  transition_utc: string | null;
+  hours_until: number | null;
+  description: string;
+}
+
+export interface ConditionsTransitions {
+  solar: VisibilityTransitionDetail;
+  earth: VisibilityTransitionDetail;
 }
 
 export interface ConditionsResponse {
@@ -109,6 +123,7 @@ export interface ConditionsResponse {
   windows?: OperationalWindow[];
   timeline?: ConditionTimelinePoint[];
   power_modeling?: PowerModelingInfo;
+  transitions?: ConditionsTransitions;
 }
 
 export interface EphemerisPoint {
@@ -117,6 +132,13 @@ export interface EphemerisPoint {
   sun_elevation_deg: number | null;
   earth_azimuth_deg: number | null;
   earth_elevation_deg: number | null;
+  moon_illumination_pct?: number | null;
+  sub_earth_lon_deg?: number | null;
+  sub_earth_lat_deg?: number | null;
+  sub_solar_lon_deg?: number | null;
+  sub_solar_lat_deg?: number | null;
+  sun_distance_au?: number | null;
+  earth_distance_km?: number | null;
 }
 
 export interface EphemerisResponse {

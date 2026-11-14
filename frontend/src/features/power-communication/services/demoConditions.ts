@@ -2,8 +2,8 @@ import type { ConditionsResponse } from "../../../types/helios";
 
 export const demoConditions: ConditionsResponse = {
   site_id: "candidate_001",
-  latitude_deg: -89.54,
-  longitude_deg: 0.0,
+  latitude_deg: -87.5,
+  longitude_deg: -5.0,
   start_utc: "2026-11-20T00:00:00Z",
   end_utc: "2026-11-20T06:00:00Z",
   step_minutes: 60,
@@ -123,6 +123,22 @@ export const demoConditions: ConditionsResponse = {
       max_dod_percent: 70,
       estimated_battery_mass_kg: 1.91,
       battery_chemistry: "Space-Grade Li-ion (150 Wh/kg)",
+    },
+  },
+  transitions: {
+    solar: {
+      current_state: "sunlit",
+      next_event: "sunset",
+      transition_utc: "2026-11-20T05:00:00Z",
+      hours_until: 5.0,
+      description: "Sunset in 5.0h (at 2026-11-20T05:00:00Z)",
+    },
+    earth: {
+      current_state: "contact_active",
+      next_event: "none",
+      transition_utc: null,
+      hours_until: null,
+      description: "Continuous direct contact throughout window",
     },
   },
 };
