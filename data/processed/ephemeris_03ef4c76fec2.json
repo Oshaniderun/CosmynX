@@ -1,0 +1,61 @@
+{
+  "source": "JPL Horizons",
+  "body": "Moon (301)",
+  "longitude_convention": "East-positive (-180 to 180 deg)",
+  "latitude_deg": -86.0,
+  "longitude_deg": 2.0,
+  "start_utc": "2026-11-20T00:00:00Z",
+  "end_utc": "2026-11-20T06:00:00Z",
+  "step_minutes": 60,
+  "points": [
+    {
+      "timestamp_utc": "2026-11-20T00:00:00Z",
+      "sun_azimuth_deg": 51.749641,
+      "sun_elevation_deg": 4.0259,
+      "earth_azimuth_deg": 350.700514,
+      "earth_elevation_deg": 7.121188
+    },
+    {
+      "timestamp_utc": "2026-11-20T01:00:00Z",
+      "sun_azimuth_deg": 51.243075,
+      "sun_elevation_deg": 4.053386,
+      "earth_azimuth_deg": 350.697331,
+      "earth_elevation_deg": 7.17439
+    },
+    {
+      "timestamp_utc": "2026-11-20T02:00:00Z",
+      "sun_azimuth_deg": 50.736493,
+      "sun_elevation_deg": 4.080676,
+      "earth_azimuth_deg": 350.69499,
+      "earth_elevation_deg": 7.227352
+    },
+    {
+      "timestamp_utc": "2026-11-20T03:00:00Z",
+      "sun_azimuth_deg": 50.229895,
+      "sun_elevation_deg": 4.107766,
+      "earth_azimuth_deg": 350.693495,
+      "earth_elevation_deg": 7.280069
+    },
+    {
+      "timestamp_utc": "2026-11-20T04:00:00Z",
+      "sun_azimuth_deg": 49.72328,
+      "sun_elevation_deg": 4.134655,
+      "earth_azimuth_deg": 350.69285,
+      "earth_elevation_deg": 7.332535
+    },
+    {
+      "timestamp_utc": "2026-11-20T05:00:00Z",
+      "sun_azimuth_deg": 49.216648,
+      "sun_elevation_deg": 4.161341,
+      "earth_azimuth_deg": 350.693058,
+      "earth_elevation_deg": 7.384743
+    },
+    {
+      "timestamp_utc": "2026-11-20T06:00:00Z",
+      "sun_azimuth_deg": 48.71,
+      "sun_elevation_deg": 4.187821,
+      "earth_azimuth_deg": 350.694124,
+      "earth_elevation_deg": 7.436688
+    }
+  ]
+}
