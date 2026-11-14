@@ -45,8 +45,8 @@ function parseUtcInput(value: string) {
   return utc.slice(0, 16) === value ? utc.replace(".000Z", "Z") : undefined;
 }
 
-const controlClass = "rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-medium text-slate-100 hover:border-slate-400 focus-visible:outline-2 focus-visible:outline-sky-400";
-const modeClass = controlClass + " inline-flex items-center gap-2 aria-pressed:border-sky-400/70 aria-pressed:bg-sky-400/10 aria-pressed:text-sky-200";
+const controlClass = "rounded-lg border border-white/[0.08] bg-[#0A1424]/80 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-slate-100 hover:border-sky-400/50 hover:bg-[#12223B] focus-visible:outline-2 focus-visible:outline-sky-400 transition cursor-pointer";
+const modeClass = "inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-[#0A1424]/80 backdrop-blur-md px-3 py-1.5 text-xs font-medium text-slate-300 hover:border-sky-400/50 hover:text-white aria-pressed:border-sky-400/80 aria-pressed:bg-sky-950/70 aria-pressed:text-sky-300 transition cursor-pointer shadow-sm";
 
 export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } = {}) {
   const { selectedSite, setSelectedSite, missionDates, setMissionDates } = useMission();
@@ -256,14 +256,16 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
   useEffect(() => { if (replayFinished) setPlaying(false); }, [replayFinished]);
 
   return (
-    <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-xl border border-slate-800 bg-[#0a101b] shadow-lg">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-4 py-4 sm:px-6">
+    <section aria-labelledby="space-explorer-title" className="min-w-0 overflow-hidden rounded-2xl glass-panel md:col-span-2">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.07] px-5 py-4 sm:px-6">
         <div className="flex flex-wrap items-center gap-3">
-          <h2 id="space-explorer-title" className="text-lg font-semibold tracking-tight text-slate-100">Sun, Earth & Moon</h2>
+          <h2 id="space-explorer-title" className="font-heading text-lg font-semibold tracking-tight text-slate-100">
+            Sun, Earth & Moon
+          </h2>
           {selectedSite && (
-            <div className="flex items-center gap-2 rounded bg-slate-950/80 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
-              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              <span>Target: {selectedSite.name} ({selectedSite.site_id})</span>
+            <div className="flex items-center gap-2 rounded-lg border border-sky-500/30 bg-[#060D19]/80 backdrop-blur-md px-2.5 py-1 text-xs font-mono text-sky-300 shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse" />
+              <span>Target: <strong className="text-white">{selectedSite.name}</strong> ({selectedSite.site_id})</span>
             </div>
           )}
         </div>
@@ -280,7 +282,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       {mode === "eclipse" && <EclipsePurpose />}
 
       {mode === "site" && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-slate-950/45 px-4 py-3 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.07] bg-[#0A1424]/60 px-5 py-3 sm:px-6">
           <div>
             <p className="text-sm font-medium text-slate-100">Connecting Ridge terrain case</p>
             <p className="mt-1 text-xs text-slate-400">Explore a real terrain obstruction using NASA elevation and ephemeris data.</p>
@@ -300,7 +302,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       )}
 
       {mode === "site" && showObstructionReplay && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-800 px-4 py-3 sm:px-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.07] px-5 py-3 sm:px-6">
           <div className="flex flex-wrap gap-2" role="group" aria-label="Terrain case shortcuts">
             {[
               { index: beforeCrossing, label: "Before crossing" },
@@ -321,7 +323,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       )}
 
       {mode === "site" && !showObstructionReplay && !ephemeris && sites.length > 0 && (
-        <form onSubmit={loadPositions} className="space-y-2 px-4 py-4 sm:px-6">
+        <form onSubmit={loadPositions} className="space-y-2 px-5 py-4 sm:px-6">
           <div className="flex flex-wrap items-end gap-3">
             <label className="flex min-w-44 flex-1 flex-col gap-1.5 text-xs text-slate-300">
               Landing site
@@ -365,16 +367,16 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                 onChange={(change) => { setEndTime(change.target.value); setDateError(""); }}
               />
             </label>
-            <button type="submit" className="rounded-md bg-sky-300 px-3 py-2 text-xs font-semibold text-slate-950 hover:bg-sky-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300">
+            <button type="submit" className="rounded-lg bg-sky-400 hover:bg-sky-300 px-3.5 py-1.5 text-xs font-semibold text-slate-950 shadow-md shadow-sky-500/20 transition cursor-pointer">
               Load positions
             </button>
           </div>
-          {dateError && <p id={dateErrorId} role="alert" className="text-xs text-rose-300">{dateError}</p>}
+          {dateError && <p id={dateErrorId} role="alert" className="text-xs text-rose-300 font-mono">{dateError}</p>}
         </form>
       )}
 
       {(mode === "eclipse" || (positions?.status === "ok" && points.length > 0)) && (
-        <Suspense fallback={<div className="grid h-[360px] place-items-center bg-slate-950 text-sm text-slate-400 sm:h-[460px]" role="status">Loading view…</div>}>
+        <Suspense fallback={<div className="grid h-[340px] place-items-center bg-[#080E1B] text-sm text-[#A7B4C7] sm:h-[460px] lg:h-[510px]" role="status">Loading view…</div>}>
           {mode === "eclipse" ? (
             <SpaceViewport key="eclipse" frame={{ mode, time }} />
           ) : showObstructionReplay && terrainView === "surface" && terrain && point ? (
@@ -388,9 +390,9 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
       )}
 
       {mode === "eclipse" ? (
-        <div className="space-y-3 border-t border-slate-800 px-4 py-4 sm:px-6">
+        <div className="space-y-3 border-t border-white/[0.07] px-5 py-4 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <label className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
+            <label className="flex flex-wrap items-center gap-2 text-xs font-medium text-slate-300">
               Total lunar eclipse
               <select className={controlClass} value={eventIndex} onChange={(change) => {
                 const next = Number(change.target.value);
@@ -401,7 +403,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                 {lunarEclipses.map(({ label }, index) => <option key={label} value={index}>{label}</option>)}
               </select>
             </label>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-300" aria-label="Earth’s shadow legend">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#A7B4C7]" aria-label="Earth’s shadow legend">
               <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="size-2.5 rounded-full border border-[#fb9366]" /> Umbra · inner shadow</span>
               <span className="inline-flex items-center gap-1.5"><span aria-hidden="true" className="size-2.5 rounded-full border border-[#c4a1bd]" /> Penumbra · outer shadow</span>
             </div>
@@ -423,7 +425,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                 onChange={(change) => { setPlaying(false); setReplayOffset(Number(change.target.value)); }}
                 className="block w-full cursor-pointer accent-sky-400" />
             </div>
-            <time className="min-w-[122px] text-right text-xs tabular-nums text-slate-200" dateTime={new Date(time).toISOString()}>
+            <time className="min-w-[122px] text-right font-mono text-xs tabular-nums text-slate-200" dateTime={new Date(time).toISOString()}>
               {timeFormat.format(time)} UTC
             </time>
           </div>
@@ -433,28 +435,28 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
           }} />
         </div>
       ) : (
-        <div className="space-y-3 border-t border-slate-800 px-4 py-4 sm:px-6">
+        <div className="space-y-3.5 border-t border-white/[0.07] px-5 py-4 sm:px-6">
           {positions && (
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-              <p className="text-slate-300">
+              <p className="font-mono text-xs text-[#A7B4C7]">
                 {showObstructionReplay ? "Connecting Ridge · Offline case · " : !ephemeris && requestedSite && `${requestedSite.name} · `}
                 {positions.source} · {positions.latitude_deg}°, {positions.longitude_deg}°
               </p>
-              {point && <time className="tabular-nums text-slate-200" dateTime={point.timestamp_utc}>{timeFormat.format(new Date(point.timestamp_utc))} UTC</time>}
+              {point && <time className="font-mono text-xs tabular-nums text-slate-200" dateTime={point.timestamp_utc}>{timeFormat.format(new Date(point.timestamp_utc))} UTC</time>}
             </div>
           )}
-          <p className="text-xs text-slate-400">
+          <p className="font-mono text-xs text-[#718096]">
             Mission window · {missionTimeFormat.format(Date.parse(missionWindow.start_utc))}–{missionTimeFormat.format(Date.parse(missionWindow.end_utc))} UTC
           </p>
           {solarObstruction && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-300/25 bg-amber-300/5 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-500/25 bg-amber-500/10 backdrop-blur-md p-3.5 shadow-sm">
               <div className="space-y-1">
-                <p className="text-sm font-medium text-amber-100">Terrain changes the sunlight result</p>
+                <p className="text-sm font-heading font-medium text-amber-200">Terrain changes the sunlight result</p>
                 <p className="text-xs leading-relaxed text-slate-300">
                   In {solarObstruction.obscuredCount} of {solarObstruction.assessedCount} assessed samples, the Sun’s center is above 0° and at or below the modeled terrain.
                 </p>
                 {solarObstruction.crossing && (
-                  <p className="text-xs text-slate-300">
+                  <p className="text-xs font-mono text-amber-300/80">
                     First sampled crossing · {timeFormat.format(Date.parse(solarObstruction.crossing.from))}–{timeFormat.format(Date.parse(solarObstruction.crossing.to))} UTC
                   </p>
                 )}
@@ -487,28 +489,38 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
                   className="block w-full cursor-pointer accent-sky-400"
                 />
               </div>
-              <p className="shrink-0 text-xs tabular-nums text-slate-400">
+              <p className="shrink-0 font-mono text-xs tabular-nums text-slate-400">
                 <span className="sr-only">Sample </span>{currentSample + 1} / {points.length}
               </p>
             </div>
           )}
           {point ? (
-            <dl className="grid gap-2 text-sm sm:grid-cols-2">
+            <dl className="grid gap-3 sm:grid-cols-2">
               {[
-                { name: "Sun", textColor: "text-amber-200", azimuth: point.sun_azimuth_deg, elevation: point.sun_elevation_deg },
-                { name: "Earth", textColor: "text-sky-200", azimuth: point.earth_azimuth_deg, elevation: point.earth_elevation_deg },
-              ].map(({ name, textColor, azimuth, elevation }) => {
+                { name: "Sun", textColor: "text-amber-300", azimuth: point.sun_azimuth_deg, elevation: point.sun_elevation_deg, accentBorder: "border-amber-500/25" },
+                { name: "Earth", textColor: "text-sky-300", azimuth: point.earth_azimuth_deg, elevation: point.earth_elevation_deg, accentBorder: "border-sky-500/25" },
+              ].map(({ name, textColor, azimuth, elevation, accentBorder }) => {
                 const local = terrain && terrainClearance(terrain, azimuth, elevation);
                 return (
-                  <div key={name} className="rounded-lg border border-slate-800 bg-slate-950/70 p-3">
-                    <dt className={`font-medium ${textColor}`}>{name}</dt>
-                    <dd className="mt-1 text-xs text-slate-300">Azimuth {formatAngle(azimuth)} · Elevation {formatAngle(elevation)}</dd>
-                    <dd className="mt-1 text-xs text-slate-400">Geometric · {horizonStatus(elevation)}</dd>
+                  <div key={name} className={`rounded-xl border ${accentBorder} bg-[#0A1424]/75 backdrop-blur-md p-3.5 shadow-sm`}>
+                    <div className="flex items-center justify-between">
+                      <dt className={`font-heading text-base font-semibold ${textColor}`}>{name}</dt>
+                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-mono font-medium ${
+                        elevation && elevation > 0 
+                          ? "bg-emerald-950/50 text-emerald-300 border border-emerald-800/50" 
+                          : "bg-slate-900 text-slate-400 border border-slate-800"
+                      }`}>
+                        {horizonStatus(elevation)}
+                      </span>
+                    </div>
+                    <dd className="mt-2 text-sm font-mono text-slate-200">
+                      Azimuth <span className="font-bold text-white">{formatAngle(azimuth)}</span> · Elevation <span className="font-bold text-white">{formatAngle(elevation)}</span>
+                    </dd>
                     {terrain && (
-                      <dd className="mt-2 border-t border-slate-800 pt-2 text-xs">
+                      <dd className="mt-2.5 border-t border-white/[0.08] pt-2 text-xs font-mono">
                         {local ? (
                           <>
-                            <p className={local.clearance > 0 ? "font-medium text-emerald-300" : "font-medium text-amber-200"}>
+                            <p className={local.clearance > 0 ? "font-medium text-emerald-300" : "font-medium text-amber-300"}>
                               {local.clearance > 0 ? "Clears modeled terrain" : "At or below the modeled skyline"}
                             </p>
                             <p className="mt-1 text-slate-300">Skyline {formatAngle(local.skyline)} · Clearance {formatAngle(local.clearance)}</p>
@@ -522,7 +534,7 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
             </dl>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-slate-300" role="status">
+              <p className="text-sm font-sans text-slate-300" role="status">
                 {loading && !ephemeris ? "Loading NASA ephemeris…" : error || (positions?.status === "pending"
                   ? "Ephemeris data is pending."
                   : "No JPL Horizons positions are available for this site and time range.")}
@@ -549,11 +561,11 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
             </div>
           )}
           {point && terrain && showObstructionReplay && (
-            <details className="rounded-lg border border-slate-800 bg-slate-950/50 p-3 text-xs leading-relaxed text-slate-300">
+            <details className="rounded-xl border border-white/[0.08] bg-[#0A1424]/75 backdrop-blur-md p-3.5 text-xs leading-relaxed text-slate-300">
               <summary className="cursor-pointer font-medium text-slate-200">How we calculated this</summary>
               <p className="mt-2">
-                The angles come from hourly <a className="underline underline-offset-2" href="https://naif.jpl.nasa.gov/pub/naif/generic_kernels/" target="_blank" rel="noreferrer">NASA/JPL SPICE samples (DE440)</a>.
-                The skyline uses the <a className="underline underline-offset-2" href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noreferrer">NASA LOLA Site01 elevation grid</a> at {terrain.pixel_size_m} m per pixel.
+                The angles come from hourly <a className="underline underline-offset-2 hover:text-sky-300" href="https://naif.jpl.nasa.gov/pub/naif/generic_kernels/" target="_blank" rel="noreferrer">NASA/JPL SPICE samples (DE440)</a>.
+                The skyline uses the <a className="underline underline-offset-2 hover:text-sky-300" href="https://pgda.gsfc.nasa.gov/products/78" target="_blank" rel="noreferrer">NASA LOLA Site01 elevation grid</a> at {terrain.pixel_size_m} m per pixel.
               </p>
               <p className="mt-2">
                 We subtract the highest terrain angle within {terrain.max_distance_m / 1_000} km in the Sun’s direction from the Sun’s elevation, for an observer {terrain.observer_height_m} m above the surface.
@@ -562,23 +574,23 @@ export function SunEarthPanel({ ephemeris }: { ephemeris?: EphemerisResponse } =
             </details>
           )}
           {point && terrain && !showObstructionReplay && (
-            <p className="text-xs leading-relaxed text-slate-300">
+            <p className="text-xs leading-relaxed text-slate-300 font-mono">
               <a className="underline decoration-slate-500 underline-offset-2 hover:text-white" href={terrain.source_url} target="_blank" rel="noreferrer">NASA LRO LOLA Site01</a>
               {" · "}{terrain.pixel_size_m} m grid · Terrain within {terrain.max_distance_m / 1_000} km · Observer {terrain.observer_height_m} m above the surface.
               Clearance compares each body’s center with the terrain in its direction.
             </p>
           )}
-          {point && (!showObstructionReplay || terrainView === "orbit") && <p className="text-xs leading-relaxed text-slate-400">
+          {point && (!showObstructionReplay || terrainView === "orbit") && <p className="text-xs leading-relaxed text-[#718096]">
             The cyan ring marks the geometric horizon. {terrain ? "Terrain farther away can still affect the view." : "Select Connecting Ridge for a terrain comparison using NASA LOLA data."} Body sizes and distances are illustrative.
           </p>}
         </div>
       )}
 
-      <footer className="flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-800 px-4 py-3 text-[11px] text-slate-400 sm:px-6">
-        <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/" target="_blank" rel="noreferrer">Earth imagery · NASA Blue Marble</a>
-        <span>Sun and Moon textures · <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noreferrer">Solar System Scope</a> (<a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>, resized)</span>
-        <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://github.com/cosinekitty/astronomy" target="_blank" rel="noreferrer">Eclipse calculations · Astronomy Engine</a>
-        <a className="underline decoration-slate-600 underline-offset-2 hover:text-white" href="https://eclipse.gsfc.nasa.gov/OH/OH2025.html" target="_blank" rel="noreferrer">2025 eclipse catalog · NASA</a>
+      <footer className="flex flex-wrap gap-x-4 gap-y-1 border-t border-white/[0.07] bg-[#040812]/75 px-5 py-3 text-xs text-slate-400 sm:px-6 backdrop-blur-md">
+        <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/" target="_blank" rel="noreferrer">Earth imagery · NASA Blue Marble</a>
+        <span>Sun and Moon textures · <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noreferrer">Solar System Scope</a> (<a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>, resized)</span>
+        <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://github.com/cosinekitty/astronomy" target="_blank" rel="noreferrer">Eclipse calculations · Astronomy Engine</a>
+        <a className="underline decoration-slate-700 underline-offset-2 hover:text-sky-300 transition" href="https://eclipse.gsfc.nasa.gov/OH/OH2025.html" target="_blank" rel="noreferrer">2025 eclipse catalog · NASA</a>
       </footer>
     </section>
   );

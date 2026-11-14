@@ -390,8 +390,8 @@ export function ComparisonPanel({
               scenarios
             </h2>
             {selectedSite && (
-              <div className="flex items-center gap-2 rounded bg-slate-950/80 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+              <div className="flex items-center gap-2 rounded-lg bg-[#080E1B] px-3 py-1 text-xs text-sky-300 font-mono border border-sky-500/30 shadow-inner">
+                <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
                 <span>Primary Target: {selectedSite.name} ({selectedSite.site_id})</span>
               </div>
             )}

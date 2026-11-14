@@ -21,12 +21,12 @@ const moonShadows = [
 
 export function EclipsePurpose() {
   return (
-    <aside className="flex gap-3 border-b border-amber-300/15 bg-gradient-to-r from-amber-400/10 via-[#121b2a] to-[#0c1421] px-4 py-4 sm:px-6">
+    <aside className="flex gap-3 border-b border-amber-300/15 bg-gradient-to-r from-amber-400/10 via-[#111D32] to-[#0D1728] px-4 py-4 sm:px-6">
       <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-amber-300/20 bg-amber-300/10 text-amber-200">
         <BatteryCharging size={18} aria-hidden="true" />
       </div>
       <div className="max-w-3xl">
-        <h3 className="text-sm font-semibold text-amber-100">Why this matters for a lunar mission</h3>
+        <h3 className="font-heading text-sm font-semibold text-amber-100">Why this matters for a lunar mission</h3>
         <p className="mt-1 text-sm leading-relaxed text-slate-300">
           Earth can block direct sunlight even when the Sun is above a landing site’s horizon.
           Replay a past eclipse to see when a solar-powered lander might need backup power and when sunlight returns.
@@ -57,7 +57,7 @@ export function EclipseGuide({
               aria-current={active ? "step" : undefined}
               aria-label={item.label}
               onClick={() => onSeek(Math.round((item.start + item.end) / 2))}
-              className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-700/80 bg-slate-950/60 px-2 py-2 text-xs font-medium text-slate-300 hover:border-amber-300/50 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-300 aria-[current=step]:border-amber-300/70 aria-[current=step]:bg-amber-300/10 aria-[current=step]:text-amber-100"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-800 bg-[#0D1728]/90 px-2 py-2 text-xs font-medium text-slate-300 hover:border-amber-300/50 hover:text-white focus-visible:outline-2 focus-visible:outline-amber-300 aria-[current=step]:border-amber-300/70 aria-[current=step]:bg-amber-300/10 aria-[current=step]:text-amber-100 transition"
             >
               <span aria-hidden="true" className={`size-3 shrink-0 rounded-full ring-1 ring-white/15 ${moonShadows[index]}`} />
               {item.shortLabel}
@@ -66,18 +66,18 @@ export function EclipseGuide({
         })}
       </div>
 
-      <article className="overflow-hidden rounded-xl border border-slate-700/80 bg-[#0e1725]">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-slate-700/80 px-4 py-3">
-          <h3 aria-live="polite" className="text-base font-semibold text-slate-100">{stage.label}</h3>
-          <p className="text-xs tabular-nums text-slate-400">{clock.format(stage.start)}–{clock.format(stage.end)} UTC</p>
+      <article className="overflow-hidden rounded-xl border border-slate-800/80 bg-[#111D32] shadow-lg shadow-black/20">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-slate-800 px-4 py-3 bg-[#17243A]/50">
+          <h3 aria-live="polite" className="font-heading text-base font-semibold text-slate-100">{stage.label}</h3>
+          <p className="font-mono text-xs tabular-nums text-slate-400">{clock.format(stage.start)}–{clock.format(stage.end)} UTC</p>
         </div>
-        <div className="grid divide-y divide-slate-700/80 md:grid-cols-2 md:divide-x md:divide-y-0">
+        <div className="grid divide-y divide-slate-800 md:grid-cols-2 md:divide-x md:divide-y-0">
           <div className="p-4">
-            <h4 className="text-xs font-medium text-slate-400">What you’re seeing</h4>
+            <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider">What you’re seeing</h4>
             <p className="mt-1.5 text-sm leading-relaxed text-slate-200">{stage.scene}</p>
           </div>
           <div className="bg-amber-300/5 p-4">
-            <h4 className="flex items-center gap-1.5 text-xs font-medium text-amber-200">
+            <h4 className="flex items-center gap-1.5 text-xs font-medium text-amber-200 uppercase tracking-wider">
               <Sun size={14} aria-hidden="true" /> Effect at the landing site
             </h4>
             <p className="mt-1.5 text-sm leading-relaxed text-slate-200">

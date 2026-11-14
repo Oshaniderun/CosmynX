@@ -305,7 +305,7 @@ export function PowerCommunicationPanel({
     (w) => w.target === "both"
   );
 
-   const derivedTransitions = data.transitions ?? (() => {
+  const derivedTransitions = data.transitions ?? (() => {
     if (
       !isOk ||
       !data.timeline ||

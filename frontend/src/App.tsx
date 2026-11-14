@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { ArrowDown, ArrowUpRight, Compass, Orbit, Radio, Sparkles } from "lucide-react";
 import { Navbar } from "./components/layout/Navbar";
+import { CosmicBackground } from "./components/layout/CosmicBackground";
 import { UnifiedLunarExplorer } from "./features/lunar-map/components/UnifiedLunarExplorer";
 import { PowerCommunicationPanel } from "./features/power-communication/components/PowerCommunicationPanel";
 import { HeliosAdvisorPanel } from "./features/helios-ai/components/HeliosAdvisorPanel";
@@ -31,10 +32,10 @@ function SectionHeading({
   return (
     <div className="section-heading">
       <div>
-        <p className="section-eyebrow"><span>{index}</span>{eyebrow}</p>
-        <h2 id={id}>{title}</h2>
+        <p className="section-eyebrow font-mono text-xs text-sky-400"><span>{index}</span>{eyebrow}</p>
+        <h2 id={id} className="font-heading text-2xl sm:text-3xl font-semibold text-slate-100">{title}</h2>
       </div>
-      <p className="section-detail">{detail}</p>
+      <p className="section-detail text-sm text-slate-300">{detail}</p>
     </div>
   );
 }
@@ -42,7 +43,8 @@ function SectionHeading({
 export default function App() {
   return (
     <MissionProvider>
-      <div className="app-shell min-h-screen text-slate-100">
+      <div className="relative app-shell min-h-screen text-slate-100 flex flex-col antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
+        <CosmicBackground />
         <Navbar />
         <main>
           <section
@@ -55,8 +57,8 @@ export default function App() {
             <div className="mission-hero__stars" aria-hidden="true" />
             <div className="mission-hero__content">
               <div className="mission-hero__copy">
-                <p className="hero-kicker"><span /> LUNAR SURFACE OPERATIONS <span className="hero-kicker__slash">/</span> SOUTH POLE</p>
-                <h1 id="mission-title">A clearer view<br />of the <em>Moon.</em></h1>
+                <p className="hero-kicker font-mono"><span /> LUNAR SURFACE OPERATIONS <span className="hero-kicker__slash">/</span> SOUTH POLE</p>
+                <h1 id="mission-title" className="font-heading">A clearer view<br />of the <em>Moon.</em></h1>
                 <p className="mission-hero__lead">
                   Explore the lunar environment, compare surface conditions, and plan a landing site with one connected mission workspace.
                 </p>
@@ -73,19 +75,18 @@ export default function App() {
                   <span>Lunar horizon visual · supplied project reference</span>
                 </div>
               </div>
-
               <aside className="hero-overview" aria-label="Mission workspace capabilities">
-                <div className="hero-overview__topline">
+                <div className="hero-overview__topline font-mono">
                   <span>MISSION WORKSPACE</span>
                   <Compass size={15} aria-hidden="true" />
                 </div>
-                <p className="hero-overview__title">One lunar environment.<br />Three ways to explore.</p>
+                <p className="hero-overview__title font-heading">One lunar environment.<br />Three ways to explore.</p>
                 <div className="hero-overview__items">
                   {overviewItems.map(({ icon: Icon, label, description }, index) => (
                     <div className="hero-overview__item" key={label}>
                       <span className="hero-overview__icon"><Icon size={16} aria-hidden="true" /></span>
                       <span className="hero-overview__text"><strong>{label}</strong><small>{description}</small></span>
-                      <span className="hero-overview__index">0{index + 1}</span>
+                      <span className="hero-overview__index font-mono">0{index + 1}</span>
                     </div>
                   ))}
                 </div>
@@ -94,7 +95,7 @@ export default function App() {
                 </a>
               </aside>
             </div>
-            <div className="mission-hero__bottom" aria-hidden="true">
+            <div className="mission-hero__bottom font-mono" aria-hidden="true">
               <span>01 — OBSERVE</span><span>02 — COMPARE</span><span>03 — PLAN</span>
               <span className="mission-hero__bottom-rule" />
               <span>GEOMETRIC DATA · MISSION CONTEXT</span>
@@ -129,12 +130,11 @@ export default function App() {
                 detail="Compare south-pole landing-site scenarios side by side using the connected scientific services."
               />
               <div className="workspace-grid">
-                <Suspense fallback={<div className="mission-panel comparison-loading" role="status">Loading comparison workspace…</div>}>
+                <Suspense fallback={<div className="mission-panel comparison-loading p-6 text-center text-slate-400 font-mono text-sm" role="status">Loading comparison workspace…</div>}>
                   <ComparisonPanel />
                 </Suspense>
               </div>
             </section>
-
             <section id="helios-advisor" className="dashboard-section dashboard-section--advisor" aria-labelledby="advisor-heading">
               <SectionHeading
                 id="advisor-heading"

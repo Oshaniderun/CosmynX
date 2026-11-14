@@ -79,7 +79,7 @@ export function LunarMap({
           }),
           text: new Text({
             text: `${Math.abs(lat)}°S`,
-            font: "10px monospace",
+            font: "10px 'IBM Plex Mono', monospace",
             fill: new Fill({ color: "rgba(148, 163, 184, 0.7)" }),
             offsetX: 0,
             offsetY: -radius,
@@ -139,10 +139,11 @@ export function LunarMap({
           new Style({
             text: new Text({
               text: m.label,
-              font: "11px monospace",
+              font: "11px 'IBM Plex Mono', monospace",
               fill: new Fill({ color: "rgba(226, 232, 240, 0.85)" }),
-              backgroundFill: new Fill({ color: "rgba(15, 23, 42, 0.75)" }),
-              padding: [2, 4, 2, 4],
+              backgroundFill: new Fill({ color: "rgba(13, 23, 40, 0.85)" }),
+              backgroundStroke: new Stroke({ color: "rgba(56, 189, 248, 0.2)", width: 1 }),
+              padding: [2, 6, 2, 6],
             }),
           })
         );
@@ -158,15 +159,15 @@ export function LunarMap({
     poleFeature.setStyle(
       new Style({
         image: new CircleStyle({
-          radius: 4,
+          radius: 4.5,
           fill: new Fill({ color: "#38bdf8" }),
           stroke: new Stroke({ color: "#ffffff", width: 1.5 }),
         }),
         text: new Text({
           text: "SOUTH POLE (90°S)",
-          font: "bold 11px monospace",
+          font: "600 11px 'Space Grotesk', sans-serif",
           fill: new Fill({ color: "#38bdf8" }),
-          offsetY: 14,
+          offsetY: 15,
         }),
       })
     );
@@ -191,10 +192,11 @@ export function LunarMap({
         new Style({
           text: new Text({
             text: c.name,
-            font: "italic 10px sans-serif",
-            fill: new Fill({ color: "rgba(203, 213, 225, 0.6)" }),
-            backgroundFill: new Fill({ color: "rgba(2, 6, 23, 0.65)" }),
-            padding: [1, 3, 1, 3],
+            font: "italic 10px 'Inter', sans-serif",
+            fill: new Fill({ color: "rgba(203, 213, 225, 0.7)" }),
+            backgroundFill: new Fill({ color: "rgba(8, 14, 27, 0.75)" }),
+            backgroundStroke: new Stroke({ color: "rgba(148, 163, 184, 0.15)", width: 0.5 }),
+            padding: [2, 4, 2, 4],
           }),
         })
       );
@@ -352,13 +354,13 @@ export function LunarMap({
               text: isCustom
                 ? `★ ${site.name}\n${site.latitude_deg.toFixed(2)}°S, ${site.longitude_deg >= 0 ? `${site.longitude_deg.toFixed(2)}°E` : `${Math.abs(site.longitude_deg).toFixed(2)}°W`}`
                 : `★ ${site.name} (Region Centroid)\n${site.latitude_deg.toFixed(2)}°S, ${site.longitude_deg >= 0 ? `${site.longitude_deg.toFixed(2)}°E` : `${Math.abs(site.longitude_deg).toFixed(2)}°W`}`,
-              font: "bold 11px system-ui, sans-serif",
+              font: "600 11px 'Space Grotesk', sans-serif",
               fill: new Fill({ color: "#ffffff" }),
               backgroundFill: new Fill({
-                color: isCustom ? "rgba(88, 28, 135, 0.9)" : "rgba(8, 51, 68, 0.9)",
+                color: isCustom ? "rgba(79, 70, 229, 0.92)" : "rgba(12, 74, 110, 0.92)",
               }),
               backgroundStroke: new Stroke({
-                color: isCustom ? "#c084fc" : "#22d3ee",
+                color: isCustom ? "#818cf8" : "#38bdf8",
                 width: 1.5,
               }),
               padding: [4, 8, 4, 8],
@@ -372,21 +374,21 @@ export function LunarMap({
           new Style({
             image: new CircleStyle({
               radius: isCustom ? 6 : 5,
-              fill: new Fill({ color: isCustom ? "#a855f7" : "#f59e0b" }),
+              fill: new Fill({ color: isCustom ? "#818cf8" : "#f59e0b" }),
               stroke: new Stroke({
-                color: isCustom ? "#f3e8ff" : "#ffffff",
+                color: isCustom ? "#e0e7ff" : "#ffffff",
                 width: 1.5,
               }),
             }),
             text: new Text({
               text: site.name,
-              font: "10px system-ui, sans-serif",
-              fill: new Fill({ color: isCustom ? "#e9d5ff" : "#fef3c7" }),
+              font: "500 10px 'Inter', sans-serif",
+              fill: new Fill({ color: isCustom ? "#e0e7ff" : "#fef3c7" }),
               backgroundFill: new Fill({
-                color: isCustom ? "rgba(59, 7, 100, 0.75)" : "rgba(30, 41, 59, 0.8)",
+                color: isCustom ? "rgba(49, 46, 129, 0.8)" : "rgba(17, 29, 50, 0.85)",
               }),
               backgroundStroke: new Stroke({
-                color: isCustom ? "#9333ea" : "#d97706",
+                color: isCustom ? "#6366f1" : "#d97706",
                 width: 1,
               }),
               padding: [2, 5, 2, 5],
@@ -437,50 +439,50 @@ export function LunarMap({
   };
 
   return (
-    <div className="relative h-[520px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+    <div className="relative h-[520px] w-full overflow-hidden rounded-2xl border border-white/[0.08] border-t-white/[0.18] bg-[#02050C]/90 shadow-2xl shadow-black/60">
       {/* OpenLayers Map Canvas Container */}
       <div ref={mapContainerRef} className="h-full w-full" />
 
       {/* Top-Right Map Controls Toolbar */}
-      <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/90 p-1 shadow-md backdrop-blur">
+      <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-[#060D19]/80 p-1.5 shadow-xl backdrop-blur-md">
         <button
           onClick={toggleGraticule}
           title={showGraticule ? "Hide Coordinate Grid" : "Show Coordinate Grid"}
-          className={`flex items-center gap-1 rounded px-2.5 py-1 text-xs font-medium transition ${
+          className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium font-sans transition ${
             showGraticule
-              ? "bg-slate-800 text-sky-400"
-              : "text-slate-400 hover:text-slate-200"
+              ? "border border-sky-400/40 bg-[#12223B]/90 text-sky-300 shadow-sm"
+              : "border border-transparent text-slate-400 hover:border-white/[0.08] hover:bg-white/[0.05] hover:text-slate-200"
           }`}
         >
-          {showGraticule ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+          {showGraticule ? <Eye className="h-3.5 w-3.5 text-sky-400" /> : <EyeOff className="h-3.5 w-3.5" />}
           Grid
         </button>
         <button
           onClick={resetView}
           title="Reset View to South Pole (90°S)"
-          className="flex items-center gap-1 rounded px-2.5 py-1 text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition"
+          className="flex items-center gap-1.5 rounded-lg border border-transparent px-2.5 py-1 text-xs font-medium font-sans text-slate-400 hover:border-white/[0.08] hover:bg-white/[0.05] hover:text-slate-200 transition"
         >
-          <RotateCcw className="h-3.5 w-3.5" />
+          <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
           Pole
         </button>
       </div>
 
       {/* Live Coordinate Status Bar */}
-      <div className="absolute bottom-3 right-3 flex items-center gap-3 rounded-md border border-slate-800/80 bg-slate-950/85 px-3 py-1.5 text-xs font-mono text-slate-300 shadow backdrop-blur">
+      <div className="absolute bottom-3 right-3 flex items-center gap-3 rounded-lg border border-white/[0.08] bg-[#040915]/85 px-3.5 py-1.5 text-xs font-mono text-slate-200 shadow-2xl backdrop-blur-md">
         {cursorCoords ? (
           <>
-            <span className="flex items-center gap-1 text-sky-400">
-              <Crosshair className="h-3.5 w-3.5" />
+            <span className="flex items-center gap-1 text-sky-300 font-semibold">
+              <Crosshair className="h-3.5 w-3.5 text-sky-400" />
               <span>{Math.abs(cursorCoords.lat).toFixed(3)}°S</span>
             </span>
-            <span className="text-slate-500">|</span>
+            <span className="text-slate-600">|</span>
             <span className="text-slate-300">
               {cursorCoords.lon >= 0
                 ? `${cursorCoords.lon.toFixed(3)}°E`
                 : `${Math.abs(cursorCoords.lon).toFixed(3)}°W`}
             </span>
-            <span className="text-slate-500">|</span>
-            <span className="text-slate-400">
+            <span className="text-slate-600">|</span>
+            <span className="text-amber-300/90 font-medium">
               Dist: {cursorCoords.distKm.toFixed(1)} km
             </span>
           </>
@@ -491,7 +493,8 @@ export function LunarMap({
 
       {/* Pin Drop Mode Banner */}
       {isPinDropMode && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 rounded-full border border-purple-500/50 bg-purple-950/90 px-4 py-1 text-xs font-medium text-purple-200 shadow-lg backdrop-blur">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-full border border-violet-500/40 bg-[#0A1224]/90 px-4 py-1.5 text-xs font-medium font-sans text-violet-200 shadow-2xl shadow-violet-950/40 backdrop-blur-md">
+          <span className="h-2 w-2 rounded-full bg-violet-400 animate-pulse" />
           Click anywhere on the lunar surface to drop a custom pin
         </div>
       )}

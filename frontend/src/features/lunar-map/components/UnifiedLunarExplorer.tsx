@@ -135,6 +135,7 @@ export function UnifiedLunarExplorer({
   // Explorer view mode: 3D Space (auto-transitions to Surface Map on zoom), Surface Map, or Eclipse replay
   const [viewMode, setViewMode] = useState<"3d" | "surface" | "eclipse">("3d");
   const [cameraZoom, setCameraZoom] = useState(1);
+  const [focusSeq, setFocusSeq] = useState(0);
   const zoomTransitionLock = useRef(false);
 
   // Site selection & custom coordinate state
@@ -774,11 +775,18 @@ export function UnifiedLunarExplorer({
                         mode: "site",
                         point,
                         latitude:
-                          positions?.latitude_deg ?? selectedSite?.latitude_deg ?? -89.45,
+                          (showObstructionReplay ? positions?.latitude_deg : undefined) ??
+                          selectedSite?.latitude_deg ??
+                          positions?.latitude_deg ??
+                          -89.45,
                         longitude:
-                          positions?.longitude_deg ?? selectedSite?.longitude_deg ?? 0,
+                          (showObstructionReplay ? positions?.longitude_deg : undefined) ??
+                          selectedSite?.longitude_deg ??
+                          positions?.longitude_deg ??
+                          0,
                         sites: selectSites,
                         selectedSiteId: selectedSite?.site_id,
+                        focusSeq,
                       }}
                       onSelectSite={(site) => {
                         startTransition(() => {
@@ -946,6 +954,7 @@ export function UnifiedLunarExplorer({
                         key={site.site_id}
                         onClick={() => {
                           startTransition(() => {
+                            setFocusSeq((n) => n + 1);
                             setSelectedSite(site);
                           });
                         }}
@@ -995,6 +1004,7 @@ export function UnifiedLunarExplorer({
                         key={dossier.id}
                         onClick={() => {
                           startTransition(() => {
+                            setFocusSeq((n) => n + 1);
                             setSelectedSite(apolloDossierToLandingSite(dossier));
                           });
                         }}
