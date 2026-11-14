@@ -130,3 +130,80 @@ def test_handling_none_elevation_fields():
         assert res.metrics.sunlit_hours == 1.0
         assert res.metrics.earth_visible_fraction == 1.0
         assert res.metrics.earth_visible_hours == 1.0
+
+
+def test_visibility_transitions_calculation():
+    """Verify next sunrise/sunset and earthrise/earthset transition countdown."""
+    mock_points = [
+        # Hour 0: Sunlit, Earth visible
+        {"timestamp_utc": "2026-11-20T00:00:00Z", "sun_elevation_deg": 1.5, "earth_elevation_deg": 3.0},
+        # Hour 1: Sunlit, Earth visible
+        {"timestamp_utc": "2026-11-20T01:00:00Z", "sun_elevation_deg": 0.8, "earth_elevation_deg": 2.5},
+        # Hour 2: Sunset occurs (negative sun elevation), Earth still visible
+        {"timestamp_utc": "2026-11-20T02:00:00Z", "sun_elevation_deg": -0.4, "earth_elevation_deg": 1.2},
+        # Hour 3: Shadow, Earthset occurs (negative earth elevation)
+        {"timestamp_utc": "2026-11-20T03:00:00Z", "sun_elevation_deg": -0.9, "earth_elevation_deg": -0.5},
+    ]
+
+    with patch("app.services.visibility.fetch_jpl_horizons_ephemeris", return_value=mock_points):
+        res = analyze_site_conditions(
+            site_id="site_trans",
+            latitude_deg=-89.5,
+            longitude_deg=0.0,
+            start_utc="2026-11-20T00:00:00Z",
+            end_utc="2026-11-20T03:00:00Z",
+            step_minutes=60,
+        )
+
+        assert res.status == "ok"
+        assert res.transitions is not None
+        solar = res.transitions["solar"]
+        earth = res.transitions["earth"]
+
+        # Started sunlit -> next event is sunset at Hour 2 (2.0 hours away)
+        assert solar["current_state"] == "sunlit"
+        assert solar["next_event"] == "sunset"
+        assert solar["transition_utc"] == "2026-11-20T02:00:00Z"
+        assert solar["hours_until"] == 2.0
+
+        # Started with contact -> next event is earthset at Hour 3 (3.0 hours away)
+        assert earth["current_state"] == "contact_active"
+        assert earth["next_event"] == "earthset"
+        assert earth["transition_utc"] == "2026-11-20T03:00:00Z"
+        assert earth["hours_until"] == 3.0
+
+
+def test_visibility_transitions_perpetual_conditions():
+    """Verify transitions behavior when sunlight and earth contact remain continuous."""
+    mock_points = [
+        {"timestamp_utc": "2026-11-20T00:00:00Z", "sun_elevation_deg": 2.0, "earth_elevation_deg": 4.0},
+        {"timestamp_utc": "2026-11-20T01:00:00Z", "sun_elevation_deg": 1.8, "earth_elevation_deg": 3.9},
+        {"timestamp_utc": "2026-11-20T02:00:00Z", "sun_elevation_deg": 1.5, "earth_elevation_deg": 3.8},
+    ]
+
+    with patch("app.services.visibility.fetch_jpl_horizons_ephemeris", return_value=mock_points):
+        res = analyze_site_conditions(
+            site_id="site_perpetual",
+            latitude_deg=-89.5,
+            longitude_deg=0.0,
+            start_utc="2026-11-20T00:00:00Z",
+            end_utc="2026-11-20T02:00:00Z",
+            step_minutes=60,
+        )
+
+        assert res.status == "ok"
+        assert res.transitions is not None
+        solar = res.transitions["solar"]
+        earth = res.transitions["earth"]
+
+        assert solar["current_state"] == "sunlit"
+        assert solar["next_event"] == "none"
+        assert solar["transition_utc"] is None
+        assert solar["hours_until"] is None
+        assert "Continuous daylight" in solar["description"]
+
+        assert earth["current_state"] == "contact_active"
+        assert earth["next_event"] == "none"
+        assert earth["transition_utc"] is None
+        assert earth["hours_until"] is None
+        assert "Continuous direct contact" in earth["description"]

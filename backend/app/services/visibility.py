@@ -179,6 +179,9 @@ def analyze_site_conditions(
         else None
     )
 
+    # Calculate next sunrise/sunset and earthrise/earthset transitions (README Section 7)
+    transitions = calculate_visibility_transitions(timeline, step_hours)
+
     # Battery sizing parameters (assuming baseline 100W survival hotel load & 70% DoD)
     baseline_hotel_load_w = 100.0
     usable_kwh_100w = round((longest_darkness_hours * baseline_hotel_load_w) / 1000.0, 3)
@@ -224,4 +227,73 @@ def analyze_site_conditions(
         windows=windows,
         timeline=timeline,
         power_modeling=power_modeling,
+        transitions=transitions,
     )
+
+
+def calculate_visibility_transitions(
+    timeline: list[dict],
+    step_hours: float,
+) -> dict:
+    """Calculate the current state and next sunrise/sunset and earthrise/earthset events.
+
+    Fulfills NASA SpaceApps Section 7 deliverable:
+    'Estimate time to the next visibility transition where data permits.'
+    """
+    if not timeline:
+        return {}
+
+    # 1. Solar Transition (Sunrise / Sunset)
+    s0 = bool(timeline[0].get("is_sunlit"))
+    current_solar_state = "sunlit" if s0 else "shadow"
+    next_solar_event = "none"
+    solar_transition_utc = None
+    solar_hours_until = None
+
+    for i in range(1, len(timeline)):
+        if bool(timeline[i].get("is_sunlit")) != s0:
+            next_solar_event = "sunset" if s0 else "sunrise"
+            solar_transition_utc = timeline[i].get("timestamp_utc")
+            solar_hours_until = round(i * step_hours, 2)
+            break
+
+    if next_solar_event != "none" and solar_hours_until is not None:
+        solar_desc = f"{'Sunset' if s0 else 'Sunrise'} in {solar_hours_until:.1f}h"
+    else:
+        solar_desc = "Continuous daylight throughout window" if s0 else "Continuous shadow throughout window"
+
+    # 2. Earth Direct-to-Earth Communication Transition (AOS / LOS)
+    e0 = bool(timeline[0].get("is_earth_visible"))
+    current_earth_state = "contact_active" if e0 else "blackout"
+    next_earth_event = "none"
+    earth_transition_utc = None
+    earth_hours_until = None
+
+    for i in range(1, len(timeline)):
+        if bool(timeline[i].get("is_earth_visible")) != e0:
+            next_earth_event = "earthset" if e0 else "earthrise"
+            earth_transition_utc = timeline[i].get("timestamp_utc")
+            earth_hours_until = round(i * step_hours, 2)
+            break
+
+    if next_earth_event != "none" and earth_hours_until is not None:
+        earth_desc = f"{'Earthset (LOS)' if e0 else 'Earthrise (AOS)'} in {earth_hours_until:.1f}h"
+    else:
+        earth_desc = "Continuous direct contact throughout window" if e0 else "Continuous blackout throughout window"
+
+    return {
+        "solar": {
+            "current_state": current_solar_state,
+            "next_event": next_solar_event,
+            "transition_utc": solar_transition_utc,
+            "hours_until": solar_hours_until,
+            "description": solar_desc,
+        },
+        "earth": {
+            "current_state": current_earth_state,
+            "next_event": next_earth_event,
+            "transition_utc": earth_transition_utc,
+            "hours_until": earth_hours_until,
+            "description": earth_desc,
+        },
+    }

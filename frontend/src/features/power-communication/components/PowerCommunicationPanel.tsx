@@ -4,11 +4,13 @@ import {
   Battery,
   BatteryCharging,
   Clock,
+  Download,
   Gauge,
   Radio,
   RefreshCw,
   Sliders,
   Sun,
+  Timer,
   Zap,
 } from "lucide-react";
 import {
@@ -239,6 +241,127 @@ export function PowerCommunicationPanel({
     (w) => w.target === "earth" || w.target === "both"
   );
 
+  // Derived transitions calculation (README Section 7: Next transition estimation)
+  const derivedTransitions = data.transitions ?? (() => {
+    if (!data.timeline || data.timeline.length === 0) return null;
+    const s0 = data.timeline[0].is_sunlit;
+    const e0 = data.timeline[0].is_earth_visible;
+    const stepHours = (data.step_minutes ?? 60) / 60;
+
+    let solarNext: "sunset" | "sunrise" | "none" = "none";
+    let solarUtc: string | null = null;
+    let solarHours: number | null = null;
+    for (let i = 1; i < data.timeline.length; i++) {
+      if (data.timeline[i].is_sunlit !== s0) {
+        solarNext = s0 ? "sunset" : "sunrise";
+        solarUtc = data.timeline[i].timestamp_utc;
+        solarHours = Math.round(i * stepHours * 10) / 10;
+        break;
+      }
+    }
+
+    let earthNext: "earthset" | "earthrise" | "none" = "none";
+    let earthUtc: string | null = null;
+    let earthHours: number | null = null;
+    for (let i = 1; i < data.timeline.length; i++) {
+      if (data.timeline[i].is_earth_visible !== e0) {
+        earthNext = e0 ? "earthset" : "earthrise";
+        earthUtc = data.timeline[i].timestamp_utc;
+        earthHours = Math.round(i * stepHours * 10) / 10;
+        break;
+      }
+    }
+
+    return {
+      solar: {
+        current_state: s0 ? ("sunlit" as const) : ("shadow" as const),
+        next_event: solarNext,
+        transition_utc: solarUtc,
+        hours_until: solarHours,
+        description:
+          solarNext !== "none"
+            ? `${s0 ? "Sunset" : "Sunrise"} in ${solarHours}h`
+            : s0
+            ? "Continuous daylight throughout window"
+            : "Continuous shadow throughout window",
+      },
+      earth: {
+        current_state: e0 ? ("contact_active" as const) : ("blackout" as const),
+        next_event: earthNext,
+        transition_utc: earthUtc,
+        hours_until: earthHours,
+        description:
+          earthNext !== "none"
+            ? `${e0 ? "Earthset (LOS)" : "Earthrise (AOS)"} in ${earthHours}h`
+            : e0
+            ? "Continuous direct contact throughout window"
+            : "Continuous blackout throughout window",
+      },
+    };
+  })();
+
+  const handleExportCsv = () => {
+    if (!data.timeline || data.timeline.length === 0) return;
+
+    const siteName =
+      sites.find((s) => s.site_id === selectedSiteId)?.name ?? data.site_id;
+    const headers = [
+      "Timestamp (UTC)",
+      "Sun Elevation (deg)",
+      "Sunlit Status",
+      "Earth Elevation (deg)",
+      "Earth DTE Status",
+      "Power Vertical (Watts)",
+      "Power Tracking (Watts)",
+      "Power Horizontal (Watts)",
+    ];
+
+    const rows = data.timeline.map((pt) => [
+      pt.timestamp_utc,
+      pt.sun_elevation_deg !== null && pt.sun_elevation_deg !== undefined
+        ? pt.sun_elevation_deg.toFixed(2)
+        : "N/A",
+      pt.is_sunlit ? "SUNLIT" : "SHADOW",
+      pt.earth_elevation_deg !== null && pt.earth_elevation_deg !== undefined
+        ? pt.earth_elevation_deg.toFixed(2)
+        : "N/A",
+      pt.is_earth_visible ? "CONTACT_LOS" : "BLACKOUT",
+      pt.power_watts_vertical !== undefined
+        ? (pt.power_watts_vertical * ratedArrayKw).toFixed(1)
+        : "0.0",
+      pt.power_watts_tracking !== undefined
+        ? (pt.power_watts_tracking * ratedArrayKw).toFixed(1)
+        : "0.0",
+      pt.power_watts_horizontal !== undefined
+        ? (pt.power_watts_horizontal * ratedArrayKw).toFixed(1)
+        : "0.0",
+    ]);
+
+    const csvLines = [
+      `# HELIOS Lunar Mission Telemetry — CosmynX (NASA SpaceApps 2026)`,
+      `# Target Site: ${siteName} (${data.site_id})`,
+      `# Coordinates: Lat ${data.latitude_deg} deg, Lon ${data.longitude_deg} deg`,
+      `# Mission Interval: ${data.start_utc} to ${data.end_utc} (Step: ${data.step_minutes} min)`,
+      `# Rated Solar Array: ${ratedArrayKw} kW (${arrayArch})`,
+      `# Daylight Availability: ${sunlitPct ?? "—"}% (${metrics.sunlit_hours ?? 0} hrs)`,
+      `# Earth DTE Coverage: ${earthVisiblePct ?? "—"}% (${metrics.earth_visible_hours ?? 0} hrs)`,
+      headers.join(","),
+      ...rows.map((r) => r.join(",")),
+    ];
+
+    const blob = new Blob([csvLines.join("\r\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `HELIOS_Telemetry_${data.site_id}_${data.start_utc.slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <ModuleCard
       title="Solar Power & Communication Analysis"
@@ -281,6 +404,16 @@ export function PowerCommunicationPanel({
               <FeasIcon className="h-3 w-3" />
               {feasibilityBadge.label}
             </span>
+
+            <button
+              type="button"
+              onClick={handleExportCsv}
+              className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 transition shadow-sm hover:border-slate-500"
+              title="Export complete timeline and power telemetry to CSV"
+            >
+              <Download className="h-3 w-3 text-cyan-400" />
+              <span>Export CSV</span>
+            </button>
 
             {loading && (
               <RefreshCw className="h-3.5 w-3.5 animate-spin text-slate-400" />
@@ -389,6 +522,127 @@ export function PowerCommunicationPanel({
                 </div>
               </div>
             </div>
+
+            {/* Next Visibility & Contact Transitions (README Section 7 Requirement) */}
+            {derivedTransitions && (
+              <div className="rounded-lg border border-slate-800/90 bg-slate-900/40 p-3.5">
+                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <Timer className="h-4 w-4 text-cyan-400" />
+                    <h3 className="text-xs font-semibold text-slate-200">
+                      Next Visibility &amp; Contact Transitions
+                    </h3>
+                  </div>
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    NASA Mission Operations Horizon Predictor
+                  </span>
+                </div>
+
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  {/* Solar Transition Card */}
+                  <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
+                        derivedTransitions.solar.current_state === "sunlit"
+                          ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                          : "bg-indigo-950/40 text-indigo-400 border border-indigo-500/30"
+                      }`}
+                    >
+                      <Sun className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                          Solar Illumination
+                        </span>
+                        <span
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                            derivedTransitions.solar.current_state === "sunlit"
+                              ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                              : "bg-slate-800 text-slate-300 border border-slate-700"
+                          }`}
+                        >
+                          {derivedTransitions.solar.current_state === "sunlit" ? "Sunlit (Day)" : "In Shadow (Night)"}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-sm font-bold text-slate-100">
+                        {derivedTransitions.solar.next_event === "sunset" && (
+                          <span className="text-amber-400">
+                            Sunset in {derivedTransitions.solar.hours_until} hrs
+                          </span>
+                        )}
+                        {derivedTransitions.solar.next_event === "sunrise" && (
+                          <span className="text-emerald-400">
+                            Sunrise in {derivedTransitions.solar.hours_until} hrs
+                          </span>
+                        )}
+                        {derivedTransitions.solar.next_event === "none" && (
+                          <span className="text-slate-300">
+                            {derivedTransitions.solar.description}
+                          </span>
+                        )}
+                      </div>
+                      {derivedTransitions.solar.transition_utc && (
+                        <div className="mt-0.5 text-[11px] text-slate-400 font-mono">
+                          Target: {formatUtc(derivedTransitions.solar.transition_utc)} UTC
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Earth Direct-to-Earth Transition Card */}
+                  <div className="flex items-start gap-3 rounded-md border border-slate-800 bg-slate-950/60 p-3">
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
+                        derivedTransitions.earth.current_state === "contact_active"
+                          ? "bg-sky-500/10 text-sky-400 border border-sky-500/30"
+                          : "bg-rose-950/40 text-rose-400 border border-rose-500/30"
+                      }`}
+                    >
+                      <Radio className="h-4 w-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">
+                          Direct-to-Earth (DTE)
+                        </span>
+                        <span
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                            derivedTransitions.earth.current_state === "contact_active"
+                              ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                              : "bg-rose-900/30 text-rose-300 border border-rose-700/40"
+                          }`}
+                        >
+                          {derivedTransitions.earth.current_state === "contact_active" ? "Contact Active" : "No LOS (Blackout)"}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-sm font-bold text-slate-100">
+                        {derivedTransitions.earth.next_event === "earthset" && (
+                          <span className="text-rose-400">
+                            Earthset (LOS) in {derivedTransitions.earth.hours_until} hrs
+                          </span>
+                        )}
+                        {derivedTransitions.earth.next_event === "earthrise" && (
+                          <span className="text-cyan-400">
+                            Earthrise (AOS) in {derivedTransitions.earth.hours_until} hrs
+                          </span>
+                        )}
+                        {derivedTransitions.earth.next_event === "none" && (
+                          <span className="text-slate-300">
+                            {derivedTransitions.earth.description}
+                          </span>
+                        )}
+                      </div>
+                      {derivedTransitions.earth.transition_utc && (
+                        <div className="mt-0.5 text-[11px] text-slate-400 font-mono">
+                          Target: {formatUtc(derivedTransitions.earth.transition_utc)} UTC
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Solar Array Power Modeling & Battery Sizing Calculator Section */}
             <div className="rounded-lg border border-slate-800 bg-slate-900/40 p-4">

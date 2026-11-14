@@ -95,6 +95,19 @@ export interface PowerModelingInfo {
   battery_sizing: BatterySizingInfo;
 }
 
+export interface VisibilityTransitionDetail {
+  current_state: "sunlit" | "shadow" | "contact_active" | "blackout";
+  next_event: "sunset" | "sunrise" | "earthset" | "earthrise" | "none";
+  transition_utc: string | null;
+  hours_until: number | null;
+  description: string;
+}
+
+export interface ConditionsTransitions {
+  solar: VisibilityTransitionDetail;
+  earth: VisibilityTransitionDetail;
+}
+
 export interface ConditionsResponse {
   site_id: string;
   latitude_deg: number;
@@ -109,6 +122,7 @@ export interface ConditionsResponse {
   windows?: OperationalWindow[];
   timeline?: ConditionTimelinePoint[];
   power_modeling?: PowerModelingInfo;
+  transitions?: ConditionsTransitions;
 }
 
 export interface EphemerisPoint {
