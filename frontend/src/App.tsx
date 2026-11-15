@@ -65,17 +65,19 @@ export default function App() {
             <div className="mission-hero__content">
               <div className="mission-hero__copy">
                 <p className="hero-kicker font-mono">
-                  <span /> PIONEERING THE NEXT ERA <span className="hero-kicker__slash">/</span> LUNAR EXPLORATION
+                  <span /> MISSION CONTROL · ARTEMIS III LUNAR CAMPAIGN
                 </p>
                 <h1 id="mission-title" className="font-heading">
-                  A clearer view<br />of the <em>Moon.</em>
+                  Pioneering the<br />
+                  Next Era of<br />
+                  <em>Space Exploration.</em>
                 </h1>
                 <p className="mission-hero__lead">
-                  Explore the lunar environment, compare surface conditions, and plan landing sites with one connected mission workspace.
+                  Next-generation lunar mission suite for landing-site characterization, continuous South Polar ephemeris telemetry, and high-fidelity solar and Direct-to-Earth analysis.
                 </p>
                 <div className="mission-hero__actions">
                   <a className="button-primary" href="#environment">
-                    Explore the environment <ArrowDown size={16} aria-hidden="true" />
+                    Explore environment <ArrowDown size={16} aria-hidden="true" />
                   </a>
                   <a className="button-quiet" href="#helios-advisor">
                     Open HELIOS advisor <ArrowUpRight size={16} aria-hidden="true" />
@@ -83,15 +85,15 @@ export default function App() {
                 </div>
                 <div className="hero-caption">
                   <span className="hero-caption__line" />
-                  <span>NASA Artemis Campaign · High-fidelity geometric telemetry</span>
+                  <span>NASA Artemis Campaign · Autonomous Lunar Operations</span>
                 </div>
               </div>
               <aside className="hero-overview" aria-label="Mission workspace capabilities">
                 <div className="hero-overview__topline font-mono">
-                  <span>KEY CAPABILITIES</span>
+                  <span>KEY SERVICES</span>
                   <Compass size={15} aria-hidden="true" />
                 </div>
-                <p className="hero-overview__title font-heading">One lunar environment.<br />Three ways to explore.</p>
+                <p className="hero-overview__title font-heading">Space Travel &amp;<br />Lunar Operations.</p>
                 <div className="hero-overview__items">
                   {overviewItems.map(({ icon: Icon, label, description }, index) => (
                     <div className="hero-overview__item" key={label}>
