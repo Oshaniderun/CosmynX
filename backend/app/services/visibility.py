@@ -290,6 +290,7 @@ def analyze_site_conditions(
     start_utc: str,
     end_utc: str,
     step_minutes: int = 60,
+    scientific_only: bool = False,
 ) -> ConditionsResponse:
     """Compute elapsed-time, sampled geometric visibility and power estimates."""
     points = fetch_jpl_horizons_ephemeris(
@@ -299,6 +300,7 @@ def analyze_site_conditions(
         end_utc=end_utc,
         step_minutes=step_minutes,
         use_cache=True,
+        allow_analytical_fallback=not scientific_only,
     )
     if not points:
         return ConditionsResponse(

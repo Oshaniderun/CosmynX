@@ -254,12 +254,14 @@ def fetch_jpl_horizons_ephemeris(
     end_utc: str,
     step_minutes: int = 60,
     use_cache: bool = True,
+    allow_analytical_fallback: bool = True,
 ) -> list[dict[str, Any]]:
     """Fetch, normalize, and cache Sun/Earth ephemeris from NASA JPL Horizons.
 
     Coordinates use East-positive longitude (-180 to 180 deg) and geodetic
     latitude (-90 to 90 deg) on the Moon (body 301). Timestamps are UTC ISO 8601.
-    Returns an empty list if upstream data is unavailable (never invents values).
+    Offline analytical estimates are optional; scientific comparisons disable
+    them and retain unknown measurements when NASA data is unavailable.
     """
     cache_file = _cache_path(
         latitude_deg=latitude_deg,
@@ -308,6 +310,8 @@ def fetch_jpl_horizons_ephemeris(
             except (httpx.HTTPError, ValueError):
                 moon_phys_series = {}
     except (httpx.HTTPError, ValueError):
+        if not allow_analytical_fallback:
+            return []
         return compute_analytical_lunar_ephemeris(
             latitude_deg=latitude_deg,
             longitude_deg=longitude_deg,

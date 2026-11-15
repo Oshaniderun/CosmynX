@@ -675,3 +675,53 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Replay replaces the expanded default metrics/details stack. */
+.comparison-panel [hidden] {
+  display: none !important;
+}
+.comparison-panel .cmp-header-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.comparison-panel .cmp-result-tabs {
+  margin: 0 0 16px;
+}
+.comparison-panel .cmp-result-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.comparison-panel .cmp-results:focus {
+  outline: none;
+}
+.comparison-panel .cmp-metric-details {
+  margin-top: 14px;
+  border: 1px solid #263c52;
+  border-radius: 9px;
+  padding: 12px;
+}
+.comparison-panel .cmp-metric-details > summary {
+  font-size: 11px;
+  color: #9cbace;
+  cursor: pointer;
+}
+.comparison-panel .cmp-metric-details[open] > summary {
+  margin-bottom: 14px;
+}
+.comparison-panel .cmp-replay-example {
+  margin-bottom: 10px;
+}
+@media (max-width: 640px) {
+  .comparison-panel .cmp-result-tabs button {
+    font-size: 10px;
+    padding: 10px 8px;
+  }
+  .comparison-panel .cmp-result-tabs button svg {
+    display: none;
+  }
+}

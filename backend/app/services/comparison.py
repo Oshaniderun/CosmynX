@@ -104,6 +104,7 @@ def compare_scenarios(request: CompareRequest) -> CompareResponse:
             params = dict(
                 site_id=site.site_id, latitude_deg=site.latitude_deg, longitude_deg=site.longitude_deg,
                 start_utc=scenario.start_utc, end_utc=scenario.end_utc, step_minutes=scenario.step_minutes,
+                scientific_only=True,
             )
             try:
                 conditions = analyze_site_conditions(**params)
@@ -135,7 +136,16 @@ def compare_scenarios(request: CompareRequest) -> CompareResponse:
             # Member 4 may still be pending on Dev. Keep this fallback inside comparison;
             # it uses the same explicit sampled intervals, never artificial measurements.
             sampled_metrics, _ = summarize_intervals(timeline, duration)
+            sampled_complete = all(value is not None for value in sampled_metrics.model_dump().values())
+            # Dev's power service interpolates crossings. Replay holds source samples;
+            # keep its totals on that same model so joint time cannot exceed Earth time.
+            different_sampling = conditions.horizon_model == "geometric" and sampled_complete and any(
+                getattr(conditions.metrics, f"{name}_hours") is not None and
+                abs(getattr(conditions.metrics, f"{name}_hours") - getattr(sampled_metrics, f"{name}_hours")) > 1e-8
+                for name in ("sunlit", "earth_visible")
+            )
             invalid = any(value is None or not isfinite(value) for value in conditions.metrics.model_dump().values())
+            invalid = invalid or different_sampling
             invalid = invalid or any(
                 getattr(conditions.metrics, f"{name}_hours") is not None and (
                     getattr(conditions.metrics, f"{name}_hours") > duration + 1e-8 or
@@ -143,10 +153,12 @@ def compare_scenarios(request: CompareRequest) -> CompareResponse:
                 ) for name in ("sunlit", "earth_visible")
             )
             if conditions.status != "ok" or invalid:
-                if all(value is not None for value in sampled_metrics.model_dump().values()):
+                if sampled_complete:
                     conditions = ConditionsResponse(**params, metrics=sampled_metrics, status="ok", source=timeline_source)
                     summary_method = "comparison_intervals"
                     warnings.append("Summary derived from complete JPL Horizons timeline intervals; sampled geometric estimates, not hardware power or link performance.")
+                    if different_sampling:
+                        warnings.append("Service totals use a different sampling model; this comparison uses held source intervals consistently with its replay and joint-duration estimates.")
                 elif conditions.status == "ok":
                     conditions = ConditionsResponse(**params, metrics=VisibilityMetrics(), status="unavailable", source=timeline_source)
                     warnings.append("Inconsistent or incomplete summary measurements were excluded.")

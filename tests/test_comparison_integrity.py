@@ -4,17 +4,47 @@ import os
 import ssl
 import tempfile
 import unittest
+import httpx
 from pathlib import Path
 from unittest.mock import patch
 
 from pydantic import ValidationError
 
-from app.models.schemas import ScenarioInput, VisibilityInterval
+from app.models.schemas import CompareRequest, ScenarioInput, VisibilityInterval
 from app.services import nasa_data
 from app.services.comparison_analysis import continuity_metrics
+from app.services.comparison import compare_scenarios
 
 
 class DataIntegrityTests(unittest.TestCase):
+    @patch('app.services.nasa_data._query_horizons_target')
+    def test_real_nasa_replay_totals_use_one_consistent_interval_model(self, query):
+        request = CompareRequest(scenarios=[ScenarioInput(site_id='custom', latitude_deg=lat, longitude_deg=lon,
+            start_utc='2026-11-28T00:00:00Z', end_utc='2026-12-01T00:00:00Z', step_minutes=15)
+            for lat, lon in ((-89.54, 0), (-86, 2))])
+        result = compare_scenarios(request)
+        query.assert_not_called()
+        delayed = result.scenarios[0]
+        self.assertEqual(delayed.summary_method, 'comparison_intervals')
+        self.assertEqual(delayed.conditions.metrics.earth_visible_hours, 54.5)
+        self.assertEqual(delayed.simultaneous_visibility_hours, 54.5)
+        self.assertEqual(delayed.longest_earth_outage_hours, 17.5)
+        self.assertTrue(all(s.simultaneous_visibility_hours <= s.conditions.metrics.earth_visible_hours for s in result.scenarios))
+
+    @patch('app.services.nasa_data._query_horizons_moon_physical', return_value={})
+    @patch('app.services.nasa_data._query_horizons_target', side_effect=httpx.ConnectError('offline'))
+    @patch('app.services.nasa_data.compute_analytical_lunar_ephemeris')
+    def test_replay_scientific_mode_never_uses_offline_analytical_fallback(self, analytical, _targets, _moon):
+        with tempfile.TemporaryDirectory() as directory, patch.object(nasa_data, 'PROCESSED_DATA_DIR', Path(directory)):
+            request = CompareRequest(scenarios=[ScenarioInput(site_id='custom', latitude_deg=latitude,
+                longitude_deg=0, start_utc='2026-11-20T00:00:00Z', end_utc='2026-11-20T01:00:00Z')
+                for latitude in (-89.54, -86)])
+            result = compare_scenarios(request)
+            self.assertEqual(result.status, 'unavailable')
+            self.assertTrue(all(s.conditions.metrics.sunlit_hours is None for s in result.scenarios))
+            self.assertTrue(all(s.timeline_status == 'unavailable' for s in result.scenarios))
+            analytical.assert_not_called()
+
     def test_nearby_sites_do_not_share_new_cache_key(self):
         args = (0, '2026-11-20T00:00:00Z', '2026-11-20T06:00:00Z', 60)
         self.assertNotEqual(nasa_data._cache_path(-89.540001, *args), nasa_data._cache_path(-89.540002, *args))

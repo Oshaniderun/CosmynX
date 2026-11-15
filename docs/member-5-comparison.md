@@ -1,5 +1,7 @@
 # Member 5 — Scenario Comparison & Timelines
 
+The current compact animation work is on `feature/scenario_improve`: see **[Mission Replay](member-5-mission-replay.md)**. Successful comparisons now open the replay, collapse the editor, and keep metrics and timelines in separate views. The one-click **Run NASA delay story · 24 h** replaces the older six-hour example described below.
+
 Owner: Ravindu. Branch: `feature/scenario-comparison` (renamed from `Ravindu`). Integrated `Dev` commit `51c22f6`, including NASA retrieval, Member 3 visualizations, and Member 4 analysis, on 14 November 2026. No other members’ feature branches were merged separately.
 
 ## Run and try it

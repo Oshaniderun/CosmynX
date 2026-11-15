@@ -15,6 +15,7 @@ def get_ephemeris_for_site(
     start_utc: str,
     end_utc: str,
     step_minutes: int = 60,
+    scientific_only: bool = False,
 ) -> EphemerisResponse:
     """Return Sun and Earth azimuth/elevation time-series for a lunar site."""
     raw_points = fetch_jpl_horizons_ephemeris(
@@ -24,6 +25,7 @@ def get_ephemeris_for_site(
         end_utc=end_utc,
         step_minutes=step_minutes,
         use_cache=True,
+        allow_analytical_fallback=not scientific_only,
     )
     points = [EphemerisPoint(**point) for point in raw_points]
     return EphemerisResponse(
