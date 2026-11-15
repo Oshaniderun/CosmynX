@@ -447,8 +447,8 @@ export function PowerCommunicationPanel({
         )}
         {/* Active Target Banner */}
         {selectedSite && (
-          <div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs text-white font-mono border border-white/15 w-fit">
-            <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+          <div className="flex items-center gap-2 rounded bg-slate-950/60 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
             <span>Target: {selectedSite.name} ({selectedSite.site_id})</span>
           </div>
         )}
@@ -468,7 +468,7 @@ export function PowerCommunicationPanel({
                 const nextSite = sites.find((site) => site.site_id === nextId);
                 if (nextSite) setSelectedSite(nextSite);
               }}
-              className="rounded-full border border-white/15 bg-[#06080d] px-3.5 py-1.5 text-xs text-white shadow-sm focus-visible:outline-2 focus-visible:outline-white transition"
+              className="rounded-xl border border-white/[0.09] bg-[#070e1c] px-3 py-1.5 text-xs text-slate-100 shadow-sm focus-visible:outline-2 focus-visible:outline-amber-400 transition"
             >
               {sites.map((site) => (
                 <option key={site.site_id} value={site.site_id}>
@@ -492,27 +492,27 @@ export function PowerCommunicationPanel({
             <button
               type="button"
               onClick={handleExportCsv}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 hover:bg-white/15 px-3.5 py-1.5 text-xs font-medium text-white transition shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-[#070e1c]/80 hover:bg-[#0c1626] px-3 py-1.5 text-xs font-medium text-slate-200 transition shadow-sm hover:border-sky-400/40"
               title="Export complete timeline and power telemetry to CSV"
             >
-              <Download className="h-3 w-3 text-white" />
+              <Download className="h-3 w-3 text-cyan-400" />
               <span>Export CSV</span>
             </button>
 
             <button
               type="button"
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 hover:bg-white/15 px-3.5 py-1.5 text-xs font-medium text-white transition shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/[0.08] bg-[#070e1c]/80 hover:bg-[#0c1626] px-3 py-1.5 text-xs font-medium text-slate-200 transition shadow-sm hover:border-sky-400/40"
               title={isFullscreen ? "Exit Fullscreen (Esc)" : "Expand to Fullscreen"}
             >
               {isFullscreen ? (
                 <>
-                  <Minimize2 className="h-3 w-3 text-white" />
+                  <Minimize2 className="h-3 w-3 text-cyan-400" />
                   <span>Exit Fullscreen</span>
                 </>
               ) : (
                 <>
-                  <Maximize2 className="h-3 w-3 text-white" />
+                  <Maximize2 className="h-3 w-3 text-cyan-400" />
                   <span>Fullscreen</span>
                 </>
               )}
@@ -609,7 +609,7 @@ export function PowerCommunicationPanel({
                 {/* Progress bar */}
                 <div className="mt-3.5 h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
                   <div
-                    className="h-full rounded-full bg-white transition-all duration-500 shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                    className="h-full rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-500 shadow-[0_0_10px_rgba(56,189,248,0.4)]"
                     style={{
                       width: `${Math.min(
                         Math.max((metrics.earth_visible_fraction ?? 0) * 100, 0),
@@ -621,17 +621,17 @@ export function PowerCommunicationPanel({
 
                 <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
                   <span>Direct line-of-sight &gt; 0°</span>
-                  <span className="text-white/80 font-medium">Not RF reliability</span>
+                  <span className="text-sky-300/90 font-medium">Not RF reliability</span>
                 </div>
               </div>
             </div>
 
             {/* Next Visibility & Contact Transitions (README Section 7 Requirement) */}
             {derivedTransitions && (
-              <div className="rounded-xl border border-white/10 bg-[#06080d]/80 p-4 backdrop-blur-md">
+              <div className="rounded-xl border border-white/[0.08] bg-[#070e1a]/70 p-4 backdrop-blur-md">
                 <div className="flex items-center justify-between border-b border-white/[0.07] pb-3">
                   <div className="flex items-center gap-2">
-                    <Timer className="h-4 w-4 text-amber-400" />
+                    <Timer className="h-4 w-4 text-cyan-400" />
                     <h3 className="text-xs font-semibold text-slate-200">
                       Sampled Visibility Transition Estimates
                     </h3>
@@ -803,7 +803,7 @@ export function PowerCommunicationPanel({
                     <label className="text-[11px] font-medium text-slate-300">
                       Night Hotel Load:
                     </label>
-                    <span className="text-[11px] font-mono text-amber-300 font-bold">
+                    <span className="text-[11px] font-mono text-cyan-400 font-bold">
                       {hotelLoadWatts} W
                     </span>
                   </div>
@@ -814,7 +814,7 @@ export function PowerCommunicationPanel({
                     step="25"
                     value={hotelLoadWatts}
                     onChange={(e) => setHotelLoadWatts(Number(e.target.value))}
-                    className="mt-2.5 w-full accent-amber-400 cursor-pointer"
+                    className="mt-2.5 w-full accent-cyan-400 cursor-pointer"
                   />
                   <div className="flex justify-between text-[10px] text-slate-500 font-mono">
                     <span>25W (Beacon)</span>
