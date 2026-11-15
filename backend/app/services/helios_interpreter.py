@@ -134,7 +134,7 @@ def _extract_threshold(
     # Numeric threshold extraction patterns
     # Pattern 1: [qualifier] <number>% [target]
     # e.g., "at least 70% sunlight", "minimum 80% earth visibility", ">= 65% sun"
-    p1 = rf"(?:at least|minimum|min|>=?|greater than or equal to|more than|require(?:s|d)?|over)?\s*(-?\d+(?:\.\d+)?)\s*(?:%|percent)?\s*(?:or more)?\s*(?:of)?\s*{target_pattern}\b"
+    p1 = rf"(?:at least|minimum|min|>=?|greater than or equal to|more than|require(?:s|d)?|over)?\s*(-?\d+(?:\.\d+)?)\s*(?:%|percent)\s*(?:or more)?\s*(?:of)?\s*{target_pattern}\b"
     for m in re.finditer(p1, text, re.IGNORECASE):
         try:
             val = float(m.group(1))
@@ -144,7 +144,7 @@ def _extract_threshold(
 
     # Pattern 2: [target] [qualifier] <number>%
     # e.g., "sunlight of at least 70%", "earth visibility >= 80%", "sunlight at 65%"
-    p2 = rf"\b{target_pattern}\s*(?:availability|visibility|levels?)?\s*(?:of|at|level|availability)?\s*(?:at least|minimum|min|>=?|greater than or equal to|more than|require(?:s|d)?|of)?\s*(-?\d+(?:\.\d+)?)\s*(?:%|percent)?"
+    p2 = rf"\b{target_pattern}\s*(?:availability|visibility|levels?)?\s*(?:of|at|level|availability)?\s*(?:at least|minimum|min|>=?|greater than or equal to|more than|require(?:s|d)?|of)?\s*(-?\d+(?:\.\d+)?)\s*(?:%|percent)"
     for m in re.finditer(p2, text, re.IGNORECASE):
         try:
             val = float(m.group(1))
