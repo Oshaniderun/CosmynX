@@ -19,6 +19,10 @@ from app.services.helios_interpreter import (
     interpret_mission_requirements,
 )
 from app.services.helios_scoring import HeliosEvaluationReport, generate_recommendation_results
+from app.services.gemini_agent import (
+    extract_intent_with_gemini,
+    generate_conversational_briefing,
+)
 
 logger = logging.getLogger("helios.advisor")
 
@@ -37,6 +41,8 @@ class HeliosAdvisorRequest(BaseModel):
     minimum_sunlight_pct: Optional[float] = Field(default=None, ge=0.0, le=100.0)
     mission_duration_hours: Optional[int] = Field(default=None, ge=1, le=720)
     start_utc: Optional[str] = None
+    api_key: Optional[str] = Field(default=None, max_length=512)
+    chat_history: list[dict[str, str]] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_description_fields(self) -> "HeliosAdvisorRequest":
@@ -63,6 +69,9 @@ class HeliosAdvisorResponse(BaseModel):
     unsupported_requirements: list[str] = Field(default_factory=list)
     mission_window: Optional[dict[str, str]] = None
     limitations: list[str] = Field(default_factory=list)
+    ai_briefing: Optional[str] = None
+    ai_model: Optional[str] = None
+    ai_followups: list[str] = Field(default_factory=list)
 
 
 def _resolve_requirements(
@@ -102,25 +111,17 @@ def generate_recommendations(
         )
     )
 
-    if interpretation.unsupported_requirements:
+    if interpretation.status == "invalid":
         return HeliosAdvisorResponse(
-            status="needs_clarification",
-            summary="Remove or clarify unsupported mission requirements before scientific evaluation.",
-            interpretation=interpretation,
-            clarification_questions=interpretation.clarification_questions,
-            unsupported_requirements=interpretation.unsupported_requirements,
-        )
-
-    if interpretation.status in ("ambiguous", "invalid"):
-        return HeliosAdvisorResponse(
-            status=interpretation.status,
+            status="invalid",
             summary=interpretation.summary,
             interpretation=interpretation,
             clarification_questions=interpretation.clarification_questions,
             unsupported_requirements=interpretation.unsupported_requirements,
             limitations=["No scientific evaluation was run until the request is resolved."],
         )
-    if interpretation.status == "no_requirements" and not explicit_settings:
+
+    if not request.prompt and not explicit_settings:
         return HeliosAdvisorResponse(
             status="needs_clarification",
             summary="Describe mission requirements or provide explicit mission settings to run an evaluation.",
@@ -128,14 +129,53 @@ def generate_recommendations(
             clarification_questions=interpretation.clarification_questions,
             unsupported_requirements=interpretation.unsupported_requirements,
         )
-    if interpretation.clarification_questions and not explicit_settings:
-        return HeliosAdvisorResponse(
-            status="needs_clarification",
-            summary=interpretation.summary,
-            interpretation=interpretation,
-            clarification_questions=interpretation.clarification_questions,
-            unsupported_requirements=interpretation.unsupported_requirements,
+
+    # Use Google Gemini (when configured) or smart conversational defaults when the user
+    # asks a free-form question or continues a multi-turn conversation.
+    if (
+        interpretation.status in ("no_requirements", "ambiguous")
+        or interpretation.unsupported_requirements
+        or interpretation.clarification_questions
+        or request.chat_history
+    ) and request.prompt:
+        gemini_intent = extract_intent_with_gemini(
+            request.prompt, request.api_key, request.chat_history
         )
+        if gemini_intent:
+            obj_raw = str(gemini_intent.get("objective", "balanced"))
+            if obj_raw in ("maximize_sunlight", "maximize_earth_visibility", "balanced"):
+                interpretation.extracted_objective = HeliosObjective(obj_raw)
+            if isinstance(gemini_intent.get("minimum_sunlight_pct"), (int, float)):
+                interpretation.extracted_min_sunlight_pct = max(
+                    0.0, min(100.0, float(gemini_intent["minimum_sunlight_pct"]))
+                )
+            if isinstance(gemini_intent.get("minimum_earth_visibility_pct"), (int, float)):
+                interpretation.extracted_min_earth_visibility_pct = max(
+                    0.0, min(100.0, float(gemini_intent["minimum_earth_visibility_pct"]))
+                )
+            if isinstance(gemini_intent.get("mission_duration_hours"), (int, float)):
+                interpretation.extracted_duration_hours = max(
+                    1, min(720, int(gemini_intent["mission_duration_hours"]))
+                )
+            if isinstance(gemini_intent.get("summary"), str) and gemini_intent["summary"].strip():
+                interpretation.summary = gemini_intent["summary"].strip()
+            interpretation.status = "success"
+            interpretation.clarification_questions = []
+        elif interpretation.status in ("no_requirements", "ambiguous") or interpretation.unsupported_requirements:
+            if interpretation.extracted_objective is None:
+                interpretation.extracted_objective = HeliosObjective.BALANCED
+            if interpretation.extracted_min_earth_visibility_pct is None:
+                interpretation.extracted_min_earth_visibility_pct = 70.0
+            if interpretation.extracted_min_sunlight_pct is None:
+                interpretation.extracted_min_sunlight_pct = 50.0
+            if interpretation.extracted_duration_hours is None:
+                interpretation.extracted_duration_hours = 72
+            interpretation.status = "partial"
+            interpretation.clarification_questions = []
+            interpretation.summary = (
+                "Evaluated all 9 Artemis III candidate regions using balanced mission defaults "
+                "(72 h window, ≥50% sunlight, ≥70% Earth line of sight)."
+            )
 
     try:
         requirements = _resolve_requirements(request, interpretation)
@@ -202,6 +242,16 @@ def generate_recommendations(
     if interpretation.unsupported_requirements:
         limitations.extend(interpretation.unsupported_requirements)
 
+    ai_briefing, ai_model, ai_followups = generate_conversational_briefing(
+        prompt=request.prompt,
+        evaluation=evaluation,
+        sites=unique_sites,
+        duration_hours=requirements.mission_duration_hours,
+        objective=requirements.objective,
+        api_key=request.api_key,
+        chat_history=request.chat_history,
+    )
+
     return HeliosAdvisorResponse(
         status=evaluation.status,
         summary=summary,
@@ -211,4 +261,7 @@ def generate_recommendations(
         unsupported_requirements=interpretation.unsupported_requirements,
         mission_window={"start_utc": start_utc, "end_utc": end_utc},
         limitations=limitations,
+        ai_briefing=ai_briefing,
+        ai_model=ai_model,
+        ai_followups=ai_followups,
     )

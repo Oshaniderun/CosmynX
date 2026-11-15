@@ -289,6 +289,16 @@ def rank_eligible_candidates(
             -item["raw_score"],
             -item["metrics"].sunlit_fraction,
             -item["metrics"].earth_visible_fraction,
+            -(
+                item["site"].terrain.terrain_safety_score
+                if item["site"].terrain and item["site"].terrain.terrain_safety_score is not None
+                else -1.0
+            ),
+            (
+                item["site"].terrain.mean_slope_deg
+                if item["site"].terrain and item["site"].terrain.mean_slope_deg is not None
+                else 999.0
+            ),
             item["site"].name,
         ),
     )

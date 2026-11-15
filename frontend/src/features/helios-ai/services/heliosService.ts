@@ -5,8 +5,15 @@ export type HeliosObjective =
   | "maximize_earth_visibility"
   | "balanced";
 
+export interface HeliosChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface HeliosAdvisorRequest {
   mission_description: string;
+  api_key?: string;
+  chat_history?: HeliosChatMessage[];
 }
 
 export interface VisibilityMetrics {
@@ -107,6 +114,9 @@ export interface HeliosAdvisorResponse {
   unsupported_requirements: string[];
   mission_window: { start_utc: string; end_utc: string } | null;
   limitations: string[];
+  ai_briefing?: string | null;
+  ai_model?: string | null;
+  ai_followups?: string[];
 }
 
 export class HeliosServiceError extends Error {
