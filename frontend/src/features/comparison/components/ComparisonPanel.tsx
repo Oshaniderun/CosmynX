@@ -383,16 +383,14 @@ export function ComparisonPanel({
     >
       <header className="cmp-header">
         <div>
-          <p className="cmp-eyebrow">HELIOS / SCENARIO LAB</p>
           <div className="flex flex-wrap items-center gap-3">
             <h2 id="comparison-title">
               <ArrowRightLeft size={22} aria-hidden="true" /> Compare landing
               scenarios
             </h2>
             {selectedSite && (
-              <div className="flex items-center gap-2 rounded-lg bg-[#080E1B] px-3 py-1 text-xs text-sky-300 font-mono border border-sky-500/30 shadow-inner">
-                <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
-                <span>Primary Target: {selectedSite.name} ({selectedSite.site_id})</span>
+              <div className="flex items-center gap-2 rounded-lg border border-sky-200/20 bg-[#050c1a]/55 px-3 py-1 text-xs font-medium text-slate-200">
+                <span>Selected Site: {selectedSite.name}</span>
               </div>
             )}
           </div>
@@ -401,9 +399,6 @@ export function ComparisonPanel({
             trade-offs.
           </p>
         </div>
-        <span className="cmp-badge cmp-model-badge">
-          Geometric horizon model
-        </span>
       </header>
       <form onSubmit={runComparison}>
         <fieldset disabled={busy}>
@@ -479,7 +474,6 @@ export function ComparisonPanel({
             </div>
           )}
           <div className="cmp-step-title">
-            <span>01</span>
             <div>
               <h3>Build your scenarios</h3>
               <p>
@@ -652,7 +646,6 @@ export function ComparisonPanel({
             ))}
           </div>
           <div className="cmp-step-title">
-            <span>02</span>
             <div>
               <h3>Explore a schedule change</h3>
               <p>
@@ -744,8 +737,7 @@ export function ComparisonPanel({
             <h3>
               {result.data_mode === "demo"
                 ? "Synthetic preview results"
-                : "Comparison results"}{" "}
-              <span className="cmp-badge">{result.status}</span>
+                : "Comparison results"}
             </h3>
             <div className="cmp-export-actions">
               <button

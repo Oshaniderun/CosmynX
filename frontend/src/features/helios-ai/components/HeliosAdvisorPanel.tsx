@@ -1,24 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import {
-  AlertCircle,
-  Bot,
-  ChevronDown,
-  ChevronUp,
-  Loader2,
-  RotateCcw,
-  Send,
-  Sparkles,
-  User,
-} from "lucide-react";
+import { AlertCircle, Loader2, RotateCcw, Send } from "lucide-react";
 
 import {
   HeliosServiceError,
   requestRecommendations,
   type HeliosAdvisorResponse,
-  type HeliosCandidate,
   type HeliosChatMessage,
 } from "../services/heliosService";
-import "./heliosMissionControl.css";
 
 const STARTER_PROMPTS = [
   "5-day rover mission needing continuous sunlight for power",
@@ -39,7 +27,7 @@ function renderInlineBold(text: string) {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
-        <strong key={i} className="font-semibold text-amber-200">
+        <strong key={i} className="font-semibold text-white">
           {part.slice(2, -2)}
         </strong>
       );
@@ -58,7 +46,7 @@ function renderFormattedMarkdown(text: string) {
       elements.push(
         <ul
           key={`${keyPrefix}-list`}
-          className="my-2 list-disc space-y-1.5 pl-5 text-base leading-relaxed text-slate-200"
+          className="my-2 list-disc space-y-1.5 pl-5 text-base leading-relaxed text-slate-100"
         >
           {listItems.map((item, idx) => (
             <li key={idx}>{renderInlineBold(item)}</li>
@@ -89,264 +77,6 @@ function renderFormattedMarkdown(text: string) {
 
   flushList("final");
   return <div className="space-y-2.5">{elements}</div>;
-}
-
-function formatFraction(fraction: number | null): string {
-  if (fraction === null) return "N/A";
-  return `${(fraction * 100).toFixed(1)}%`;
-}
-
-function formatHours(hours: number | null): string {
-  if (hours === null) return "";
-  return `${hours.toFixed(1)} h`;
-}
-
-function formatObjective(objective?: string | null): string {
-  if (objective === "maximize_sunlight") return "Maximize Sunlight";
-  if (objective === "maximize_earth_visibility") return "Maximize Earth Comms";
-  return "Balanced";
-}
-
-function getRunnerUpSummary(
-  site: HeliosCandidate,
-  topPick: HeliosCandidate | null,
-): string {
-  if (site.constraints.violations.length > 0) {
-    return site.constraints.violations[0];
-  }
-  if (
-    topPick &&
-    site.metrics.sunlit_fraction !== null &&
-    topPick.metrics.sunlit_fraction !== null &&
-    site.metrics.sunlit_fraction < topPick.metrics.sunlit_fraction
-  ) {
-    return `${formatFraction(site.metrics.sunlit_fraction)} sun vs ${formatFraction(topPick.metrics.sunlit_fraction)}`;
-  }
-  if (
-    topPick &&
-    site.metrics.earth_visible_fraction !== null &&
-    topPick.metrics.earth_visible_fraction !== null &&
-    site.metrics.earth_visible_fraction < topPick.metrics.earth_visible_fraction
-  ) {
-    return `${formatFraction(site.metrics.earth_visible_fraction)} Earth LOS`;
-  }
-  if (site.tradeoffs.length > 0) {
-    return site.tradeoffs[0];
-  }
-  return "Eligible · steeper LOLA terrain slope than #1";
-}
-
-function EvaluationDetailsCard({
-  response,
-}: {
-  response: HeliosAdvisorResponse;
-}) {
-  const [showAllTable, setShowAllTable] = useState(false);
-
-  const eligible = response.evaluation?.eligible ?? [];
-  const disqualified = response.evaluation?.disqualified ?? [];
-  const topPick = eligible[0] ?? null;
-  const allSites = [...eligible, ...disqualified];
-
-  if (allSites.length === 0) return null;
-
-  return (
-    <div className="mt-4 space-y-4 rounded-xl border border-white/10 bg-slate-950/75 p-4">
-      {/* #1 Recommended Site Detail Header */}
-      {topPick && (
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
-          <div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="rounded-md bg-amber-300/20 px-2.5 py-0.5 text-sm font-bold uppercase tracking-wider text-amber-300">
-                #1 Top Pick
-              </span>
-              <span className="font-mono text-sm text-slate-400">
-                {topPick.latitude_deg.toFixed(2)}°, {topPick.longitude_deg.toFixed(2)}°
-              </span>
-              {topPick.score !== null && (
-                <span className="rounded-md border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 text-sm font-semibold text-emerald-200">
-                  Score {topPick.score.toFixed(1)}/100
-                </span>
-              )}
-            </div>
-            <h4 className="mt-1.5 text-lg font-semibold text-white">
-              {topPick.site_name}
-            </h4>
-            <p className="mt-1 text-sm leading-relaxed text-slate-300">
-              {topPick.explanation}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2.5 text-sm">
-            <div className="rounded-lg border border-amber-300/30 bg-amber-300/10 px-3.5 py-2 text-amber-100">
-              <span className="block text-sm font-medium uppercase tracking-wider text-amber-300/90">
-                Sunlight
-              </span>
-              <span className="text-base font-semibold">
-                {formatFraction(topPick.metrics.sunlit_fraction)}
-              </span>{" "}
-              <span className="text-sm text-amber-200/80">
-                ({formatHours(topPick.metrics.sunlit_hours)})
-              </span>
-            </div>
-            <div className="rounded-lg border border-sky-300/30 bg-sky-300/10 px-3.5 py-2 text-sky-100">
-              <span className="block text-sm font-medium uppercase tracking-wider text-sky-300/90">
-                Earth Comms
-              </span>
-              <span className="text-base font-semibold">
-                {formatFraction(topPick.metrics.earth_visible_fraction)}
-              </span>{" "}
-              <span className="text-sm text-sky-200/80">
-                ({formatHours(topPick.metrics.earth_visible_hours)})
-              </span>
-            </div>
-            {response.requirements && (
-              <div className="rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-slate-200">
-                <span className="block text-sm font-medium uppercase tracking-wider text-slate-400">
-                  Mission Profile
-                </span>
-                <span className="text-base font-semibold">
-                  {response.requirements.mission_duration_hours}h
-                </span>{" "}
-                <span className="text-sm text-slate-400">
-                  · {formatObjective(response.requirements.objective)}
-                </span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Compact Runner-Ups & Disqualified Breakdown */}
-      {(eligible.length > 1 || disqualified.length > 0) && (
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-sm font-semibold uppercase tracking-wider text-slate-300">
-              How other candidate sites compare ({eligible.length} eligible ·{" "}
-              {disqualified.length} disqualified)
-            </span>
-            <button
-              type="button"
-              onClick={() => setShowAllTable((prev) => !prev)}
-              className="inline-flex items-center gap-1 text-sm font-medium text-amber-300 hover:text-amber-200"
-            >
-              {showAllTable ? (
-                <>
-                  Hide full table <ChevronUp className="h-4 w-4" />
-                </>
-              ) : (
-                <>
-                  View all 9 site metrics <ChevronDown className="h-4 w-4" />
-                </>
-              )}
-            </button>
-          </div>
-
-          {!showAllTable ? (
-            <div className="grid gap-2.5 sm:grid-cols-2">
-              {disqualified.map((site) => (
-                <div
-                  key={site.site_id}
-                  className="flex flex-col justify-between rounded-lg border border-rose-400/25 bg-rose-500/[0.08] px-3.5 py-2.5 text-sm"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-rose-200">
-                      Disqualified: {site.site_name}
-                    </span>
-                    <span className="font-mono text-sm text-rose-300">
-                      Sun {formatFraction(site.metrics.sunlit_fraction)} · Earth{" "}
-                      {formatFraction(site.metrics.earth_visible_fraction)}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-sm text-rose-200/80">
-                    {site.constraints.violations.join("; ") || "Disqualified"}
-                  </p>
-                </div>
-              ))}
-              {eligible.slice(1, 5).map((site) => (
-                <div
-                  key={site.site_id}
-                  className="flex flex-col justify-between rounded-lg border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-slate-100">
-                      #{site.rank} {site.site_name}
-                    </span>
-                    <span className="font-mono text-sm text-slate-300">
-                      Sun {formatFraction(site.metrics.sunlit_fraction)} · Earth{" "}
-                      {formatFraction(site.metrics.earth_visible_fraction)}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-sm text-slate-400">
-                    {getRunnerUpSummary(site, topPick)}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="overflow-x-auto rounded-lg border border-white/10">
-              <table className="w-full text-left text-sm text-slate-200">
-                <thead className="bg-white/[0.05] text-sm uppercase tracking-wider text-slate-400">
-                  <tr>
-                    <th className="px-3.5 py-2.5">Rank / Site</th>
-                    <th className="px-3.5 py-2.5">Coordinates</th>
-                    <th className="px-3.5 py-2.5">Score</th>
-                    <th className="px-3.5 py-2.5">Sunlight</th>
-                    <th className="px-3.5 py-2.5">Earth Comms</th>
-                    <th className="px-3.5 py-2.5">Status / Notes</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {allSites.map((site) => {
-                    const isDisq = !site.constraints.passed_all;
-                    return (
-                      <tr
-                        key={site.site_id}
-                        className={
-                          isDisq ? "bg-rose-500/[0.06]" : "hover:bg-white/[0.02]"
-                        }
-                      >
-                        <td className="px-3.5 py-2.5 font-medium text-white">
-                          {isDisq ? "Disqualified —" : `#${site.rank}`}{" "}
-                          {site.site_name}
-                        </td>
-                        <td className="px-3.5 py-2.5 font-mono text-sm text-slate-400">
-                          {site.latitude_deg.toFixed(2)}°,{" "}
-                          {site.longitude_deg.toFixed(2)}°
-                        </td>
-                        <td className="px-3.5 py-2.5 font-mono text-sm">
-                          {site.score !== null ? `${site.score.toFixed(1)}` : "—"}
-                        </td>
-                        <td className="px-3.5 py-2.5 text-amber-200">
-                          {formatFraction(site.metrics.sunlit_fraction)}{" "}
-                          <span className="text-slate-400">
-                            ({formatHours(site.metrics.sunlit_hours)})
-                          </span>
-                        </td>
-                        <td className="px-3.5 py-2.5 text-sky-200">
-                          {formatFraction(site.metrics.earth_visible_fraction)}{" "}
-                          <span className="text-slate-400">
-                            ({formatHours(site.metrics.earth_visible_hours)})
-                          </span>
-                        </td>
-                        <td className="px-3.5 py-2.5 text-sm text-slate-300">
-                          {isDisq
-                            ? site.constraints.violations.join("; ")
-                            : site.rank === 1
-                              ? "Top recommendation (flattest LOLA slope)"
-                              : getRunnerUpSummary(site, topPick)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
 }
 
 export function HeliosAdvisorPanel() {
@@ -424,21 +154,16 @@ export function HeliosAdvisorPanel() {
       : lastAssistantTurn?.response?.clarification_questions ?? [];
 
   return (
-    <div className="helios-room flex flex-col rounded-2xl border border-white/10 bg-slate-950/60 p-4 sm:p-5">
-      {/* Top Chat Header */}
-      <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-300/40 bg-amber-300/15 text-amber-300">
-            <Bot className="h-5 w-5" />
-          </div>
-          <div>
-            <h3 className="text-base font-semibold text-white">
-              HELIOS Mission AI Chat
-            </h3>
-            <p className="text-sm text-slate-400">
-              Ask about any of the 9 Artemis III South Pole sites or continue with follow-up questions
-            </p>
-          </div>
+    <div className="helios-light-chat flex flex-col rounded-2xl border border-sky-200/15 bg-[#081224]/50 p-5 text-slate-100 shadow-lg backdrop-blur-md">
+      {/* Header */}
+      <div className="mb-4 flex items-center justify-between border-b border-sky-200/12 pb-3.5">
+        <div>
+          <h3 className="text-lg font-semibold text-white">
+            HELIOS Mission Advisor
+          </h3>
+          <p className="text-sm text-slate-300">
+            Ask about any of the 9 Artemis III South Pole landing sites or continue with follow-up questions
+          </p>
         </div>
 
         {messages.length > 0 && (
@@ -448,7 +173,7 @@ export function HeliosAdvisorPanel() {
               setMessages([]);
               setError(null);
             }}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm text-slate-300 transition hover:border-white/25 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-sky-200/20 bg-[#0c1b34]/60 px-3.5 py-2 text-sm font-medium text-slate-200 transition hover:bg-[#13284c] hover:text-white"
           >
             <RotateCcw className="h-4 w-4" />
             New Chat
@@ -459,19 +184,14 @@ export function HeliosAdvisorPanel() {
       {/* Scrollable Conversation Thread */}
       <div className="max-h-[58vh] min-h-[300px] flex-1 space-y-4 overflow-y-auto pr-1">
         {messages.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-amber-300/40 bg-amber-300/15 text-amber-300">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <div className="space-y-1.5">
-                <p className="text-base font-medium text-white">
-                  Hello! I'm HELIOS, your Artemis III Lunar South Pole AI Advisor.
-                </p>
-                <p className="text-sm leading-relaxed text-slate-300">
-                  I evaluate all 9 candidate landing sites using JPL Horizons solar/Earth geometry and LRO LOLA terrain data (slope, roughness, and PSR distance). Pick a starter question below or type anything to start chatting:
-                </p>
-              </div>
+          <div className="rounded-xl border border-sky-200/12 bg-[#050c1a]/45 p-5 space-y-4">
+            <div className="space-y-1.5">
+              <p className="text-base font-semibold text-white">
+                How can I help plan your lunar landing mission?
+              </p>
+              <p className="text-sm leading-relaxed text-slate-300">
+                Select a question below or type your own question to compare sunlight, Earth visibility, and terrain slope across the 9 Artemis III candidate sites:
+              </p>
             </div>
 
             <div className="grid gap-2.5 sm:grid-cols-2">
@@ -480,7 +200,7 @@ export function HeliosAdvisorPanel() {
                   key={prompt}
                   type="button"
                   onClick={() => void sendMessage(prompt)}
-                  className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-slate-200 transition hover:border-amber-300/50 hover:bg-amber-300/10 hover:text-white"
+                  className="rounded-xl border border-sky-200/15 bg-[#0c1b34]/55 px-4 py-3 text-left text-sm font-medium text-slate-100 transition hover:border-sky-300/40 hover:bg-[#13284c]/75 hover:text-white"
                 >
                   {prompt}
                 </button>
@@ -491,45 +211,26 @@ export function HeliosAdvisorPanel() {
           messages.map((turn) =>
             turn.role === "user" ? (
               <div key={turn.id} className="flex justify-end">
-                <div className="flex max-w-[85%] items-start gap-2.5 rounded-2xl rounded-tr-sm border border-amber-300/35 bg-amber-300/15 px-4 py-3 text-base text-amber-50">
+                <div className="max-w-[85%] rounded-2xl rounded-tr-sm border border-sky-300/30 bg-[#12284c]/80 px-4 py-3 text-base text-white">
                   <p className="leading-relaxed">{turn.content}</p>
-                  <User className="mt-1 h-4 w-4 shrink-0 text-amber-300" />
                 </div>
               </div>
             ) : (
               <div key={turn.id} className="flex justify-start">
-                <div className="w-full rounded-2xl rounded-tl-sm border border-white/10 bg-slate-900/90 p-5 shadow-md">
-                  <div className="mb-3 flex items-center gap-2.5">
-                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider text-amber-300">
-                      <Bot className="h-4 w-4" />
-                      HELIOS Advisor
-                    </span>
-                    {turn.response?.ai_model && (
-                      <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-sm text-slate-400">
-                        {turn.response.ai_model}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Detailed Conversational Answer */}
+                <div className="w-full rounded-2xl rounded-tl-sm border border-sky-200/15 bg-[#050c1a]/55 p-5">
                   {renderFormattedMarkdown(turn.content)}
-
-                  {/* Structured Site Evaluation Details */}
-                  {turn.response && (
-                    <EvaluationDetailsCard response={turn.response} />
-                  )}
                 </div>
               </div>
             ),
           )
         )}
 
-        {/* Loading Indicator inside Thread */}
+        {/* Loading Indicator */}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="inline-flex items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-sm text-slate-300">
-              <Loader2 className="h-4 w-4 animate-spin text-amber-300" />
-              HELIOS is analyzing lunar ephemeris & terrain data...
+            <div className="inline-flex items-center gap-2.5 rounded-2xl border border-sky-200/15 bg-[#050c1a]/55 px-4 py-3 text-sm font-medium text-slate-200">
+              <Loader2 className="h-4 w-4 animate-spin text-sky-300" />
+              Analyzing lunar landing sites...
             </div>
           </div>
         )}
@@ -538,7 +239,7 @@ export function HeliosAdvisorPanel() {
         {error && (
           <div
             role="alert"
-            className="flex items-start gap-3 rounded-xl border border-rose-400/35 bg-rose-500/10 p-4 text-sm text-rose-100"
+            className="flex items-start gap-3 rounded-xl border border-rose-400/35 bg-rose-950/50 p-4 text-sm text-rose-100"
           >
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300" />
             <p>{error}</p>
@@ -548,18 +249,18 @@ export function HeliosAdvisorPanel() {
         <div ref={threadEndRef} />
       </div>
 
-      {/* Contextual Follow-Up Chips */}
+      {/* Follow-Up Suggestions */}
       {!isLoading && activeFollowUps.length > 0 && (
-        <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3">
-          <span className="text-sm font-medium uppercase tracking-wider text-slate-400">
-            Continue chat:
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-sky-200/12 pt-3">
+          <span className="text-sm font-medium text-slate-300">
+            Suggested follow-ups:
           </span>
           {activeFollowUps.map((question) => (
             <button
               key={question}
               type="button"
               onClick={() => void sendMessage(question)}
-              className="rounded-full border border-amber-300/30 bg-amber-300/10 px-3.5 py-1.5 text-sm text-amber-100 transition hover:border-amber-300/60 hover:bg-amber-300/20"
+              className="rounded-full border border-sky-200/20 bg-[#0c1b34]/60 px-3.5 py-1.5 text-sm font-medium text-slate-100 transition hover:border-sky-300/45 hover:bg-[#13284c]/80 hover:text-white"
             >
               {question}
             </button>
@@ -567,10 +268,10 @@ export function HeliosAdvisorPanel() {
         </div>
       )}
 
-      {/* Continuous Chat Input Form */}
+      {/* Chat Input Form */}
       <form
         onSubmit={handleSubmit}
-        className="mt-3 flex items-end gap-2.5 border-t border-white/10 pt-3"
+        className="mt-3 flex items-end gap-2.5 border-t border-sky-200/12 pt-3"
         aria-label="HELIOS mission advisor chat form"
       >
         <textarea
@@ -586,15 +287,15 @@ export function HeliosAdvisorPanel() {
           }}
           placeholder={
             messages.length > 0
-              ? "Ask a follow-up question (e.g., 'Tell me more about Malapert Massif' or 'What if we stay 10 days?')..."
-              : "Ask anything about the lunar landing sites or describe your mission..."
+              ? "Ask a follow-up question..."
+              : "Ask a question about the lunar landing sites..."
           }
-          className="helios-directive-input flex-1 resize-none rounded-xl p-3.5 text-base leading-relaxed text-slate-100 placeholder:text-slate-500 focus:outline-none"
+          className="flex-1 resize-none rounded-xl border border-sky-200/20 bg-[#050c1a]/65 p-3.5 text-base leading-relaxed text-white placeholder:text-slate-400 focus:border-sky-300/50 focus:outline-none"
         />
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="helios-cta inline-flex h-[50px] shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold uppercase tracking-wider text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-[50px] shrink-0 items-center justify-center gap-2 rounded-xl border border-sky-300/35 bg-[#12284c] px-5 text-sm font-semibold text-white transition hover:bg-[#183462] disabled:cursor-not-allowed disabled:opacity-40"
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />

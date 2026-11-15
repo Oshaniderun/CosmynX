@@ -470,9 +470,6 @@ export function UnifiedLunarExplorer({
               >
                 3D Lunar Explorer &amp; Site Selection
               </h2>
-              <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-300">
-                3D → Surface
-              </span>
             </div>
             <p className="mt-0.5 text-xs text-slate-400">
               Zoom directly onto the 3D South Polar relief (up to {MAX_3D_ZOOM}×) or switch to the 2D Surface Map for coordinate pin-dropping &amp; LOLA terrain metrics.
@@ -548,18 +545,20 @@ export function UnifiedLunarExplorer({
       {viewMode === "eclipse" ? (
         <>
           <EclipsePurpose />
-          <Suspense
-            fallback={
-              <div
-                className="grid h-[360px] place-items-center bg-slate-950 text-sm text-slate-400 sm:h-[460px]"
-                role="status"
-              >
-                Loading 3D eclipse view…
-              </div>
-            }
-          >
-            <SpaceViewport key="eclipse" frame={{ mode: "eclipse", time }} />
-          </Suspense>
+          <div className="space-viewport-dark">
+            <Suspense
+              fallback={
+                <div
+                  className="grid h-[360px] place-items-center bg-slate-950 text-sm text-slate-400 sm:h-[460px]"
+                  role="status"
+                >
+                  Loading 3D eclipse view…
+                </div>
+              }
+            >
+              <SpaceViewport key="eclipse" frame={{ mode: "eclipse", time }} />
+            </Suspense>
+          </div>
 
           <div className="space-y-3 border-t border-slate-800 px-4 py-4 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -735,7 +734,7 @@ export function UnifiedLunarExplorer({
             terrainView === "surface" &&
             terrain &&
             point ? (
-              <div className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+              <div className="space-viewport-dark overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
                 <Suspense
                   fallback={
                     <div
@@ -750,7 +749,7 @@ export function UnifiedLunarExplorer({
                 </Suspense>
               </div>
             ) : (
-              <div className="relative h-[520px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
+              <div className="space-viewport-dark relative h-[520px] w-full overflow-hidden rounded-lg border border-slate-800 bg-slate-950">
                 {/* 3D Globe Layer */}
                 <div
                   className={`absolute inset-0 transition-all duration-500 ease-out ${

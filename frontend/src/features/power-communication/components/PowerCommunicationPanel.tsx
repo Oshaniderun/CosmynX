@@ -447,9 +447,8 @@ export function PowerCommunicationPanel({
         )}
         {/* Active Target Banner */}
         {selectedSite && (
-          <div className="flex items-center gap-2 rounded bg-slate-950/60 px-2.5 py-1 text-xs text-cyan-300 font-mono border border-cyan-800/40">
-            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            <span>Target: {selectedSite.name} ({selectedSite.site_id})</span>
+          <div className="flex items-center gap-2 rounded border border-sky-200/20 bg-[#050c1a]/55 px-3 py-1.5 text-xs font-medium text-slate-200">
+            <span>Selected Site: {selectedSite.name}</span>
           </div>
         )}
 
@@ -1085,26 +1084,6 @@ export function PowerCommunicationPanel({
           </>
         )}
 
-        {/* Scientific Limitations & Reality Note */}
-        <div className="rounded-lg border border-amber-900/20 bg-amber-950/15 p-3 text-xs text-amber-200/80">
-          <div className="flex items-start gap-2">
-            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-amber-400" />
-            <div className="space-y-1">
-              <p className="font-medium text-amber-300">
-                NASA SpaceApps Scientific Reality Note
-              </p>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
-                Sunlight and Earth visibility use a <strong>geometric horizon model</strong> ({data.horizon_model}); Earth line of sight does not guarantee RF communication. Power and battery outputs are estimates from the displayed array, load, depth-of-discharge, and cell-specific-energy assumptions.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Metadata Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/60 pt-2 text-[11px] text-slate-500">
-          <span>Source: <span className="text-slate-400">{isDemoData ? "Synthetic fixed demonstration data (not NASA/JPL)" : data.source}</span></span>
-          <span>Observation: <span className="font-mono text-slate-400">{formatUtc(data.start_utc)} – {formatUtc(data.end_utc)}</span></span>
-        </div>
       </div>
     </ModuleCard>
   );
