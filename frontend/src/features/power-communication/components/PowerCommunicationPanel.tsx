@@ -225,6 +225,8 @@ export function PowerCommunicationPanel({
 
   const metrics = data.metrics;
   const isOk = data.status === "ok";
+  const earthWindows = isOk ? (data.windows ?? []).filter((window) => window.target === "earth") : [];
+  const simultaneousWindows = isOk ? (data.windows ?? []).filter((window) => window.target === "both") : [];
   const hasMeasuredMetrics = isOk && !isDemoData &&
     metrics.sunlit_fraction !== null && metrics.earth_visible_fraction !== null;
 
