@@ -17,7 +17,7 @@ from datetime import datetime, timedelta, timezone
 import logging
 from typing import Optional
 
-from app.api.sites import DEFAULT_SITES
+from app.api.sites import DEFAULT_SITES, get_sites
 from app.models.helios_models import ScientificProvenance
 from app.models.schemas import ConditionsResponse, LandingSite, VisibilityMetrics
 from app.services.visibility import analyze_site_conditions
@@ -78,8 +78,11 @@ def compute_mission_window(start_utc: str, duration_hours: int) -> tuple[str, st
 
 
 def get_candidate_landing_sites() -> list[LandingSite]:
-    """Return the list of candidate lunar landing sites from the sites module."""
-    return list(DEFAULT_SITES)
+    """Return the list of candidate lunar landing sites enriched with LRO LOLA terrain metrics."""
+    try:
+        return get_sites()
+    except Exception:
+        return list(DEFAULT_SITES)
 
 
 def fetch_site_scientific_conditions(
@@ -199,6 +202,14 @@ def build_scientific_provenance(
     if conditions.horizon_model == "geometric":
         warnings.append(
             "Geometric horizon model: elevation > 0 deg does not model terrain shadow casting."
+        )
+
+    if conditions.status == "ok" and (
+        conditions.metrics.sunlit_fraction is not None
+        or conditions.metrics.earth_visible_fraction is not None
+    ):
+        warnings.append(
+            "Visibility fractions and durations are sampled estimates; horizon crossings are linearly interpolated between ephemeris timestamps."
         )
 
     is_synthetic = (

@@ -204,6 +204,85 @@ class TestMandatoryConstraintFiltering:
         assert res.passed_all is False
         assert any("Earth visibility measurement is unavailable" in v for v in res.violations)
 
+    def test_known_earth_failure_with_missing_sunlight_is_disqualified(self):
+        """A known mandatory failure is conclusive despite another missing metric."""
+        site = LandingSite(
+            site_id="known-fail-missing-sun",
+            name="Known Earth Constraint Failure",
+            latitude_deg=-89.0,
+            longitude_deg=0.0,
+        )
+        conditions = make_synthetic_conditions(
+            site.site_id,
+            sunlit_fraction=None,
+            earth_visible_fraction=0.50,
+            sunlit_hours=None,
+            earth_visible_hours=36.0,
+        )
+        report = generate_recommendation_results(
+            [site],
+            {site.site_id: conditions},
+            HeliosMissionRequirements(minimum_earth_visibility_pct=80.0),
+        )
+        assert report.disqualified[0].site_id == site.site_id
+        assert report.insufficient_data == []
+        assert report.disqualified[0].metrics.sunlit_fraction is None
+        assert any("Earth visibility (50.0%)" in v for v in report.disqualified[0].constraints.violations)
+
+    def test_known_sunlight_failure_with_missing_earth_is_disqualified(self):
+        site = LandingSite(
+            site_id="known-fail-missing-earth",
+            name="Known Sunlight Constraint Failure",
+            latitude_deg=-89.0,
+            longitude_deg=0.0,
+        )
+        conditions = make_synthetic_conditions(
+            site.site_id,
+            sunlit_fraction=0.20,
+            earth_visible_fraction=None,
+            sunlit_hours=14.4,
+            earth_visible_hours=None,
+        )
+        report = generate_recommendation_results(
+            [site],
+            {site.site_id: conditions},
+            HeliosMissionRequirements(minimum_sunlight_pct=40.0),
+        )
+        assert report.disqualified[0].site_id == site.site_id
+        assert report.insufficient_data == []
+        assert report.disqualified[0].metrics.earth_visible_fraction is None
+
+    @pytest.mark.parametrize("status", ["pending", "unavailable"])
+    def test_non_ok_status_with_complete_metrics_is_not_ranked(self, status):
+        site = LandingSite(
+            site_id="status-gated",
+            name="Status Gated Site",
+            latitude_deg=-89.0,
+            longitude_deg=0.0,
+        )
+        conditions = make_synthetic_conditions(
+            site.site_id,
+            sunlit_fraction=0.95,
+            earth_visible_fraction=0.95,
+            status=status,
+        )
+        report = generate_recommendation_results(
+            [site],
+            {site.site_id: conditions},
+            HeliosMissionRequirements(minimum_earth_visibility_pct=80.0),
+        )
+
+        assert report.eligible == []
+        assert report.disqualified == []
+        assert len(report.insufficient_data) == 1
+        candidate = report.insufficient_data[0]
+        assert candidate.rank is None
+        assert candidate.score is None
+        assert candidate.metrics.sunlit_fraction == 0.95
+        assert candidate.metrics.earth_visible_fraction == 0.95
+        assert candidate.provenance.status == status
+        assert any(f"status is '{status}'" in violation for violation in candidate.constraints.violations)
+
     def test_invalid_fraction_ranges_raises(self):
         # When constructed via model_construct, filter_mandatory_constraints verifies bounds
         with pytest.raises(ValueError, match="sunlit_fraction must be in"):
@@ -366,7 +445,7 @@ class TestScientificExplanations:
 
         # Trade-offs must be grounded in numbers
         assert any("Darkness interval" in t and "6.0 hours" in t for t in tradeoffs)
-        assert any("Communication blackout" in t and "14.0 hours" in t for t in tradeoffs)
+        assert any("No geometric Earth line of sight" in t and "14.0 hours" in t for t in tradeoffs)
 
         # Ensure NO hallucinated terms exist
         for forbidden in ["RF link quality", "terrain blocking", "power generation", "signal-to-noise"]:

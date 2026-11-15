@@ -9,8 +9,8 @@ router = APIRouter()
 @router.get("/conditions", response_model=ConditionsResponse)
 def get_conditions(
     site_id: str = Query("candidate_001"),
-    latitude_deg: float = Query(-89.54, ge=-90.0, le=90.0),
-    longitude_deg: float = Query(0.0, ge=-180.0, le=180.0),
+    latitude_deg: float = Query(-87.50, ge=-90.0, le=90.0),
+    longitude_deg: float = Query(-5.00, ge=-180.0, le=180.0),
     start_utc: str = Query("2026-11-20T00:00:00Z"),
     end_utc: str = Query("2026-11-23T00:00:00Z"),
     step_minutes: int = Query(60, ge=1, le=1440),

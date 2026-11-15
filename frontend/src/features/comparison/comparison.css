@@ -1,0 +1,732 @@
+/* ==========================================================================
+   HELIOS SCENARIO LAB — Translucent Cosmic Midnight-Blue Theme
+   ========================================================================== */
+
+.comparison-panel {
+  border: 1px solid rgba(148, 197, 248, 0.16);
+  border-radius: 16px;
+  background: rgba(8, 18, 36, 0.50);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #f1f5f9;
+  overflow: hidden;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 15px;
+  box-shadow: 0 16px 40px rgba(2, 6, 23, 0.45);
+}
+
+.comparison-panel * {
+  box-sizing: border-box;
+}
+
+.comparison-panel [hidden] {
+  display: none !important;
+}
+
+/* --- Header --- */
+.comparison-panel .cmp-header {
+  padding: 24px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  border-bottom: 1px solid rgba(148, 197, 248, 0.12);
+  background: transparent;
+}
+
+.comparison-panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: clamp(20px, 2.2vw, 24px);
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.comparison-panel h3 {
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: 17px;
+  color: #f8fafc;
+  font-weight: 600;
+  margin: 0;
+}
+
+.comparison-panel h4 {
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  color: #f8fafc;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 6px 0;
+}
+
+.comparison-panel .cmp-header > div > p:last-child {
+  color: #cbd5e1;
+  max-width: 540px;
+  line-height: 1.6;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+/* --- Form & Section Layout --- */
+.comparison-panel form,
+.comparison-panel .cmp-results {
+  padding: 24px 28px;
+}
+
+.comparison-panel fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.comparison-panel .cmp-toolbar {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.comparison-panel .cmp-toolbar p,
+.comparison-panel .cmp-submit-row p {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.comparison-panel label {
+  display: block;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* --- Form Inputs & Selects --- */
+.comparison-panel input,
+.comparison-panel select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(148, 197, 248, 0.22);
+  background: rgba(5, 12, 26, 0.65);
+  color: #f8fafc;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  margin-top: 6px;
+  color-scheme: dark;
+  transition: border-color 0.15s;
+}
+
+.comparison-panel input[type="datetime-local"],
+.comparison-panel input[type="number"],
+.comparison-panel input[type="text"] {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+}
+
+.comparison-panel input:focus-visible,
+.comparison-panel select:focus-visible,
+.comparison-panel button:focus-visible,
+.comparison-panel summary:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+  border-color: #93c5fd;
+}
+
+.comparison-panel .cmp-mode {
+  min-width: 210px;
+}
+
+/* --- Step Indicators --- */
+.comparison-panel .cmp-step-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 16px;
+}
+
+.comparison-panel .cmp-step-title h3 {
+  font-size: 16px;
+  color: #f8fafc;
+}
+
+.comparison-panel .cmp-step-title p {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+/* --- Draft Grid --- */
+.comparison-panel .cmp-draft-grid,
+.comparison-panel .cmp-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.comparison-panel .cmp-draft {
+  border: 1px solid rgba(148, 197, 248, 0.15);
+  border-radius: 12px;
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+  background: rgba(5, 12, 26, 0.45);
+}
+
+.comparison-panel .cmp-draft-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 22px;
+  font-size: 13px;
+  color: #f1f5f9;
+  font-weight: 600;
+}
+
+.comparison-panel .cmp-scenario-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: -4px;
+}
+
+.comparison-panel .cmp-scenario-tools .cmp-link {
+  margin: 0;
+  color: #bae6fd;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.comparison-panel .cmp-date-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.comparison-panel .cmp-caption {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+
+/* --- Action Rows & Buttons --- */
+.comparison-panel .cmp-actions,
+.comparison-panel .cmp-submit-row,
+.comparison-panel .cmp-result-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.comparison-panel .cmp-actions {
+  margin: 20px 0;
+}
+
+.comparison-panel button {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.comparison-panel button:disabled,
+.comparison-panel fieldset:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.comparison-panel .cmp-secondary,
+.comparison-panel .cmp-primary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.comparison-panel .cmp-secondary {
+  border: 1px solid rgba(148, 197, 248, 0.22);
+  background: rgba(12, 27, 52, 0.55);
+  color: #f1f5f9;
+}
+
+.comparison-panel .cmp-secondary:hover:not(:disabled) {
+  background: rgba(18, 38, 72, 0.75);
+  border-color: rgba(148, 197, 248, 0.4);
+}
+
+.comparison-panel .cmp-primary {
+  background: #12284c;
+  color: #ffffff;
+  border: 1px solid rgba(147, 197, 253, 0.35);
+}
+
+.comparison-panel .cmp-primary:hover:not(:disabled) {
+  background: #183462;
+}
+
+.comparison-panel .cmp-icon {
+  padding: 4px;
+  color: #94a3b8;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+}
+
+.comparison-panel .cmp-icon:hover {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.comparison-panel .cmp-delay {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.comparison-panel .cmp-delay label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comparison-panel .cmp-delay input {
+  display: inline-block;
+  width: 72px;
+  margin: 0;
+  padding: 7px 10px;
+}
+
+.comparison-panel .cmp-submit-row {
+  padding-top: 18px;
+  border-top: 1px solid rgba(148, 197, 248, 0.12);
+}
+
+/* --- Notices, Alerts & Empty States --- */
+.comparison-panel .cmp-notice,
+.comparison-panel .cmp-error {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.comparison-panel .cmp-notice {
+  border: 1px solid rgba(148, 197, 248, 0.18);
+  color: #cbd5e1;
+  background: rgba(5, 12, 26, 0.45);
+}
+
+.comparison-panel .cmp-error,
+.comparison-panel > .cmp-error {
+  margin: 0 0 18px;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  background: rgba(136, 19, 55, 0.35);
+  color: #fecdd3;
+}
+
+.comparison-panel > .cmp-error {
+  margin: 0 28px 24px;
+}
+
+.comparison-panel .cmp-link {
+  text-decoration: underline;
+  margin-left: 8px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.comparison-panel .cmp-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 32px;
+  color: #cbd5e1;
+  border-top: 1px solid rgba(148, 197, 248, 0.12);
+  line-height: 1.8;
+}
+
+.comparison-panel .cmp-empty span {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* --- Results Section --- */
+.comparison-panel .cmp-results {
+  border-top: 1px solid rgba(148, 197, 248, 0.12);
+}
+
+.comparison-panel .cmp-result-heading {
+  margin-bottom: 20px;
+}
+
+.comparison-panel .cmp-evidence-strip {
+  display: none;
+}
+
+.comparison-panel .cmp-overview-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.comparison-panel .cmp-overview-heading h3 {
+  margin-top: 6px;
+  font-size: 19px;
+}
+
+.comparison-panel .cmp-overview-heading > p {
+  max-width: 280px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+/* --- Comparison Overview Table --- */
+.comparison-panel .cmp-comparison-table {
+  overflow-x: auto;
+  border: 1px solid rgba(148, 197, 248, 0.15);
+  border-radius: 12px;
+  background: rgba(5, 12, 26, 0.45);
+}
+
+.comparison-panel .cmp-comparison-table table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.comparison-panel .cmp-comparison-table caption {
+  caption-side: bottom;
+  text-align: left;
+  padding: 12px 16px;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.6;
+  background: rgba(5, 12, 26, 0.55);
+  border-top: 1px solid rgba(148, 197, 248, 0.12);
+}
+
+.comparison-panel .cmp-comparison-table th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.comparison-panel .cmp-comparison-table thead th {
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #cbd5e1;
+  background: rgba(12, 27, 52, 0.55);
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(148, 197, 248, 0.15);
+}
+
+.comparison-panel .cmp-comparison-table thead svg {
+  display: inline;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.comparison-panel .cmp-comparison-table tbody td,
+.comparison-panel .cmp-comparison-table tbody th {
+  padding: 16px;
+  border-bottom: 1px solid rgba(148, 197, 248, 0.1);
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 13px;
+  color: #f1f5f9;
+}
+
+.comparison-panel .cmp-comparison-table tbody th {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 210px;
+}
+
+.comparison-panel .cmp-comparison-table tbody tr:hover {
+  background: rgba(18, 38, 72, 0.35);
+}
+
+.comparison-panel .cmp-comparison-table small {
+  display: block;
+  color: #94a3b8;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.comparison-panel .cmp-letter {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  background: rgba(18, 38, 72, 0.65);
+  border: 1px solid rgba(148, 197, 248, 0.25);
+  border-radius: 6px;
+  color: #bae6fd;
+  font-weight: 600;
+}
+
+/* --- Result Tabs & Views --- */
+.comparison-panel .cmp-result-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 24px 0 20px;
+  padding: 4px;
+  background: rgba(5, 12, 26, 0.55);
+  border: 1px solid rgba(148, 197, 248, 0.15);
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.comparison-panel .cmp-result-tabs button {
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #cbd5e1;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.comparison-panel .cmp-result-tabs button[aria-pressed="true"] {
+  background: rgba(18, 38, 72, 0.8);
+  color: #ffffff;
+  border-color: rgba(148, 197, 248, 0.3);
+}
+
+.comparison-panel .cmp-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* --- Scenario Summary Cards --- */
+.comparison-panel .cmp-summary {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid rgba(148, 197, 248, 0.15);
+  border-radius: 14px;
+  background: rgba(5, 12, 26, 0.45);
+}
+
+.comparison-panel .cmp-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 20px 0;
+  gap: 16px;
+}
+
+.comparison-panel .cmp-metrics > div {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  background: rgba(8, 18, 36, 0.55);
+  border: 1px solid rgba(148, 197, 248, 0.14);
+  border-radius: 10px;
+}
+
+.comparison-panel .cmp-metrics span {
+  font-size: 12px;
+  color: #cbd5e1;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.comparison-panel .cmp-metrics strong {
+  font-family: var(--font-heading, "Space Grotesk", sans-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.comparison-panel .cmp-metrics small {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.comparison-panel .cmp-sun {
+  color: #fde68a;
+}
+
+.comparison-panel .cmp-earth {
+  color: #bae6fd;
+}
+
+.comparison-panel .cmp-delta {
+  padding: 12px 14px;
+  margin: 14px 0;
+  border: 1px solid rgba(148, 197, 248, 0.15);
+  border-radius: 8px;
+  background: rgba(8, 18, 36, 0.55);
+  font-size: 13px;
+  color: #f1f5f9;
+  line-height: 1.8;
+}
+
+.comparison-panel .cmp-delta strong {
+  color: #bae6fd;
+}
+
+.comparison-panel .cmp-warning {
+  color: #fde68a;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
+.comparison-panel .cmp-quality-details {
+  display: none;
+}
+
+/* --- Timeline Controls & Charts --- */
+.comparison-panel .cmp-timeline-header {
+  margin: 24px 0 16px;
+}
+
+.comparison-panel .cmp-timeline-header p {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.comparison-panel .cmp-range-controls {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.comparison-panel .cmp-range-controls label {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.comparison-panel input[type="range"] {
+  padding: 0;
+  accent-color: #93c5fd;
+  height: 20px;
+  border: 0;
+  background: transparent;
+}
+
+.comparison-panel .cmp-chart-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-top: 12px;
+}
+
+.comparison-panel .cmp-inspect {
+  font-size: 12px;
+  margin: 12px 0;
+  color: #e0f2fe;
+  padding: 6px 10px;
+  background: rgba(8, 18, 36, 0.55);
+  border-radius: 6px;
+  border: 1px solid rgba(148, 197, 248, 0.2);
+}
+
+.comparison-panel .cmp-operations {
+  margin: 12px 0;
+  padding: 14px;
+  background: rgba(8, 18, 36, 0.55);
+  border: 1px solid rgba(148, 197, 248, 0.14);
+  border-radius: 8px;
+}
+
+.comparison-panel .cmp-window-table {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.comparison-panel .cmp-window-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.comparison-panel .cmp-window-table th,
+.comparison-panel .cmp-window-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(148, 197, 248, 0.1);
+  text-align: left;
+  vertical-align: top;
+  color: #f1f5f9;
+}
+
+.comparison-panel .cmp-window-table th {
+  color: #cbd5e1;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.comparison-panel .cmp-assumptions {
+  display: none;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .comparison-panel .cmp-header,
+  .comparison-panel form,
+  .comparison-panel .cmp-results {
+    padding: 20px 18px;
+  }
+  .comparison-panel .cmp-header,
+  .comparison-panel .cmp-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .comparison-panel .cmp-draft-grid,
+  .comparison-panel .cmp-summary-grid,
+  .comparison-panel .cmp-range-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .comparison-panel .cmp-submit-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .comparison-panel .cmp-overview-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .comparison-panel .cmp-result-tabs,
+  .comparison-panel .cmp-export-actions {
+    width: 100%;
+  }
+  .comparison-panel .cmp-result-tabs button,
+  .comparison-panel .cmp-export-actions button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 440px) {
+  .comparison-panel .cmp-date-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

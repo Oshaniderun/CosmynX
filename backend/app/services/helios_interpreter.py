@@ -36,6 +36,7 @@ UNSUPPORTED_PATTERNS: list[tuple[str, str]] = [
     (r"\b(?:thermal|temperature|cryogenic|heat)\b", "Thermal / temperature conditions"),
     (r"\b(?:landing ellipse|pinpoint|precision landing)\b", "Landing error ellipse / precision navigation"),
     (r"\b(?:rf link|data rate|bandwidth|snr|signal-to-noise|antenna gain)\b", "RF link budget / communications data rate"),
+    (r"\b(?:communication|comms?)\s+(?:reliability|quality|availability|blackout probability)\b", "Communications reliability / link quality"),
     (r"\b(?:payload mass|delta[- ]?v|propellant|fuel)\b", "Spacecraft mass / propulsion budget"),
 ]
 
@@ -395,6 +396,11 @@ def interpret_mission_requirements(
     else:
         status = "success"
 
+    if unsupported:
+        clarifications.append(
+            "HELIOS cannot evaluate the unsupported requirement(s) listed below. Remove or clarify them before scientific evaluation."
+        )
+
     # Assemble summary
     summary_parts = []
     if obj_val is not None:
@@ -427,12 +433,14 @@ def interpret_mission_requirements(
     else:
         summary = "No recognized mission requirements found in text."
 
-    # Clarifications if critical inputs were not extracted
-    if status == "success":
-        if obj_val is None:
-            clarifications.append("Would you like to prioritize sunlight, Earth visibility, or a balanced compromise?")
-        if dur_val is None:
-            clarifications.append("What is your expected mission duration in hours?")
+    if re.search(r"\b(?:comms?|communication)\b", cleaned, re.IGNORECASE):
+        notes.append(
+            "HELIOS interprets Earth visibility as geometric Earth line-of-sight only; it does not evaluate RF link quality or communications reliability."
+        )
+    if re.search(r"\bsolar\s+power\b", cleaned, re.IGNORECASE):
+        notes.append(
+            "Solar power wording is treated as a request to prioritize geometric solar illumination; electrical power generation is not modeled."
+        )
 
     return HeliosInterpretationResult(
         query=user_input,
